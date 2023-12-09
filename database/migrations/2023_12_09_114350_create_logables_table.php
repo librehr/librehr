@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('userables', function (Blueprint $table) {
+        Schema::create('logables', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('user_id');
-            $table->foreignId('userable_id');
-            $table->string('userable_type');
+            $table->foreignId('user_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            $table->bigInteger('logable_id');
+            $table->string('logable_type');
             $table->timestampsTz();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('userables');
+        Schema::dropIfExists('logables');
     }
 };

@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('userables', function (Blueprint $table) {
+        Schema::create('documents', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('user_id');
-            $table->foreignId('userable_id');
-            $table->string('userable_type');
+            $table->string('name');
+            $table->string('path');
+            $table->string('type');
+            $table->integer('size');
             $table->timestampsTz();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('userables');
+        Schema::dropIfExists('documents');
     }
 };

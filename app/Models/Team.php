@@ -19,4 +19,14 @@ class Team extends Model
     }
 
     protected $guarded = [];
+
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class)->activeContracts();
+    }
+
+    public function supervisors()
+    {
+        return$this->morphToMany(User::class, 'userable');
+    }
 }

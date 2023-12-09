@@ -30,9 +30,9 @@ class Contract extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function contractsTypes()
+    public function contractType()
     {
-        return $this->belongsTo(ContractType::class);
+        return $this->belongsTo(ContractType::class, 'contract_type_id');
     }
 
     public function team()
@@ -43,5 +43,10 @@ class Contract extends Model
     public function supervisors()
     {
         return $this->morphToMany(User::class, 'userable', 'userables', 'userable_id', 'userable_id');
+    }
+
+    public function scopeActiveContracts($builder)
+    {
+        $builder->whereNull('end')->orWhere('end', '>', now());
     }
 }

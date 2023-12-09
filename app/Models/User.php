@@ -28,6 +28,10 @@ class User extends Authenticatable implements FilamentUser
         'password',
     ];
 
+    protected $with = [
+        'role',
+    ];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -57,6 +61,11 @@ class User extends Authenticatable implements FilamentUser
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function getActiveBusinessId()
+    {
+        return data_get($this->getActiveBusiness(), 'id');
     }
 
     public function getActiveBusiness($uuid = null)

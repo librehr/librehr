@@ -1,33 +1,53 @@
 <?php
 
-namespace App\Filament\Resources\UserResource\RelationManagers;
+namespace App\Filament\Resources\TeamResource\RelationManagers;
 
-use App\Filament\Resources\ContractResource;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ContractsRelationManager extends RelationManager
 {
     protected static string $relationship = 'contracts';
+    protected static ?string $label = 'Employees';
+
+    protected function canCreate(): bool
+    {
+        return  false;
+    }
+
+    protected function canDelete(Model $record): bool
+    {
+        return false;
+    }
+
+    protected function canEdit(Model $record): bool
+    {
+        return  false;
+    }
 
     public function form(Form $form): Form
     {
         return $form
-            ->schema(
-                app(ContractResource::class)->formInputs($form)
-            );
+            ->schema([
+                Forms\Components\TextInput::make('user.name')
+                    ->required()
+                    ->maxLength(255),
+            ]);
     }
 
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('name')
-            ->columns(app(ContractResource::class)->tableColumns($table))
+            ->recordTitleAttribute('user.name')
+            ->columns([
+                Tables\Columns\TextColumn::make('user.name'),
+            ])
             ->filters([
                 //
             ])
@@ -39,9 +59,7 @@ class ContractsRelationManager extends RelationManager
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+
             ]);
     }
 }

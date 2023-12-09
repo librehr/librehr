@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('userables', function (Blueprint $table) {
+        Schema::create('calendars', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('user_id');
-            $table->foreignId('userable_id');
-            $table->string('userable_type');
+            $table->date('date');
+            $table->string('name');
+            $table->boolean('workable')->default(false);
             $table->timestampsTz();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('userables');
+        Schema::dropIfExists('calendars');
     }
 };

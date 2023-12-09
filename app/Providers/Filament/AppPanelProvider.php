@@ -31,6 +31,7 @@ class AppPanelProvider extends PanelProvider
 
         return $panel
             ->default()
+            ->collapsibleNavigationGroups(false)
             ->id('app')
             ->path('app')
             ->login()

@@ -40,6 +40,9 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\TextColumn::make('role.name'),
                 Tables\Columns\TextColumn::make('email'),
+                Tables\Columns\TextColumn::make('contracts_count')
+                    ->label('Contracts')
+                    ->counts('contracts'),
                 Tables\Columns\TextColumn::make('active'),
             ])
             ->filters([

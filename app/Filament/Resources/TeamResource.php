@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TeamResource\Pages;
 use App\Filament\Resources\TeamResource\RelationManagers;
+use App\Filament\Resources\UserResource\RelationManagers\ContractsRelationManager;
 use App\Models\Team;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -25,7 +26,11 @@ class TeamResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\TextInput::make('name'),
+                Forms\Components\Select::make('supervisors')
+                ->relationship('supervisors', 'name')
+                    ->multiple()
+                    ->preload(),
             ]);
     }
 
@@ -34,6 +39,12 @@ class TeamResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('contracts_count')
+                    ->label('Active Contracts')
+                ->counts('contracts'),
+                Tables\Columns\TextColumn::make('supervisors')
+                    ->formatStateUsing(fn ($state) => implode(',' ,$state->pluck('name')->toArray()))
+                ->badge()
             ])
             ->filters([
                 //
@@ -51,8 +62,7 @@ class TeamResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
-        ];
+            RelationManagers\ContractsRelationManager::class];
     }
 
     public static function getPages(): array

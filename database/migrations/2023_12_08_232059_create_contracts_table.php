@@ -32,10 +32,6 @@ return new class extends Migration
             $table->jsonb('attributes')->nullable();
             $table->timestampTz('start');
             $table->timestampTz('end')->nullable();
-            $table->foreignId('supervisor_id')
-                ->constrained('users')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
             $table->timestampsTz();
         });
     }
