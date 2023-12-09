@@ -25,9 +25,17 @@ return new class extends Migration
                 ->constrained()
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->jsonb('attributes');
+            $table->foreignId('team_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            $table->jsonb('attributes')->nullable();
             $table->timestampTz('start');
             $table->timestampTz('end')->nullable();
+            $table->foreignId('supervisor_id')
+                ->constrained('users')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->timestampsTz();
         });
     }

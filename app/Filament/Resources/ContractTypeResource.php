@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
-use App\Models\User;
+use App\Filament\Resources\ContractTypeResource\Pages;
+use App\Filament\Resources\ContractTypeResource\RelationManagers;
+use App\Models\ContractType;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,23 +13,21 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class UserResource extends Resource
+class ContractTypeResource extends Resource
 {
-    protected static ?string $model = User::class;
+    protected static ?string $model = ContractType::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user';
+    protected static ?string $navigationIcon = null;
 
-    protected static ?string $navigationGroup = 'Human Resources';
+    protected static ?string $navigationGroup = 'Administration';
+
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')->columnSpanFull(),
-                Forms\Components\TextInput::make('email'),
                 Forms\Components\TextInput::make('name'),
-                Forms\Components\Select::make('role_id')
-                ->relationship('role', 'name'),
+                Forms\Components\TextInput::make('attributes.hours'),
             ]);
     }
 
@@ -37,10 +35,7 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('role.name'),
-                Tables\Columns\TextColumn::make('email'),
-                Tables\Columns\TextColumn::make('active'),
+                Tables\Columns\TextColumn::make('name')
             ])
             ->filters([
                 //
@@ -58,16 +53,16 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\ContractsRelationManager::class
+            //
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => Pages\ListContractTypes::route('/'),
+            'create' => Pages\CreateContractType::route('/create'),
+            'edit' => Pages\EditContractType::route('/{record}/edit'),
         ];
     }
 }

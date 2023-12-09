@@ -59,6 +59,10 @@ class AppPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
+            ->navigationGroups([
+                'Human Resources',
+                'Administration'
+            ])
             ->authMiddleware([
                 Authenticate::class,
             ]);

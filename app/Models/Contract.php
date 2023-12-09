@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\BusinessScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,8 +17,31 @@ class Contract extends Model
 
     protected $guarded = [];
 
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new BusinessScope());
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function contractsTypes()
+    {
+        return $this->belongsTo(ContractType::class);
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
+    }
+
+    public function supervisors()
+    {
+        return $this->morphToMany(User::class, 'userable', 'userables', 'userable_id', 'userable_id');
     }
 }

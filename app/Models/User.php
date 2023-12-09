@@ -4,10 +4,13 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser
@@ -49,6 +52,21 @@ class User extends Authenticatable implements FilamentUser
     public function contracts()
     {
         return $this->hasMany(Contract::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function getActiveBusiness($uuid = null)
+    {
+        if ($uuid === null) {
+            $uuid = data_get($this, 'attributes.default_business');
+        }
+        return Business::query()
+            ->where('active', true)
+            ->where('uuid', $uuid)->first();
     }
 
     public function canAccessPanel(Panel $panel): bool

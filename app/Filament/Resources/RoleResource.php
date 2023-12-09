@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\BusinessResource\Pages;
-use App\Filament\Resources\BusinessResource\RelationManagers;
-use App\Models\Business;
+use App\Filament\Resources\RoleResource\Pages;
+use App\Filament\Resources\RoleResource\RelationManagers;
+use App\Models\Role;
+use Faker\Provider\Text;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,13 +14,14 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class BusinessResource extends Resource
+class RoleResource extends Resource
 {
-    protected static ?string $model = Business::class;
+    protected static ?string $model = Role::class;
 
     protected static ?string $navigationIcon = null;
 
     protected static ?string $navigationGroup = 'Administration';
+
 
     public static function form(Form $form): Form
     {
@@ -58,9 +60,9 @@ class BusinessResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBusinesses::route('/'),
-            'create' => Pages\CreateBusiness::route('/create'),
-            'edit' => Pages\EditBusiness::route('/{record}/edit'),
+            'index' => Pages\ListRoles::route('/'),
+            'create' => Pages\CreateRole::route('/create'),
+            'edit' => Pages\EditRole::route('/{record}/edit'),
         ];
     }
 }
