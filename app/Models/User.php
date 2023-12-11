@@ -78,8 +78,23 @@ class User extends Authenticatable implements FilamentUser
             ->where('uuid', $uuid)->first();
     }
 
+    public function getActiveContractId()
+    {
+        return data_get($this->getActiveContract(), 'id');
+    }
+
+    public function getActiveContract()
+    {
+        return $this->contracts()->ActiveContracts()->first();
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
+    }
+
+    public function documents()
+    {
+        return $this->morphToMany(Document::class, 'documentable');
     }
 }

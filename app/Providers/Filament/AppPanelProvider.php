@@ -31,6 +31,7 @@ class AppPanelProvider extends PanelProvider
 
         return $panel
             ->default()
+            ->viteTheme('resources/css/filament/app/theme.css')
             ->collapsibleNavigationGroups(false)
             ->id('app')
             ->path('app')

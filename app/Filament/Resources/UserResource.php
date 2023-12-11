@@ -7,6 +7,8 @@ use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Pages\SubNavigationPosition;
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -21,15 +23,20 @@ class UserResource extends Resource
 
     protected static ?string $navigationGroup = 'Human Resources';
 
+    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
+
     public static function form(Form $form): Form
     {
         return $form
+            ->schema([
+                Forms\Components\Section::make('User Details')
             ->schema([
                 Forms\Components\TextInput::make('name')->columnSpanFull(),
                 Forms\Components\TextInput::make('email'),
                 Forms\Components\TextInput::make('name'),
                 Forms\Components\Select::make('role_id')
-                ->relationship('role', 'name'),
+                    ->relationship('role', 'name'),
+            ])
             ]);
     }
 
@@ -60,9 +67,7 @@ class UserResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            RelationManagers\ContractsRelationManager::class
-        ];
+        return [];
     }
 
     public static function getPages(): array
@@ -71,6 +76,17 @@ class UserResource extends Resource
             'index' => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
             'edit' => Pages\EditUser::route('/{record}/edit'),
-        ];
+            'documents' => Pages\ManageUserDocuments::route('/{record}/documents'),
+            'contracts' => Pages\ManageUserContracts::route('/{record}/contracts'),
+            ];
+    }
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            Pages\EditUser::class,
+            Pages\ManageUserDocuments::class,
+            Pages\ManageUserContracts::class,
+        ]);
     }
 }

@@ -49,4 +49,9 @@ class Contract extends Model
     {
         $builder->whereNull('end')->orWhere('end', '>', now());
     }
+
+    public function documents()
+    {
+        return $this->morphToMany(Document::class, 'documentable');
+    }
 }

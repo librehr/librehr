@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TeamResource\RelationManagers;
 
+use App\Filament\Resources\ContractResource;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -35,9 +36,6 @@ class ContractsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('user.name')
-                    ->required()
-                    ->maxLength(255),
             ]);
     }
 
@@ -45,9 +43,7 @@ class ContractsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('user.name')
-            ->columns([
-                Tables\Columns\TextColumn::make('user.name'),
-            ])
+            ->columns(ContractResource::table($table)->getColumns())
             ->filters([
                 //
             ])

@@ -3,12 +3,16 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+use App\Models\Absence;
+use App\Models\AbsenceType;
 use App\Models\Business;
 use App\Models\Contract;
 use App\Models\ContractType;
 use App\Models\Role;
 use App\Models\Team;
 use App\Models\User;
+use App\Policies\AbsencePolicy;
+use App\Policies\AbsenceTypePolicy;
 use App\Policies\BusinessPolicy;
 use App\Policies\ContractPolicy;
 use App\Policies\ContractTypePolicy;
@@ -31,6 +35,8 @@ class AuthServiceProvider extends ServiceProvider
         Business::class => BusinessPolicy::class,
         Contract::class => ContractPolicy::class,
         Team::class => TeamPolicy::class,
+        Absence::class => AbsencePolicy::class,
+        AbsenceType::class => AbsenceTypePolicy::class,
     ];
 
     /**

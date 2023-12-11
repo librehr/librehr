@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use App\Filament\Resources\ContractResource;
+use App\Models\Document;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -19,7 +20,7 @@ class ContractsRelationManager extends RelationManager
     {
         return $form
             ->schema(
-                app(ContractResource::class)->formInputs($form)
+                ContractResource::form($form)->getComponents()
             );
     }
 
@@ -27,12 +28,14 @@ class ContractsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('name')
-            ->columns(app(ContractResource::class)->tableColumns($table))
+            ->columns(
+                ContractResource::table($table)->getColumns()
+            )
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

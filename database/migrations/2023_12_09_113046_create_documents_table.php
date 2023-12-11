@@ -13,10 +13,15 @@ return new class extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId('user_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->string('name');
             $table->string('path');
             $table->string('type');
             $table->integer('size');
+            $table->string('uuid');
             $table->timestampsTz();
         });
     }

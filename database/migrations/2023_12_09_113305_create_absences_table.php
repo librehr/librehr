@@ -22,6 +22,8 @@ return new class extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->text('comments');
+            $table->date('start');
+            $table->date('end');
             $table->enum('status', [
                 'pending',
                 'allowed',
@@ -29,7 +31,8 @@ return new class extends Migration
             ]);
             $table->bigInteger('status_by')
                 ->nullable();
-            $table->timestampTz('status_at');
+            $table->timestampTz('status_at')
+                ->nullable();
             $table->timestampsTz();
         });
     }
