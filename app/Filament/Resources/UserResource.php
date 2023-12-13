@@ -78,6 +78,7 @@ class UserResource extends Resource
             'edit' => Pages\EditUser::route('/{record}/edit'),
             'documents' => Pages\ManageUserDocuments::route('/{record}/documents'),
             'contracts' => Pages\ManageUserContracts::route('/{record}/contracts'),
+            'absences' => Pages\ManageUserAbsences::route('/{record}/absences'),
             ];
     }
 
@@ -85,8 +86,9 @@ class UserResource extends Resource
     {
         return $page->generateNavigationItems([
             Pages\EditUser::class,
-            Pages\ManageUserDocuments::class,
             Pages\ManageUserContracts::class,
+            Pages\ManageUserAbsences::class,
+            Pages\ManageUserDocuments::class,
         ]);
     }
 }

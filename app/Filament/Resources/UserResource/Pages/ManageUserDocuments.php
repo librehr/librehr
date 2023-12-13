@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
+use App\Filament\Resources\ContractResource;
 use App\Filament\Resources\UserResource;
 use App\Models\Document;
+use App\Models\User;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
@@ -35,6 +37,24 @@ class ManageUserDocuments extends Page
 
         static::authorizeResourceAccess();
 
-        $this->documents = Document::query()->get();
+        $this->documents = Document::query()
+            ->where('user_id', $this->record->id)
+            ->with([
+                'relatedType',
+            ])
+            ->get()
+            ->mapToGroups(function ($record) {
+                $modelName = $record->relatedType->documentable_type;
+                $modelName = class_basename($modelName);
+                $modelName = app('App\Filament\Resources\\'.$modelName . 'Resource')->getNavigationLabel();
+                return [$modelName => $record];
+            });
+    }
+
+    public function showDocument($id)
+    {
+        $this->dispatch('open-modal', id: $id);
+
+
     }
 }

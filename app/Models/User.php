@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasTenants;
+use Filament\Notifications\DatabaseNotification;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -96,5 +97,10 @@ class User extends Authenticatable implements FilamentUser
     public function documents()
     {
         return $this->morphToMany(Document::class, 'documentable');
+    }
+
+    public function absences()
+    {
+        return $this->hasManyThrough(Absence::class, Contract::class);
     }
 }

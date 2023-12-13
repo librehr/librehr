@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
+use App\Filament\Resources\AbsenceResource;
 use App\Filament\Resources\ContractResource;
 use App\Filament\Resources\UserResource;
 use Filament\Actions;
@@ -13,30 +14,30 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class ManageUserContracts extends ManageRelatedRecords
+class ManageUserAbsences extends ManageRelatedRecords
 {
     protected static string $resource = UserResource::class;
 
-    protected static string $relationship = 'contracts';
+    protected static string $relationship = 'absences';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getNavigationLabel(): string
     {
-        return 'Contracts';
+        return 'Absences';
     }
 
     public function form(Form $form): Form
     {
         return $form
-            ->schema(ContractResource::form($form)->getComponents());
+            ->schema(AbsenceResource::form($form)->getComponents());
     }
 
     public function table(Table $table): Table
     {
         return $table
             ->recordTitleAttribute('type.name')
-            ->columns(ContractResource::table($table)->getColumns())
+            ->columns(AbsenceResource::table($table)->getColumns())
             ->filters([
 
             ])
