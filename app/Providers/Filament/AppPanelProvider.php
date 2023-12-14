@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
+use Carbon\Carbon;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -32,6 +33,10 @@ class AppPanelProvider extends PanelProvider
             fn (): string => Blade::render('@livewire(\'navbar\')'),
         );
 
+        FilamentView::registerRenderHook(
+            'panels::body.start',
+            fn (): string => Blade::render('@livewire(\'header-notifications\')'),
+        );
 
         $this->registerMyProfileNavigationClasses(
             [
@@ -39,6 +44,10 @@ class AppPanelProvider extends PanelProvider
                 \App\Filament\Pages\MyProfile\ProfileContracts::class,
                 \App\Filament\Pages\MyProfile\Documents::class,
             ]
+        );
+
+        $this->registerCalendar(
+            \App\Filament\Pages\Attendances::class,
         );
 
         return $panel
@@ -96,10 +105,47 @@ class AppPanelProvider extends PanelProvider
 
         FilamentView::registerRenderHook(
             'panels::page.start',
-            fn (): View => view('filament.pages.my-profile.navigation', [
+            fn (): View => view('filament.pages.header.my-profile-navigation', [
                 'links' => $links
             ]),
             scopes: $myProfileNavigationClasses
+        );
+    }
+
+    private function registerCalendar($myProfileNavigationClass)
+    {
+        $selectedMonth = request('m');
+        $selectedYear = request('y');
+
+        $selected = Carbon::today();
+        $next = null;
+        if ($selectedYear !== null && $selectedMonth !== null) {
+            $selected = Carbon::create(
+                $selectedYear,
+                $selectedMonth
+            );
+            $previous = Carbon::parse($selected)->subMonth();
+            $next = Carbon::parse($selected)->addMonth();
+        } else {
+            $previous = Carbon::today()->subMonth();
+        }
+
+        $route = $myProfileNavigationClass::getRouteName('app');
+        FilamentView::registerRenderHook(
+            'panels::page.start',
+            fn (): View => view('filament.pages.header.calendar', [
+                'selected' => $selected->format('F, Y'),
+                'previous' => [
+                    'y' => $previous->format('Y'),
+                    'm' => $previous->format('m'),
+                ],
+                'next' => ($next !== null && $next < now()  ? [
+                    'y' => $next->format('Y'),
+                    'm' => $next->format('m'),
+                ] : null),
+                'route' => $route
+            ]),
+            scopes: $myProfileNavigationClass
         );
     }
 }

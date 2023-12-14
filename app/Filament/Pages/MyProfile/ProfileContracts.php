@@ -13,4 +13,7 @@ class ProfileContracts extends Page
     protected static ?int $navigationSort = 2;
 
     protected static ?string $navigationGroup = 'My Profile';
+
+    protected static ?string $navigationLabel = 'Contracts';
+    protected static ?string $title = 'Contracts';
 }

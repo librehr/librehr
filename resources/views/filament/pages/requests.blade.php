@@ -1,11 +1,19 @@
 <x-filament-panels::page>
+    <button
+            class=""
+            x-data="{}"
+            x-on:click="$dispatch('open-modal', { id: 'database-notifications' })"
+            type="button"
+    >
+        Notifications
+    </button>
     <div class="container mx-auto max-w-4xl flex flex-col border rounded-lg divide-y gap-4">
         @foreach(\Illuminate\Support\Facades\Auth::user()->notifications as $notification)
         <div class="flex flex-row gap-4 justify-between p-4 px-6">
             <div class="flex gap-4">
                 <div class="flex flex-col px-6 gap-2">
             <span class="font-semibold">
-                {{ data_get($notification, 'data.title') }}
+                {{ data_get($notification, 'data.subject') }}
             </span>
                     <span class="text-gray-700 text-sm">
                  {{ data_get($notification, 'created_at')->format('d/m/Y H:i') }}
