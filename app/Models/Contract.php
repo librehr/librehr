@@ -54,4 +54,9 @@ class Contract extends Model
     {
         return $this->morphToMany(Document::class, 'documentable');
     }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }
