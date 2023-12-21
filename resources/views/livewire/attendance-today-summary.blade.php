@@ -1,3 +1,3 @@
 <div wire:poll.60s="reloadTodaySummary">
-    {{ $totalSeconds }}
+    {{ $totalTime }}
 </div>

@@ -17,11 +17,3 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
-$appPanel = Filament::getPanel('app');
-/*
-Route::get(
-    '/app/attendances/{year}/{month}',
-    \App\Filament\Pages\Attendances::routes($appPanel)
-);
-*/

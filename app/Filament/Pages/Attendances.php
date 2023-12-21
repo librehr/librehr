@@ -31,45 +31,12 @@ class Attendances extends Page
     {
         $selected = $this->loadSelectedDate();
         $this->loadDays($selected);
-        $this->getCurrentAttendance();
     }
 
-    public function getCurrentAttendance()
+    public function registerAttendanceNow(): void
     {
-        $user = Auth::user();
-        $activeContract = $user->getActiveContractId();
-        // Check if there is something openm just close it
-        $attendance = Attendance::query()
-            ->where('contract_id', $activeContract)
-            ->whereNull('end')
-            ->first();
-
-        if ($attendance) {
-            $this->currentAttendance = $attendance;
-        }
-
-        return [
-            $user, $activeContract, $attendance
-        ];
-    }
-    public function registerAttendanceNow()
-    {
-        [$user, $activeContract, $attendance] = $this->getCurrentAttendance();
-        if ($attendance) {
-            $attendance->end = now()->setTimezone(config('app.timezone'));
-            $attendance->save();
-            $attendance = null;
-        } else {
-            $attendance = Attendance::query()->create(
-                [
-                    'contract_id' => $activeContract,
-                    'date' => now()->setTimezone(config('app.timezone'))->format('Y-m-d'),
-                    'start' => now()->setTimezone(config('app.timezone')),
-                ]
-            );
-        }
-
-        $this->currentAttendance = $attendance;
+        $this->currentAttendance = app(\App\Services\Attendances::class)
+            ->startResumeAttendanceNow(Auth::user()->getActiveContractId());
         $this->reloadAttendances($this->selected);
     }
 
@@ -112,77 +79,23 @@ class Attendances extends Page
     public function confirmDeleteAttendance($delete)
     {
         if ($delete) {
-            Attendance::query()
-                ->where('contract_id', Auth::user()->getActiveContractId())
-                ->where('id', $this->attendanceToBeDeleted)
-                ->delete();
+            app(\App\Services\Attendances::class)->deleteAttendance(
+                $this->attendanceToBeDeleted,
+                Auth::user()->getActiveContractId()
+            );
         }
         $this->attendanceToBeDeleted = null;
         $this->dispatch('close-modal', id: 'confirm-delete-attendance');
         $this->reloadAttendances($this->selected);
     }
 
-    public function reloadAttendances($selected, $filterDay = null)
+    public function reloadAttendances($selected)
     {
-
-        $days = range(1, $selected->daysInMonth);
-        $attendances = Attendance::query();
-
-        if ($filterDay !== null) {
-            $attendances = $attendances->whereDay('date', $filterDay);
-        } else {
-            $this->days = [];
-        }
-
-        $attendances = $attendances
-            ->where('contract_id', Auth::user()->getActiveContractId())
-            ->whereMonth('date', $selected->format('m'))
-            ->whereYear('date', $selected->format('Y'))
-            ->get()
-            ->mapToGroups(function ($attendance, $key) {
-
-                $attendance->startFormat = Carbon::create($attendance->start)->format('H:m');
-                $attendance->endFormat = null;
-                $attendance->seconds = Carbon::create(now())->diffInSeconds(Carbon::create($attendance->start));;
-                if ($attendance->end) {
-                    $attendance->endFormat = Carbon::create($attendance->end)->format('H:m');
-                    $attendance->seconds = Carbon::create($attendance->end)->diffInSeconds(Carbon::create($attendance->start));
-                }
-                return ["{$attendance->date->format('Y-m-j')}" => $attendance->toArray()];
-            })->toArray();
-
-        foreach ($days as $day) {
-            $attendancesFormat = data_get($attendances, $selected->format('Y-m-') . $day, []);
-            if ($attendancesFormat === null) {
-                continue;
-            }
-            $seconds = [];
-
-            foreach ($attendancesFormat as $attendance) {
-                $seconds[] = $attendance['seconds'];
-            }
-
-            $this->days[$day] = [
-                'number' => $day,
-                'date' => \Carbon\Carbon::create($selected->format('Y'), $selected->format('m'), $day)->format('Y-m-d'),
-                'day_name' => str(\Carbon\Carbon::create($selected->format('Y'), $selected->format('m'), $day)->format('l'))->lower(),
-                'month_name' => str($selected->format('M'))->lower() . '.',
-                'attendances' => $attendancesFormat,
-                'total_seconds' => $this->secondsToHm(array_sum($seconds))
-            ];
-        }
-    }
-
-    public function reloadTodaySummary()
-    {
-        $this->reloadAttendances($this->selected, now()->format('j'));
-    }
-
-    private function secondsToHm($seconds)
-    {
-        $hours = floor($seconds / 3600);
-        $minutes = floor(($seconds % 3600) / 60);
-        $formattedDuration = sprintf('%dh %02dm', $hours, $minutes);
-        return $formattedDuration;
+        //dd('e');
+        $contractId = Auth::user()->getActiveContractId();
+        $this->days = app(\App\Services\Attendances::class)
+            ->getAttendancesByDay($selected, [$contractId]);
+        $this->currentAttendance = app(\App\Services\Attendances::class)
+            ->getCurrentAttendance(Auth::user()->getActiveContractId());
     }
 }

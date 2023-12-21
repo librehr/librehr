@@ -22,7 +22,7 @@
                         </span>
                     @endif
                     @persist('timer')
-                    @livewire('attendance-today-summary')
+                    @livewire('attendance-today-summary', ['currentAttendance' => $currentAttendance])
                     @endpersist
                 </span>
                 <span class="text-sm text-gray-700">Today Journey</span>
@@ -92,8 +92,8 @@
                 <div class="flex-grow w-full flex flex-col col-span-3 p-4 gap-2">
                     @foreach($day['attendances'] as $attendance)
                         <div class="flex flex-row gap-4 items-baseline">
-                            <input x-mask="99:99" value="{{ $attendance['startFormat'] }}" type="text" class="py-1 text-center text-lg rounded border border-gray-300 w-20">
-                            <input x-mask="99:99" value="{{ $attendance['endFormat'] }}" type="text" class="py-1 text-center text-lg rounded border border-gray-300 w-20">
+                            <input x-mask="99:99" value="{{ $attendance['startFormat'] }}" onclick="seleccionarNumeros(this, event)"  oninput="moverAlMinutoCampo(this)" type="text" class="py-1 text-center text-lg rounded border border-gray-300 w-20">
+                            <input x-mask="99:99" value="{{ $attendance['endFormat'] }}" onclick="seleccionarNumeros(this, event)"  oninput="moverAlMinutoCampo(this)" type="text" class="py-1 text-center text-lg rounded border border-gray-300 w-20">
                             @if ($attendance['end'] === null)
                                 <button>Finish</button>
                             @endif
@@ -126,6 +126,28 @@
                 </div>
             </div>
         @endforeach
+    <script>
+        function seleccionarNumeros(input, evento) {
+            evento.preventDefault();
 
+            var clicX = evento.clientX;
+            var inputRect = input.getBoundingClientRect();
+
+            var posicionRelativa = clicX - inputRect.left;
+            var seleccionarHora = posicionRelativa <= inputRect.width / 2;
+
+            if (seleccionarHora) {
+                input.setSelectionRange(0, 2); // Seleccionar la hora
+            } else {
+                input.setSelectionRange(3, 5); // Seleccionar el minuto
+            }
+        }
+
+        function moverAlMinutoCampo(input) {
+            if (input.value.length === 3) {
+                input.setSelectionRange(3, 5); // Seleccionar automáticamente los minutos (MM)
+            }
+        }
+    </script>
     </div>
 </x-filament-panels::page>

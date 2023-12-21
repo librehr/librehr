@@ -10,5 +10,9 @@ class Documents extends Page
 
     protected static string $view = 'filament.pages.documents';
     protected static ?int $navigationSort = 3;
-    protected static ?string $navigationGroup = 'My Profile';
+
+
+
+    protected static ?string $navigationParentItem = 'Profile';
+
 }
