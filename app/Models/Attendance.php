@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Attendances;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -46,18 +47,54 @@ class Attendance extends Model
     ];
 
     protected $appends = [
-        'StartFormat'
+        'dateFormat',
+        'dateFormatText',
+        'startFormat',
+        'endFormat',
+        'seconds',
+        'secondsFormat'
     ];
+
+    public function getDateFormatAttribute()
+    {
+        return $this->date->format('Y-m-d');
+    }
+
+    public function getDateFormatTextAttribute()
+    {
+        return $this->date->format('Y-m-j');
+    }
 
     public function getStartFormatAttribute()
     {
+        if ($this->start === null) {
+            return null;
+        }
 
-        $diffInHours = now()->diffInHours($this->start);
-        $diffInMinutes = now()->diffInMinutes($this->start) % 60;
-        $diffInMinutesFormatted = str_pad($diffInMinutes, 2, '0', STR_PAD_LEFT);
+        return $this->start->format('H:i');
+    }
 
+    public function getEndFormatAttribute()
+    {
+        return $this->end === null ? null : $this->end->format('H:i');
+    }
 
-        return "{$diffInHours}h {$diffInMinutesFormatted}m";
+    public function getSecondsAttribute()
+    {
+        if ($this->end === null) {
+            if ($this->start === null) {
+                return null;
+            }
+
+            return Carbon::create(now())->diffInSeconds(Carbon::create($this->start));
+        }
+
+        return Carbon::create($this->end)->diffInSeconds(Carbon::create($this->start));
+    }
+
+    public function getSecondsFormatAttribute()
+    {
+        return app(Attendances::class)->secondsToHm($this->seconds);
     }
 
     public function contract()

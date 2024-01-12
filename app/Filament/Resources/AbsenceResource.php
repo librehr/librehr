@@ -9,6 +9,7 @@ use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Table;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 
@@ -56,11 +57,11 @@ class AbsenceResource extends Resource
                     ->formatStateUsing(fn ($state) => $state->format('d/m/Y')),
                 Tables\Columns\TextColumn::make('end')
                     ->formatStateUsing(fn ($state) => $state->format('d/m/Y')),
-                Tables\Columns\TextColumn::make('status')
             ])
             ->filters([
             ])
             ->actions([
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([

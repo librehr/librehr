@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Services\Attendances;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class AttendanceTodaySummary extends Component
@@ -26,5 +27,11 @@ class AttendanceTodaySummary extends Component
     {
         $this->totalTime = app(Attendances::class)
             ->getTotalTimeByDay(data_get($this->currentAttendance, 'date', now()->format('Y-m-d')), [Auth::user()->getActiveContractId()]);
+    }
+
+    #[On('update-summary')]
+    public function updateSummary()
+    {
+        $this->reloadTodaySummary();
     }
 }

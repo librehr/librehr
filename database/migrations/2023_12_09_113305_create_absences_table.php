@@ -21,7 +21,8 @@ return new class extends Migration
                 ->constrained()
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->text('comments');
+            $table->text('comments')->nullable();
+            $table->string('year');
             $table->date('start');
             $table->date('end');
             $table->enum('status', [

@@ -22,13 +22,13 @@
                         </span>
                     @endif
                     @persist('timer')
-                    @livewire('attendance-today-summary', ['currentAttendance' => $currentAttendance])
+                        @livewire('attendance-today-summary', ['currentAttendance' => $currentAttendance])
                     @endpersist
                 </span>
                 <span class="text-sm text-gray-700">Today Journey</span>
             </div>
                 <x-filament::button color="{{ $currentAttendance ? 'gray' : 'primary' }}" outlined wire:click="registerAttendanceNow">
-                    {{ $currentAttendance ? 'Finish' : 'Start' }}
+                    {{ data_get($currentAttendance, 'start') !== null ? 'Finish' : 'Start' }}
                 </x-filament::button>
             </div>
         </div>
@@ -36,7 +36,7 @@
 
     <div class="flex flex-row border rounded-lg gap-4 divide-x justify-items-center items-center">
         <div class="p-4 flex flex-col">
-            <span>40h</span>
+            <span>{{ app(\App\Services\Attendances::class)->secondsToHm(collect($days)->sum('total_seconds')) }}</span>
             <span class="text-xs">Total</span>
         </div>
         <div class="p-4 flex flex-col">
@@ -52,67 +52,96 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-10 border rounded-lg    justify-items-center items-center">
-        <div class="col-span-10 flex items-center py-4 border-b w-full justify-center">
+    <x-filament::modal
+        icon="heroicon-m-exclamation-triangle"
+        icon-color="danger"
+        id="confirm-delete-attendance">
+        Are you sure?
+        <x-slot name="footerActions">
+            <x-filament::button wire:click="confirmDeleteAttendance(true)">
+                Confirm
+            </x-filament::button>
+            <x-filament::button wire:click="confirmDeleteAttendance(false)">
+                Cancel
+            </x-filament::button>
+        </x-slot>
+    </x-filament::modal>
+
+    <div class="grid grid-cols-10 border rounded-lg">
+        <div class="col-span-10 text-center py-2">
             Status: currently in progress
         </div>
-        <div class="flex flex-row justify-between col-span-10 w-full bg-gray-200">
-            <div class="w-full flex flex-col col-span-3 p-4">
-                <span>Day</span>
-            </div>
-            <div class="flex-grow w-full flex flex-col col-span-3 p-4">
-                <span>Work</span>
-            </div>
-            <div class="w-full col-span-3 flex flex-col p-4 items-end justify-end">
-                <span>Hours</span>
-            </div>
+
+        <div class="col-span-2 p-4 bg-gray-200">
+            <span>Day</span>
         </div>
 
-        <x-filament::modal id="confirm-delete-attendance">
-            Are you sure?
+        <div class="col-span-6 p-4 bg-gray-200">
+            <span>Work</span>
+        </div>
 
-            <x-slot name="footerActions">
-                <x-filament::button wire:click="confirmDeleteAttendance(true)">
-                    Confirm
-                </x-filament::button>
-                <x-filament::button wire:click="confirmDeleteAttendance(false)">
-                    Cancel
-                </x-filament::button>
-            </x-slot>
-        </x-filament::modal>
+        <div class="col-span-2 p-4 bg-gray-200">
+            <span>Hours</span>
+        </div>
 
         @foreach($days as $day)
-            <div class="flex flex-row justify-between col-span-10 w-full border-b {{ $day['date'] === date('Y-m-d') ? 'bg-orange-50' : '' }}">
+            <div class="col-span-2 p-4">
                 <div class="w-full flex flex-col col-span-3 p-4 py-6">
                     <span>{{ $day['number'] }} {{ $day['month_name']  }}</span>
                     <span class="text-sm text-gray-600">
                         {{ $day['day_name'] }}
                     </span>
                 </div>
+            </div>
+
+            <div class="col-span-6 p-4">
                 <div class="flex-grow w-full flex flex-col col-span-3 p-4 gap-2">
                     @foreach($day['attendances'] as $attendance)
                         <div class="flex flex-row gap-4 items-baseline">
-                            <input x-mask="99:99" value="{{ $attendance['startFormat'] }}" onclick="seleccionarNumeros(this, event)"  oninput="moverAlMinutoCampo(this)" type="text" class="py-1 text-center text-lg rounded border border-gray-300 w-20">
-                            <input x-mask="99:99" value="{{ $attendance['endFormat'] }}" onclick="seleccionarNumeros(this, event)"  oninput="moverAlMinutoCampo(this)" type="text" class="py-1 text-center text-lg rounded border border-gray-300 w-20">
-                            @if ($attendance['end'] === null)
-                                <button>Finish</button>
-                            @endif
 
-                            @if ($attendance['end'] !== null)
-                                <x-filament::button  color="primary" size="xs" outlined   wire:click="deleteAttendance({{ $attendance['id'] }})">
-                                    Delete
-                                </x-filament::button>
-                            @endif
+                            <x-filament::icon-button
+                                icon="heroicon-m-information-circle"
+                                color="gray"
+                                tooltip="Created manually"
+                            />
+
+                            <input id="{{ $attendance['id'] }}_start"   wire:change="updateAttendance({{ $attendance['id'] }}, 'start', document.getElementById('{{ $attendance['id'] }}_start').value)" value="{{ $attendance['startFormat'] }}" type="time" class="py-1 text-center text-lg rounded border border-gray-300" />
+                            <input id="{{ $attendance['id'] }}_end"  wire:change="updateAttendance({{ $attendance['id'] }}, 'end', document.getElementById('{{ $attendance['id'] }}_end').value)" value="{{ $attendance['endFormat'] }}" type="time" class="py-1 text-center text-lg rounded border border-gray-300" />
+
+                            <div class="flex items-center">
+
+                                <x-filament::icon-button
+                                    icon="heroicon-m-trash"
+                                    color="primary"
+                                    tooltip="Remove"
+                                    label="Remove"
+                                    outlined
+                                    wire:click="deleteAttendance({{ $attendance['id'] }})"
+                                />
+                            </div>
+
+
                         </div>
                     @endforeach
+
+                    @if(now()->timestamp > strtotime($day['date']))
+                        <span>
+                            <x-filament::button icon="heroicon-m-plus" wire:click="newAttendance('{{ $day['date'] }}')"  color="gray" size="xs" outlined>
+                                Add
+                            </x-filament::button>
+                        </span>
+                    @endif
                 </div>
+            </div>
+
+            <div class="col-span-2 p-4">
                 <div class="w-full  flex flex-col col-span-3 p-4">
                     <div class="flex flex-row gap-4 justify-end">
                         <span>
                             Worked
                         </span>
                         <span class="flex justify-end items-end min-w-[80px]">
-                            {{ $day['total_seconds'] }}
+                            {{ $day['total_time'] }}
                         </span>
                     </div>
                     <div class="flex flex-row gap-4 justify-end">
@@ -126,28 +155,5 @@
                 </div>
             </div>
         @endforeach
-    <script>
-        function seleccionarNumeros(input, evento) {
-            evento.preventDefault();
-
-            var clicX = evento.clientX;
-            var inputRect = input.getBoundingClientRect();
-
-            var posicionRelativa = clicX - inputRect.left;
-            var seleccionarHora = posicionRelativa <= inputRect.width / 2;
-
-            if (seleccionarHora) {
-                input.setSelectionRange(0, 2); // Seleccionar la hora
-            } else {
-                input.setSelectionRange(3, 5); // Seleccionar el minuto
-            }
-        }
-
-        function moverAlMinutoCampo(input) {
-            if (input.value.length === 3) {
-                input.setSelectionRange(3, 5); // Seleccionar automáticamente los minutos (MM)
-            }
-        }
-    </script>
     </div>
 </x-filament-panels::page>

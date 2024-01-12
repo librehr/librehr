@@ -53,6 +53,10 @@ class Absence extends Model
         'status' => AbsenceStatusEnum::class
     ];
 
+    protected $with = [
+        'absenceType'
+    ];
+
     public function absenceType()
     {
         return $this->belongsTo(AbsenceType::class);
@@ -66,5 +70,10 @@ class Absence extends Model
     public function documents()
     {
         return $this->morphToMany(Document::class, 'documentable');
+    }
+
+    public function requests()
+    {
+        return $this->morphToMany(Request::class, 'requestable');
     }
 }

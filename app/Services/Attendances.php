@@ -4,7 +4,9 @@ namespace App\Services;
 
 
 use App\Models\Attendance;
+use App\Models\User;
 use Carbon\Carbon;
+use Filament\Forms\Get;
 use Illuminate\Support\Facades\Auth;
 
 class Attendances extends BaseService
@@ -15,16 +17,48 @@ class Attendances extends BaseService
         return Attendance::query()
             ->where('contract_id', $contractId)
             ->whereNull('end')
+            ->whereNotNull('start')
             ->first();
     }
 
-    public function startResumeAttendanceNow($contractId)
+    public function startResumeAttendanceNow($contractId, $attendanceId = null, $type = null, $date = null, $value = null)
     {
+        if ($attendanceId === null && $type === 'new') {
+            $attendance = Attendance::query()->create(
+                [
+                    'contract_id' => $contractId,
+                    'date' => $date,
+                ]
+            );
+
+            return $attendance;
+        }
+
+        if ($attendanceId && $type !== null) {
+            $attendance = Attendance::query()
+                ->where('contract_id', $contractId)
+                ->where('id', $attendanceId)
+                ->first();
+
+            $time = explode(':', $value);
+            $dateTime = Carbon::createFromDate( $attendance->date)
+                ->setTime($time[0], $time[1])
+                ->setTimezone(config('app.timezone'));
+
+            if ($type === 'end') {
+                $attendance->end = $dateTime;
+            } else {
+                $attendance->start = $dateTime;
+            }
+
+            $attendance->save();
+            return $attendance;
+        }
+
         $attendance = $this->getCurrentAttendance($contractId);
         if ($attendance) {
             $attendance->end = now()->setTimezone(config('app.timezone'));
             $attendance->save();
-            $attendance = null;
         } else {
             $attendance = Attendance::query()->create(
                 [
@@ -46,51 +80,75 @@ class Attendances extends BaseService
             ->delete();
     }
 
-    public function getAttendancesByDay(string $day, array $contractIds): array
+    public function getAttendancesByDay(string $day, string|array $contractIds)
     {
+        $singleContract = is_string($contractIds);
         $currentDate = Carbon::parse($day);
+        $contractFilterIds = $singleContract ? [$contractIds] : $contractIds;
+        return User::query()
+            ->with(
+                [
+                    'contracts' => function ($q) use ($contractFilterIds) {
+                        $q->whereIn('id', $contractFilterIds);
+                    },
+                    'contracts.attendances' => function ($q) use ($currentDate) {
+                        $q->whereMonth('date', $currentDate->format('m'))
+                            ->whereYear('date', $currentDate->format('Y'));
+                    }
+                ])
+            ->get();
+    }
+
+    public function buildSingleDayByContract($date, $contractId)
+    {
+        $dayData = Attendance::query()
+            ->where('date', $date)
+            ->where('contract_id', $contractId)
+            ->get();
+
+        return [
+            'number' => $date->format('j'),
+            'date' => $date,
+            'day_name' => str($date->format('l'))->lower(),
+            'month_name' => str($date->format('M'))->lower() . '.',
+            'attendances' => $dayData,
+            'total_seconds' => $dayData->sum('seconds'),
+            'total_time' => $this->secondsToHm(
+                $dayData->sum('seconds')
+            )
+        ];
+
+    }
+    public function buildSingleContractAttendances($currentDate, $data)
+    {
+        $buildedAttendances = [];
         $days = range(1, $currentDate->daysInMonth);
-        $attendances = Attendance::query()
-            ->whereIn('contract_id', $contractIds)
-            ->whereMonth('date', $currentDate->format('m'))
-            ->whereYear('date', $currentDate->format('Y'))
-            ->get()
-            ->mapToGroups(function ($attendance, $key) {
-                $attendance->startFormat = Carbon::create($attendance->start)->format('H:i');
-                $attendance->endFormat = null;
-                $attendance->seconds = Carbon::create(now())->diffInSeconds(Carbon::create($attendance->start));;
-                if ($attendance->end) {
-                    $attendance->endFormat = Carbon::create($attendance->end)->format('H:i');
-                    $attendance->seconds = Carbon::create($attendance->end)->diffInSeconds(Carbon::create($attendance->start));
-                }
-                return ["{$attendance->date->format('Y-m-j')}" => $attendance->toArray()];
-            })->toArray();
+        try {
+            $attendances = data_get($data->first()->contracts->first(), 'attendances');
 
-        $month = [];
-        foreach ($days as $day) {
-            $attendancesFormat = data_get($attendances, $currentDate->format('Y-m-') . $day, []);
-            if ($attendancesFormat === null) {
-                continue;
-            }
-            $seconds = [];
-
-
-            foreach ($attendancesFormat as $attendance) {
-                $seconds[] = $attendance['seconds'];
+            foreach ($days as $day) {
+                //todo: meter contractid, esto no es funcional si paso varios contratos.
+                $dateAttendance = Carbon::createFromDate($currentDate->format('Y-m-') . $day);
+                $dayData = $attendances->where('date', $dateAttendance);
+                $buildedAttendances[$day] = [
+                    'number' => $day,
+                    'date' => $dateAttendance,
+                    'day_name' => str(\Carbon\Carbon::create($dateAttendance->format('Y'), $dateAttendance->format('m'), $day)->format('l'))->lower(),
+                    'month_name' => str($dateAttendance->format('M'))->lower() . '.',
+                    'attendances' => $dayData,
+                    'total_seconds' => $dayData->sum('seconds'),
+                    'total_time' => $this->secondsToHm(
+                        $dayData->sum('seconds')
+                    ),
+                ];
             }
 
-            //todo: meter contractid, esto no es funcional si paso varios contratos.
-            $month[$day] = [
-                'number' => $day,
-                'date' => \Carbon\Carbon::create($currentDate->format('Y'), $currentDate->format('m'), $day)->format('Y-m-d'),
-                'day_name' => str(\Carbon\Carbon::create($currentDate->format('Y'), $currentDate->format('m'), $day)->format('l'))->lower(),
-                'month_name' => str($currentDate->format('M'))->lower() . '.',
-                'attendances' => $attendancesFormat,
-                'total_seconds' => $this->secondsToHm(array_sum($seconds))
-            ];
+            logger(collect($buildedAttendances)->count());
+        } catch (\Exception $exception) {
+            return [];
         }
 
-        return $month;
+        return $buildedAttendances;
     }
 
     public function getTotalTimeByDay(string $day, array $contractIds): string

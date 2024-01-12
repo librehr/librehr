@@ -25,7 +25,9 @@ class AbsenceTypeResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\TextInput::make('name'),
+                Forms\Components\ColorPicker::make('attributes.color.background')->label('Background Color'),
+                Forms\Components\ColorPicker::make('attributes.color.text')->label('Text Color'),
             ]);
     }
 
@@ -33,7 +35,9 @@ class AbsenceTypeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\ColorColumn::make('attributes.color.background')->label('Background Color'),
+                Tables\Columns\ColorColumn::make('attributes.color.text')->label('Text Color')
             ])
             ->filters([
                 //

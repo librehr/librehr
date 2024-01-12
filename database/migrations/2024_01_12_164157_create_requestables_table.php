@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attendances', function (Blueprint $table) {
+        Schema::create('requestables', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->bigInteger('request_id');
+            $table->bigInteger('user_id');
             $table->foreignId('contract_id')
                 ->constrained()
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->date('date')->index();
-            $table->jsonb('attributes')->nullable();
-            $table->dateTimeTz('start')->nullable()->index();
-            $table->dateTimeTz('end')->nullable()->index();
+            $table->bigInteger('requestable_id');
+            $table->string('requestable_type');
             $table->timestampsTz();
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attendances');
+        Schema::dropIfExists('requestables');
     }
 };

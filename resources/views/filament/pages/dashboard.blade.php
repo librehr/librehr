@@ -1,6 +1,5 @@
 <div class="pt-10">
-
-    <div class="grid grid-cols-3 gap-4 mt-20">
+    <div class="grid grid-cols-3 gap-4">
         <x-filament::section>
 
             Signing

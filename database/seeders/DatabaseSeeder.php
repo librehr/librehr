@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Request;
 use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -15,6 +16,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // \App\Models\User::factory(10)->create();
+
+        Request::query()->create([
+            'name' => 'absences'
+        ]);
+
+        Request::query()->create([
+            'name' => 'signs'
+        ]);
 
          \App\Models\User::factory()->create([
              'name' => 'borja',

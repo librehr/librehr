@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Livewire\AttendanceTodaySummary;
 use App\Models\Attendance;
 use Carbon\Carbon;
 use Filament\Pages\Page;
@@ -15,12 +16,16 @@ class Attendances extends Page
     protected static string $view = 'filament.pages.attendances';
     protected static ?int $navigationSort = 2;
 
+    public $contractId;
     public $year;
     public $month;
     public $selected;
     public $currentAttendance = null;
     public $days;
     public $attendanceToBeDeleted = null;
+
+    public $startValue;
+    public $endValue;
 
     public function getHeader(): ?\Illuminate\Contracts\View\View
     {
@@ -29,6 +34,7 @@ class Attendances extends Page
 
     public function mount()
     {
+        $this->contractId = Auth::user()->getActiveContractId();;
         $selected = $this->loadSelectedDate();
         $this->loadDays($selected);
     }
@@ -36,7 +42,8 @@ class Attendances extends Page
     public function registerAttendanceNow(): void
     {
         $this->currentAttendance = app(\App\Services\Attendances::class)
-            ->startResumeAttendanceNow(Auth::user()->getActiveContractId());
+            ->startResumeAttendanceNow($this->contractId);
+
         $this->reloadAttendances($this->selected);
     }
 
@@ -70,6 +77,14 @@ class Attendances extends Page
         $this->reloadAttendances($selected);
     }
 
+    public function newAttendance($date)
+    {
+        app(\App\Services\Attendances::class)
+            ->startResumeAttendanceNow($this->contractId, type: 'new', date: $date);
+
+        $this->reloadAttendances($this->selected);
+    }
+
     public function deleteAttendance($id)
     {
         $this->attendanceToBeDeleted = $id;
@@ -89,13 +104,30 @@ class Attendances extends Page
         $this->reloadAttendances($this->selected);
     }
 
+    public function updateAttendance($id, $type, $value)
+    {
+        app(\App\Services\Attendances::class)->startResumeAttendanceNow(
+            Auth::user()->getActiveContractId(),
+            $id,
+            type: $type,
+            value: $value
+        );
+
+        $this->reloadAttendances($this->selected);
+    }
+
     public function reloadAttendances($selected)
     {
-        //dd('e');
-        $contractId = Auth::user()->getActiveContractId();
         $this->days = app(\App\Services\Attendances::class)
-            ->getAttendancesByDay($selected, [$contractId]);
+            ->buildSingleContractAttendances(
+                $selected,
+                app(\App\Services\Attendances::class)
+                ->getAttendancesByDay($selected, $this->contractId)
+            );
+
         $this->currentAttendance = app(\App\Services\Attendances::class)
-            ->getCurrentAttendance(Auth::user()->getActiveContractId());
+            ->getCurrentAttendance($this->contractId);
+
+        $this->dispatch('update-summary')->to(AttendanceTodaySummary::class);
     }
 }

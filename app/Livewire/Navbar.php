@@ -42,7 +42,16 @@ class Navbar extends Component
             <x-filament::dropdown>
                 <x-slot name="trigger">
                     <x-filament::button color="gray">
-                        {!! $activeBusiness ? '<b>Business:</b> ' . $activeBusiness->name : 'Business' !!}
+                        <div class="flex flex-col">
+                            <span>
+                                {!! $activeBusiness ? '<b>Business:</b> ' . $activeBusiness->name : 'Business' !!}
+                            </span>
+                            @if(Auth::user()->getActiveContract())
+                            <span class="text-xs">
+                                 from {{ data_get(Auth::user()->getActiveContract(), 'start')->format('d/m/Y') }}
+                            </span>
+                            @endif
+                        </div>
                     </x-filament::button>
                 </x-slot>
 

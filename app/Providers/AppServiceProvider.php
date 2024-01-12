@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Carbon\Carbon;
+use Filament\Facades\Filament;
+use Filament\Support\Assets\Js;
+use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
 use Illuminate\Support\ServiceProvider;
 use Filament\Notifications\Notification;
@@ -25,33 +28,56 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
 
-        $this->registerMyProfileNavigationClasses(
+        $this->attachViewToFilamentClasses(
             [
                 \App\Filament\Pages\MyProfile\Profile::class,
                 \App\Filament\Pages\MyProfile\ProfileContracts::class,
                 \App\Filament\Pages\MyProfile\Documents::class,
-            ]
+            ],
+            view: 'filament.pages.header.my-profile-navigation',
+            hookName: 'panels::page.start'
         );
+
+
+        $this->attachViewToFilamentClasses(
+            [
+                \App\Filament\Pages\Dashboard::class,
+                \App\Filament\Pages\Requests::class,
+                \App\Filament\Pages\TimeOff::class,
+                \App\Filament\Pages\Attendances::class,
+            ],
+            view: 'filament.pages.header.user',
+            hookName: 'panels::page.start'
+        );
+
 
         $this->registerCalendar(
             \App\Filament\Pages\Attendances::class,
         );
+
+        FilamentAsset::register([
+            Js::make('alpinejs-tooltip', __DIR__ . '/../../resources/js/alpinejs-tooltip.js')
+        ]);
     }
 
 
-    private function registerMyProfileNavigationClasses($myProfileNavigationClasses)
-    {
+    private function attachViewToFilamentClasses(
+        array $classes,
+        string $view,
+        string $hookName,
+        array $data = []
+    ) {
         $links = [];
-        foreach ($myProfileNavigationClasses as $navigationClass) {
+        foreach ($classes as $navigationClass) {
             $links[$navigationClass::getNavigationLabel()] = $navigationClass::getRouteName('app');
         }
 
-        FilamentView::registerRenderHook(
-            'panels::page.start',
-            fn (): View => view('filament.pages.header.my-profile-navigation', [
-                'links' => $links
+        FilamentView::registerRenderHook($hookName,
+            fn (): View => view($view, [
+                'links' => $links,
+                'data' => $data
             ]),
-            scopes: $myProfileNavigationClasses
+            scopes: $classes
         );
     }
 
