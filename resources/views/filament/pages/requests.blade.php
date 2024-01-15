@@ -7,7 +7,7 @@
     >
         Notifications
     </button>
-    @empty(!$requests)
+    @empty($requests)
         <div class="">No requests pending.</div>
     @else
         <div class="container mx-auto max-w-4xl flex flex-col border rounded-lg divide-y">

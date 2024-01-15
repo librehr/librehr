@@ -8,7 +8,7 @@
                 <div class="w-full flex flex-col gap-4 justify-center items-center min-h-[80px] ">
                     <div class="flex flex-col items-center justify-items-center gap-1 mb-2">
                 <span class="text-lg font-semibold flex flex-row items-center justify-items-center gap-2">
-                    @if ($currentAttendance)
+                    @if ($currentAttendance && data_get($currentAttendance, 'end') === null)
                         <span class="relative flex h-3 w-3">
                           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                           <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
@@ -20,8 +20,8 @@
                 </span>
                         <span class="text-sm text-gray-700">Today Journey</span>
                     </div>
-                    <x-filament::button color="{{ $currentAttendance ? 'gray' : 'primary' }}" outlined wire:click="registerAttendanceNow">
-                        {{ data_get($currentAttendance, 'start') !== null ? 'Finish' : 'Start' }}
+                    <x-filament::button color="{{ $currentAttendance && data_get($currentAttendance, 'end') === null  ? 'gray' : 'primary' }}" outlined wire:click="registerAttendanceNow">
+                        {{ data_get($currentAttendance, 'start') !== null && data_get($currentAttendance, 'end') === null ? 'Finish' : 'Start' }}
                     </x-filament::button>
                 </div>
             </div>
@@ -42,7 +42,7 @@
                 </x-slot>
 
                 <x-slot name="headerEnd">
-                    {{ data_get($post, 'created_at')->format('N, M Y') }}
+                    {{ data_get($post, 'created_at')->format('M N, Y') }}
                 </x-slot>
 
                 {!! data_get($post, 'body') !!}

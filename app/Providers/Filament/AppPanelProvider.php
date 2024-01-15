@@ -94,8 +94,7 @@ class AppPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->default()
-            ->spa();
+            ->default();
 
 
         return $panel;

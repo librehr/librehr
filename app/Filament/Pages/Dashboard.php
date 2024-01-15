@@ -17,7 +17,6 @@ class Dashboard extends Page
     protected static string $routePath = '/';
 
     protected static ?int $navigationSort = -2;
-    public $currentAttendance;
 
     /**
      * @var view-string
@@ -26,6 +25,8 @@ class Dashboard extends Page
 
     public $contractId;
     public $businessId;
+
+    public $currentAttendance;
     public $posts = [];
 
     public function mount()
