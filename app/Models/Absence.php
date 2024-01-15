@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\AbsenceStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Models\Absence
@@ -42,7 +43,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Absence extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $guarded = [];
 

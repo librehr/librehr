@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\AbsenceResource\Pages;
 use App\Filament\Resources\AbsenceResource\RelationManagers;
+use App\Filament\Resources\CalendarWidgetResource\Widgets\CalendarWidget;
 use App\Models\Absence;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -11,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 
 class AbsenceResource extends Resource
@@ -45,13 +47,17 @@ class AbsenceResource extends Resource
             ]);
     }
 
+
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('absenceType.name')
                 ->label('Type')
+                    ->badge()
+                    ->color('success')
                 ->searchable(),
+                Tables\Columns\TextColumn::make('status'),
                 Tables\Columns\TextColumn::make('contract.user.name'),
                 Tables\Columns\TextColumn::make('start')
                     ->formatStateUsing(fn ($state) => $state->format('d/m/Y')),
@@ -62,13 +68,20 @@ class AbsenceResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->modifyQueryUsing(function ($query) {
+                return $query->with([
+                    'contract',
+                    'contract.user',
+                    'contract.team',
+                ]);
+            });
     }
 
     public static function getRelations(): array
@@ -84,6 +97,7 @@ class AbsenceResource extends Resource
             'index' => Pages\ListAbsences::route('/'),
             'create' => Pages\CreateAbsence::route('/create'),
             'edit' => Pages\EditAbsence::route('/{record}/edit'),
+            'view' => Pages\ViewAbsence::route('/{record}/view'),
         ];
     }
 }

@@ -9,6 +9,7 @@ use Filament\Notifications\DatabaseNotification;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
@@ -58,7 +59,7 @@ use Laravel\Sanctum\HasApiTokens;
  */
 class User extends Authenticatable implements FilamentUser
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -69,6 +70,7 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
+        'role_id'
     ];
 
     protected $with = [
@@ -145,6 +147,11 @@ class User extends Authenticatable implements FilamentUser
     public function absences()
     {
         return $this->hasManyThrough(Absence::class, Contract::class);
+    }
+
+    public function tools()
+    {
+        return $this->hasManyThrough(ContractTool::class, Contract::class);
     }
 
     public function attendances()

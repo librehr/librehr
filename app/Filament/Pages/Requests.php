@@ -41,8 +41,9 @@ x                   'wtf.com',
             ->where('user_id', Auth::id())
             ->with([
                 'userTo',
-                'contract:id,user_id',
+                'contract:id,user_id,team_id',
                 'contract.user:id,name,email',
+                'contract.team:id,name',
                 'request',
                 'requestable'
             ])

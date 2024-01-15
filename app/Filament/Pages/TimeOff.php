@@ -143,7 +143,14 @@ class TimeOff extends Page
     }
     public function loadCalendar($year = null)
     {
-        $this->calendar = app(Calendar::class)->buildCalendar($year ?? date('Y'), [$this->contractId]);
+        $absences = Absence::query()
+            ->whereIn('contract_id', [$this->contractId])
+            ->whereYear('start', $year)
+            ->where('status', 'allowed')
+            ->orderBy('start')
+            ->get();
+
+        $this->calendar = app(Calendar::class)->buildCalendar($year ?? date('Y'), $absences);
     }
 
     public function reloadAbsences()

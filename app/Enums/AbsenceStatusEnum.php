@@ -7,14 +7,14 @@ use Filament\Support\Contracts\HasLabel;
 enum AbsenceStatusEnum: string implements HasLabel
 {
     case Pending = 'pending';
-    case Accepted = 'accepted';
+    case Allowed = 'allowed';
     case Denied = 'denied';
 
     public function getLabel(): ?string
     {
         return match ($this) {
             self::Pending => 'Pending',
-            self::Accepted => 'Accepted',
+            self::Allowed => 'Allowed',
             self::Denied => 'Denied'
         };
     }

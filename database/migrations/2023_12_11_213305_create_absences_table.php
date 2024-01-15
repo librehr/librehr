@@ -34,6 +34,8 @@ return new class extends Migration
                 ->nullable();
             $table->timestampTz('status_at')
                 ->nullable();
+            $table->timestampTz('deleted_at')
+                ->nullable();
             $table->timestampsTz();
         });
     }

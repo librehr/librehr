@@ -97,4 +97,19 @@ class Contract extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+
+    public function place()
+    {
+        return $this->belongsTo(Place::class);
+    }
+
+    public function planning()
+    {
+        return $this->belongsTo(Planning::class);
+    }
+
+    public function tools()
+    {
+        return $this->hasMany(ContractTool::class);
+    }
 }

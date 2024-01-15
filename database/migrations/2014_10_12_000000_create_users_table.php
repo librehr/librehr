@@ -17,9 +17,10 @@ return new class extends Migration
             $table->foreignId('role_id');
             $table->string('email')->unique();
             $table->jsonb('attributes')->nullable();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->timestampTz('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+            $table->timestampTz('deleted_at')->nullable();
             $table->timestampsTz();
         });
     }

@@ -80,8 +80,12 @@ class Attendances extends BaseService
             ->delete();
     }
 
-    public function getAttendancesByDay(string $day, string|array $contractIds)
+    public function getAttendancesByDay(string $day, string|array|null $contractIds)
     {
+        if ($contractIds === null) {
+            return collect();
+        }
+
         $singleContract = is_string($contractIds);
         $currentDate = Carbon::parse($day);
         $contractFilterIds = $singleContract ? [$contractIds] : $contractIds;

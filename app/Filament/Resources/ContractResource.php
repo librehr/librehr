@@ -45,19 +45,32 @@ class ContractResource extends Resource
                             Forms\Components\Select::make('user_id')
                                 ->relationship('user', 'name')
                                 ->searchable()
+                                ->required()
                                 ->hidden(fn($record) => $record)
                                 ->preload(),
                             Forms\Components\DatePicker::make('start')
+                                ->required()
                                 ->default(now()),
                             Forms\Components\DatePicker::make('end'),
                             Forms\Components\Select::make('team_id')
                                 ->relationship('team', 'name')
                                 ->searchable()
+                                ->required()
                                 ->preload(),
-
                             Forms\Components\Select::make('contract_type_id')
                                 ->relationship('contractType', 'name')
                                 ->searchable()
+                                ->required()
+                                ->preload(),
+                            Forms\Components\Select::make('place_id')
+                                ->relationship('place', 'name')
+                                ->searchable()
+                                ->required()
+                                ->preload(),
+                            Forms\Components\Select::make('planning_id')
+                                ->relationship('planning', 'name')
+                                ->searchable()
+                                ->required()
                                 ->preload(),
                         ])->columns(2)
                 ]
@@ -73,6 +86,8 @@ class ContractResource extends Resource
                         ->searchable(),
                     Tables\Columns\TextColumn::make('contractType.name'),
                     Tables\Columns\TextColumn::make('team.name')->badge(),
+                    Tables\Columns\TextColumn::make('place.name'),
+                    Tables\Columns\TextColumn::make('planning.name'),
                     Tables\Columns\TextColumn::make('start')->dateTime(),
                     Tables\Columns\TextColumn::make('end')->dateTime()
                 ]

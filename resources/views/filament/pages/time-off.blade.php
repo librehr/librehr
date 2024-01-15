@@ -74,7 +74,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
                     </svg>
                     </x-slot>
-                    <x-time-off-calendar-row-component :absences="data_get($contractAbsences, 'accepted', [])" status="incoming"/>
+                    <x-time-off-calendar-row-component :absences="data_get($contractAbsences, 'allowed', [])" status="incoming"/>
             </x-time-off-calendar-component>
 
 
@@ -87,7 +87,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                     </svg>
                     </x-slot>
-                    <x-time-off-calendar-row-component :absences="data_get($contractAbsences, 'accepted', [])" status="past"/>
+                    <x-time-off-calendar-row-component :absences="data_get($contractAbsences, 'allowed', [])" status="past"/>
             </x-time-off-calendar-component>
 
             <x-time-off-calendar-component
@@ -122,62 +122,7 @@
                 </button>
             </ul>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                @foreach($calendar as $month)
-                    <div class="flex flex-col">
-                        <span class="text-gray-400 mb-2">
-                            {{ str($month['name'])->lower() }}
-                        </span>
-                        <div class="grid grid-cols-7">
-                            @foreach(['m','t','w','t','f','s','s'] as $dayN)
-                                <span class="text-xs text-gray-500 text-center">
-                                    {{ $dayN }}
-                                </span>
-                            @endforeach
-                            @foreach ($month['weeks'] as $day)
-                                @foreach($day as $key => $weekDay)
-                                    @php
-                                        if (!empty(data_get($weekDay, 'events.absences.*', []))) {
-                                            $backgroundColor = data_get($weekDay, 'events.absences.*.absenceType.attributes.color.background', []);
-                                            $textColor = data_get($weekDay, 'events.absences.*.absenceType.attributes.color.text', []);
-                                        }
-                                    @endphp
-
-                                    @php($toolTip = implode(', ', data_get($weekDay, 'events.tooltip', [])))
-                                    <div style="@if(!empty(data_get($weekDay, 'events.absences', [])))
-                                        background-color:{{ head($backgroundColor) }}; color: {{ head($textColor) }}
-                                    @endif" class="flex flex-row items-center p-1.5 justify-items-center text-xs
-
-
-                                    @if(data_get($weekDay, 'date') == now()->format('Y-m-d'))
-                                        shadow-inner shadow-black
-                                    @endif
-                                    "
-
-                                    >
-                                        @if (!empty($weekDay))
-                                            <div class="text-center w-full
-                                             @if(!empty(data_get($weekDay, 'events.holiday', [])))
-                                                   ring-2 ring-primary-600
-                                             @endif
-                                            "
-                                                 @if(!empty($toolTip))
-                                                     x-data x-tooltip-span.top="{{ $toolTip }}"
-                                                @endif
-                                                 >{{ $weekDay['number'] }}</div>
-
-                                        @endif
-
-
-                                    </div>
-                                @endforeach
-
-                            @endforeach
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-
+            <x-calendar-component :calendar="$calendar" :months="[]" :xsColumns="2" :smColumns="2"/>
         </div>
     </div>
 

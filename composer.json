@@ -14,7 +14,8 @@
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
-        "malzariey/filament-daterangepicker-filter": "^2.3"
+        "malzariey/filament-daterangepicker-filter": "^2.3",
+        "saade/filament-fullcalendar": "^3.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.13",

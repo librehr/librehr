@@ -8,7 +8,7 @@ use Illuminate\Support\Carbon;
 
 class Calendar extends BaseService
 {
-    public function buildCalendar($year, $contracts = [])
+    public function buildCalendar($year, $absences = [])
     {
         $date = Carbon::createFromDate($year);
         $startOfCalendar = $date->copy()->firstOfYear();
@@ -21,15 +21,6 @@ class Calendar extends BaseService
         ->mapWithKeys(function ($row, $key) {
             return [Carbon::createFromDate($key)->format('Y-m-d') => $row];
         })->toArray();
-
-        // TODO: add year and complete.
-        $absences = Absence::query()
-            ->whereIn('contract_id', $contracts)
-            ->whereYear('start', $year)
-            ->where('status', 'pending')
-            ->orderBy('start')
-            ->get();
-
 
         $date = [];
         while($startOfCalendar <= $endOfCalendar) {

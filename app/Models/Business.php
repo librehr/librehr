@@ -30,4 +30,9 @@ class Business extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function places()
+    {
+        return $this->hasMany(Place::class);
+    }
 }

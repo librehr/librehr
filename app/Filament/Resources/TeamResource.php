@@ -18,9 +18,10 @@ class TeamResource extends Resource
 {
     protected static ?string $model = Team::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationGroup = 'Human Resources';
+    protected static ?string $navigationIcon = null;
+
+    protected static ?string $navigationGroup = 'Business Configuration';
 
     public static function form(Form $form): Form
     {
@@ -42,8 +43,7 @@ class TeamResource extends Resource
                 Tables\Columns\TextColumn::make('contracts_count')
                     ->label('Active Contracts')
                 ->counts('contracts'),
-                Tables\Columns\TextColumn::make('supervisors')
-                    ->formatStateUsing(fn ($state) => implode(',' ,$state->pluck('name')->toArray()))
+                Tables\Columns\TextColumn::make('supervisors.name')
                 ->badge()
             ])
             ->filters([

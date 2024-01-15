@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\Post;
 use Filament\Facades\Filament;
 use Filament\Pages\Page;
 use Filament\Panel;
@@ -16,11 +17,30 @@ class Dashboard extends Page
     protected static string $routePath = '/';
 
     protected static ?int $navigationSort = -2;
+    public $currentAttendance;
 
     /**
      * @var view-string
      */
     protected static string $view = 'filament.pages.dashboard';
+
+    public $contractId;
+    public $businessId;
+    public $posts = [];
+
+    public function mount()
+    {
+        $this->contractId = \Auth::user()->getActiveContractId();
+        $this->businessId = \Auth::user()->getActiveBusinessId();
+        $this->posts = Post::query()
+            ->where('business_id', $this->businessId)
+            ->latest()
+            ->limit(20)
+            ->get();
+
+        $this->currentAttendance = app(\App\Services\Attendances::class)
+            ->getCurrentAttendance($this->contractId);
+    }
 
     public static function getNavigationLabel(): string
     {
@@ -76,5 +96,11 @@ class Dashboard extends Page
     public function getTitle(): string | Htmlable
     {
         return static::$title ?? __('filament-panels::pages/dashboard.title');
+    }
+
+    public function registerAttendanceNow(): void
+    {
+        $this->currentAttendance = app(\App\Services\Attendances::class)
+            ->startResumeAttendanceNow($this->contractId);
     }
 }

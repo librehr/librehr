@@ -33,7 +33,6 @@ class UserResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')->columnSpanFull(),
                 Forms\Components\TextInput::make('email'),
-                Forms\Components\TextInput::make('name'),
                 Forms\Components\Select::make('role_id')
                     ->relationship('role', 'name'),
             ])
@@ -79,6 +78,7 @@ class UserResource extends Resource
             'documents' => Pages\ManageUserDocuments::route('/{record}/documents'),
             'contracts' => Pages\ManageUserContracts::route('/{record}/contracts'),
             'absences' => Pages\ManageUserAbsences::route('/{record}/absences'),
+            'tools' => Pages\ManageUserTools::route('/{record}/tools'),
             ];
     }
 
@@ -89,6 +89,7 @@ class UserResource extends Resource
             Pages\ManageUserContracts::class,
             Pages\ManageUserAbsences::class,
             Pages\ManageUserDocuments::class,
+            Pages\ManageUserTools::class,
         ]);
     }
 }

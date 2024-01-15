@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Illuminate\View\View;
+use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 
 class AppPanelProvider extends PanelProvider
 {
@@ -60,6 +61,13 @@ class AppPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
             ])
+            ->plugin(
+                FilamentFullCalendarPlugin::make()
+                    ->selectable()
+                    ->editable()
+                    ->timezone('Europe/Madrid')
+                    ->locale(app()->getLocale())
+            )
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
@@ -80,6 +88,7 @@ class AppPanelProvider extends PanelProvider
                 'Inbox',
                 'My Profile',
                 'Human Resources',
+                'Business Configuration',
                 'Administration'
             ])
             ->authMiddleware([
