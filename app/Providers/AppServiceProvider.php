@@ -50,10 +50,10 @@ class AppServiceProvider extends ServiceProvider
             hookName: 'panels::page.start'
         );
 
-
+        /**
         $this->registerCalendar(
             \App\Filament\Pages\Attendances::class,
-        );
+        );**/
 
         FilamentAsset::register([
             Js::make('alpinejs-tooltip', __DIR__ . '/../../resources/js/alpinejs-tooltip.js')

@@ -21,13 +21,25 @@ class Attendances extends BaseService
             ->first();
     }
 
-    public function startResumeAttendanceNow($contractId, $attendanceId = null, $type = null, $date = null, $value = null)
+    public function startResumeAttendanceNow(
+        $contractId,
+        $attendanceId = null,
+        $type = null,
+        $date = null,
+        $value = null,
+        $start = null,
+        $end = null
+    )
     {
         if ($attendanceId === null && $type === 'new') {
+            $start = explode(':', $start);
+            $end = explode(':', $end);
             $attendance = Attendance::query()->create(
                 [
                     'contract_id' => $contractId,
                     'date' => $date,
+                    'start' => Carbon::createFromDate($date)->setTime($start[0], $start[1]),
+                    'end' => Carbon::createFromDate($date)->setTime($end[0], $end[1]),
                 ]
             );
 

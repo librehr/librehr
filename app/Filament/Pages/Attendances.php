@@ -2,11 +2,24 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Widgets\AttendancesChart;
 use App\Livewire\AttendanceTodaySummary;
 use App\Models\Attendance;
 use Carbon\Carbon;
+use Filament\Actions\Action;
+use Filament\Actions\Concerns\HasParentActions;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TimePicker;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Support\Enums\IconPosition;
+use Filament\Support\Facades\FilamentView;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 use Symfony\Component\HttpKernel\DataCollector\AjaxDataCollector;
 
 class Attendances extends Page
@@ -32,11 +45,100 @@ class Attendances extends Page
         return view('filament.pages.attendances-header');
     }
 
+    public function getYearMonth()
+    {
+        return [$this->year, $this->month];
+    }
+
+
+    protected function getActions(): array
+    {
+        return [
+            Action::make('add_time_action')
+                ->icon('heroicon-m-plus-circle')
+                ->iconPosition(IconPosition::After)
+                ->iconButton()
+                ->label('Add time')
+                ->outlined()
+                ->color('primary')
+                ->slideOver()
+                ->requiresConfirmation()
+                ->form([
+                    TimePicker::make('start')
+                        ->required()
+                        ->autofocus()
+                        ->step(false),
+                    TimePicker::make('end')
+                        ->required()
+                        ->step(false)
+                ])
+            ->action(function (array $arguments, $data) {
+                app(\App\Services\Attendances::class)
+                    ->startResumeAttendanceNow(
+                        $this->contractId,
+                        type: 'new',
+                        date: data_get($arguments, 'date'),
+                        start: data_get($data, 'start'),
+                        end: data_get($data, 'end'),
+                    );
+
+                $this->reloadAttendances($this->selected);
+
+            })->after(function () {
+                Notification::make('ok')
+                    ->title('Added successfully.')
+                    ->success()
+                    ->send();
+            }),
+
+            Action::make('delete_time_action')
+                ->icon('heroicon-m-minus-circle')
+                ->iconPosition(IconPosition::After)
+                ->iconButton()
+                ->label('Delete time')
+                ->outlined()
+                ->color('primary')
+                ->slideOver()
+                ->requiresConfirmation()
+                ->action(function (array $arguments) {
+                    app(\App\Services\Attendances::class)->deleteAttendance(
+                        data_get($arguments, 'id'),
+                        Auth::user()->getActiveContractId()
+                    );
+
+                    $this->reloadAttendances($this->selected);
+                })->after(function () {
+                    Notification::make('ok')
+                        ->title('Removed successfully.')
+                        ->success()
+                        ->send();
+                })
+        ];
+    }
+
+    public function previous()
+    {
+        $this->selected = Carbon::parse($this->selected)->subMonth();
+        $this->loadDays($this->selected);
+    }
+
+    public function next()
+    {
+        $this->selected = Carbon::parse($this->selected)->addMonth();
+        $this->loadDays($this->selected);
+    }
+
     public function mount()
     {
         $this->contractId = Auth::user()->getActiveContractId();;
         $selected = $this->loadSelectedDate();
         $this->loadDays($selected);
+    }
+
+    public function createTime(): Action
+    {
+        return Action::make('edit')
+            ->requiresConfirmation();
     }
 
     public function registerAttendanceNow(): void
@@ -56,7 +158,6 @@ class Attendances extends Page
     {
         $this->year = request()->get('y');
         $this->month = request()->get('m');
-
         $selectedMonth = request('m');
         $selectedYear = request('y');
 
@@ -73,16 +174,19 @@ class Attendances extends Page
     }
     private function loadDays($selected)
     {
+        // prevent going to next month on over clicks
+        if ($selected > now()) {
+            $this->selected = now()->startOfMonth();
+        }
+
+        $this->dispatch('change-date-chart', selected: $this->selected)
+            ->to(AttendancesChart::class);
         $this->days = [];
-        $this->reloadAttendances($selected);
+        $this->reloadAttendances($this->selected);
     }
 
-    public function newAttendance($date)
+    public function newAttendance($date, $start, $end)
     {
-        app(\App\Services\Attendances::class)
-            ->startResumeAttendanceNow($this->contractId, type: 'new', date: $date);
-
-        $this->reloadAttendances($this->selected);
     }
 
     public function deleteAttendance($id)
