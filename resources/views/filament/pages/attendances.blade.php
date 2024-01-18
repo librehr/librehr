@@ -1,6 +1,5 @@
 <x-filament-panels::page>
     <ul class="-mt-6 p-6 border-b border-t flex flex-row justify-center items-center gap-8">
-
         <a wire:click="previous" class="cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75" />
@@ -57,11 +56,11 @@
 
     <div class="flex flex-row border rounded-lg gap-0 bg-white justify-items-center items-center">
         <div class="p-4 flex flex-col">
-            <span>{{ app(\App\Services\Attendances::class)->secondsToHm(collect($days)->sum('total_seconds')) }}</span>
+            <span>{{ app(\App\Services\Attendances::class)->secondsToHm(collect(data_get($days, $contractId))->sum('total_seconds')) }}</span>
             <span class="text-xs">Total</span>
         </div>
         <div class="p-4 flex flex-col">
-            <span>120h</span>
+            <span>{{ app(\App\Services\Attendances::class)->secondsToHm(collect(data_get($days, $contractId))->sum('total_seconds_estimated')) }}</span>
             <span class="text-xs">Estimate</span>
         </div>
         <div class="flex-grow p-4">
@@ -75,7 +74,13 @@
 
     <div class="grid grid-cols-10 border rounded-lg bg-white divide-y">
         <div class="col-span-10 text-center py-6">
-            Status: currently in progress
+            Status:
+            @if($selected->endOfMonth() < now())
+                <span class="bg-warning-500 text-sm text-white p-2 rounded">pending approval</span>
+            @else
+                <span class="bg-primary-500 text-sm animate-pulse text-white p-2 rounded">currently in progress</span>
+            @endif
+
         </div>
 
         <div class="col-span-2 p-4 bg-gray-200">
@@ -90,8 +95,9 @@
             <span>Hours</span>
         </div>
 
-        @foreach($days as $day)
-            <div class="col-span-2 p-4">
+        @foreach(data_get($days, $contractId) as $day)
+            @php($dayError = data_get($day, 'errors', false === true) ? 'bg-warning-50' : null)
+            <div class="col-span-2 p-4 {{ $dayError }} ">
                 <div class="w-full flex flex-col col-span-3 p-4 py-6">
                     <span>{{ $day['number'] }} {{ $day['month_name']  }}</span>
                     <span class="text-sm text-gray-600">
@@ -100,7 +106,7 @@
                 </div>
             </div>
 
-            <div class="col-span-6 p-4">
+            <div class="col-span-6 p-4 {{ $dayError }}">
                 <div class="flex-grow w-full flex flex-col col-span-3 p-4 gap-2">
                     @foreach($day['attendances'] as $attendance)
                         <div class="flex flex-row gap-4 items-baseline">
@@ -138,7 +144,7 @@
                 </div>
             </div>
 
-            <div class="col-span-2 p-4">
+            <div class="col-span-2 p-4 {{ $dayError }}">
                 <div class="w-full  flex flex-col col-span-3 p-4">
                     <div class="flex flex-row gap-4 justify-end">
                         <span>
@@ -153,9 +159,27 @@
                             Estimated
                         </span>
                         <span class="flex justify-end items-end min-w-[80px]">
-                            0.00h
+                            {{ $day['total_time_estimated'] }}
                         </span>
                     </div>
+                    @if (data_get($day, 'total_time_extra'))
+                        <div class="flex flex-row gap-4 justify-end">
+                        <span class="font-semibold">
+                            Extra
+                        </span>
+                            <span class="flex justify-end items-end min-w-[80px] text-primary-600">
+                            {{ $day['total_time_extra'] }}
+                        </span>
+                        </div>
+                    @endif
+
+                    @if($dayError !== null)
+                        <div class="flex flex-row gap-4 w-full justify-end">
+                        <span class="font-semibold text-danger-600">
+                            warning
+                        </span>
+                        </div>
+                    @endif
                 </div>
             </div>
         @endforeach

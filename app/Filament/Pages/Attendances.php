@@ -40,6 +40,20 @@ class Attendances extends Page
     public $startValue;
     public $endValue;
 
+
+    public static function canAccess(): bool
+    {
+        $user = Auth::user();
+        return $user->getActiveBusinessId() && $user->getActiveContractId();
+    }
+
+    public function mount()
+    {
+        $this->contractId = Auth::user()->getActiveContractId();;
+        $selected = $this->loadSelectedDate();
+        $this->loadDays($selected);
+    }
+
     public function getHeader(): ?\Illuminate\Contracts\View\View
     {
         return view('filament.pages.attendances-header');
@@ -118,21 +132,14 @@ class Attendances extends Page
 
     public function previous()
     {
-        $this->selected = Carbon::parse($this->selected)->subMonth();
+        $this->selected = Carbon::parse($this->selected)->startOfMonth()->subMonth();
         $this->loadDays($this->selected);
     }
 
     public function next()
     {
-        $this->selected = Carbon::parse($this->selected)->addMonth();
+        $this->selected = Carbon::parse($this->selected)->startOfMonth()->addMonth();
         $this->loadDays($this->selected);
-    }
-
-    public function mount()
-    {
-        $this->contractId = Auth::user()->getActiveContractId();;
-        $selected = $this->loadSelectedDate();
-        $this->loadDays($selected);
     }
 
     public function createTime(): Action
@@ -182,29 +189,6 @@ class Attendances extends Page
         $this->dispatch('change-date-chart', selected: $this->selected)
             ->to(AttendancesChart::class);
         $this->days = [];
-        $this->reloadAttendances($this->selected);
-    }
-
-    public function newAttendance($date, $start, $end)
-    {
-    }
-
-    public function deleteAttendance($id)
-    {
-        $this->attendanceToBeDeleted = $id;
-        $this->dispatch('open-modal', id: 'confirm-delete-attendance');
-    }
-
-    public function confirmDeleteAttendance($delete)
-    {
-        if ($delete) {
-            app(\App\Services\Attendances::class)->deleteAttendance(
-                $this->attendanceToBeDeleted,
-                Auth::user()->getActiveContractId()
-            );
-        }
-        $this->attendanceToBeDeleted = null;
-        $this->dispatch('close-modal', id: 'confirm-delete-attendance');
         $this->reloadAttendances($this->selected);
     }
 

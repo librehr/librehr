@@ -158,4 +158,9 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasManyThrough(Attendance::class, Contract::class);
     }
+
+    public function plannings()
+    {
+        return $this->hasManyThrough(Planning::class, Contract::class);
+    }
 }

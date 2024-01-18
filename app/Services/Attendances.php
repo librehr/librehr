@@ -110,7 +110,8 @@ class Attendances extends BaseService
                     'contracts.attendances' => function ($q) use ($currentDate) {
                         $q->whereMonth('date', $currentDate->format('m'))
                             ->whereYear('date', $currentDate->format('Y'));
-                    }
+                    },
+                    'contracts.planning'
                 ])
             ->get();
     }
@@ -140,26 +141,91 @@ class Attendances extends BaseService
         $buildedAttendances = [];
         $days = range(1, $currentDate->daysInMonth);
         try {
-            $attendances = data_get($data->first()->contracts->first(), 'attendances');
+            foreach ($data as $user) {
+                $contract = $user->contracts->first();
+                $attendances = data_get($contract, 'attendances');
+                $periods = data_get($contract, 'planning.attributes.periods');
 
-            foreach ($days as $day) {
-                //todo: meter contractid, esto no es funcional si paso varios contratos.
-                $dateAttendance = Carbon::createFromDate($currentDate->format('Y-m-') . $day);
-                $dayData = $attendances->where('date', $dateAttendance);
-                $buildedAttendances[$day] = [
-                    'number' => $day,
-                    'date' => $dateAttendance,
-                    'day_name' => str(\Carbon\Carbon::create($dateAttendance->format('Y'), $dateAttendance->format('m'), $day)->format('l'))->lower(),
-                    'month_name' => str($dateAttendance->format('M'))->lower() . '.',
-                    'attendances' => $dayData,
-                    'total_seconds' => $dayData->sum('seconds'),
-                    'total_time' => $this->secondsToHm(
-                        $dayData->sum('seconds')
-                    ),
-                ];
+                $planningWorkDays = [];
+                foreach ($periods as $period) {
+                    [$periodDateFrom, $periodDateUntil] = str(data_get($period, 'date'))->explode(' - ');
+                    [$periodDateFromDay, $periodDateFromMonth] = str($periodDateFrom)->explode('-');
+                    [$periodDateUntilDay, $periodDateUntilMonth] = str($periodDateUntil)->explode('-');
+
+                    $periodDateStart = Carbon::create($currentDate->format('Y'), $periodDateFromMonth, $periodDateFromDay);
+                    $periodDateEnd = Carbon::create($currentDate->format('Y'), $periodDateUntilMonth, $periodDateUntilDay);
+
+                    if ($currentDate->between($periodDateStart, $periodDateEnd)) {
+                        $planningWorkDays = data_get($period, 'work_days');
+                    }
+                }
+
+                $estimatedWorkTime = collect($planningWorkDays)->map(function ($day) {
+                    $times = collect(data_get($day, 'times'))->map(function ($time) {
+                        $time['seconds'] = $this->calculateTiming(data_get($time, 'from'), data_get($time, 'to'));
+                        return $time;
+                    });
+
+                    $day['times'] = $times->toArray();
+                    $day['seconds'] = $times->sum('seconds');
+                    return $day;
+                })->mapWithKeys(function ($day) {;
+                    return [data_get($day, 'day') => $day];
+                });
+
+                foreach ($days as $day) {
+                    //todo: meter contractid, esto no es funcional si paso varios contratos.
+                    $dateAttendance = Carbon::createFromDate($currentDate->format('Y-m-') . $day);
+                    $dayData = $attendances->where('date', $dateAttendance);
+                    $estimated = data_get($estimatedWorkTime, $dateAttendance->format('N'));
+                    $differenceSeconds = data_get($estimated, 'seconds')-$dayData->sum('seconds');
+                    $extraSeconds = data_get($estimated, 'seconds')-$dayData->sum('seconds');
+
+                    $estimatedTimes = data_get($estimated, 'times');
+
+                    $totalTimes = is_array($estimatedTimes) ? count($estimatedTimes) : 0;
+                    $timesValids = 0;
+                    foreach ($dayData as $row) {
+                        $start = Carbon::parse(data_get($row, 'start'))->format('H:i:s');
+                        $end = Carbon::parse(data_get($row, 'end'))->format('H:i:s');
+                        foreach ($estimatedTimes as $time) {
+                            if (in_array($start, [
+                                data_get($time, 'from'),
+                                data_get($time, 'to'),
+                                ]) || in_array($end, [
+                                    data_get($time, 'from'),
+                                    data_get($time, 'to'),
+                                ])) {
+                                $timesValids++;
+                            }
+                        }
+                    }
+
+                    $timesValidated = $totalTimes === $timesValids;
+
+                    $buildedAttendances[data_get($contract, 'id')][$day] = [
+                        'number' => $day,
+                        'date' => $dateAttendance,
+                        'day_name' => str(\Carbon\Carbon::create($dateAttendance->format('Y'), $dateAttendance->format('m'), $day)->format('l'))->lower(),
+                        'month_name' => str($dateAttendance->format('M'))->lower() . '.',
+                        'attendances' => $dayData,
+                        'total_seconds' => $dayData->sum('seconds'),
+                        'total_time' => $this->secondsToHm(
+                            $dayData->sum('seconds')
+                        ),
+                        'total_seconds_estimated' => data_get($estimated, 'seconds'),
+                        'total_time_estimated' => $this->secondsToHm(
+                            data_get($estimated, 'seconds')
+                        ),
+                        'total_seconds_extra' => ($extraSeconds < 0 &&  data_get($estimated, 'seconds') > 0 ? -$extraSeconds : 0),
+                        'total_time_extra' => ($extraSeconds < 0 &&  data_get($estimated, 'seconds') > 0 ? $this->secondsToHm(
+                            -$extraSeconds
+                        ) : null),
+                        'errors' =>  data_get($estimated, 'seconds') > $dayData->sum('seconds') || $timesValidated === false,
+                    ];
+                }
             }
 
-            logger(collect($buildedAttendances)->count());
         } catch (\Exception $exception) {
             return [];
         }
@@ -193,5 +259,13 @@ class Attendances extends BaseService
         $minutes = floor(($seconds % 3600) / 60);
         $formattedDuration = sprintf('%dh %02dm', $hours, $minutes);
         return $formattedDuration;
+    }
+
+    public function calculateTiming($from, $to)
+    {
+        $from = Carbon::createFromFormat('H:i:s', $from);
+        $to = Carbon::createFromFormat('H:i:s', $to);
+
+        return $to->diffInSeconds($from);
     }
 }

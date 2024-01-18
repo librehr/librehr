@@ -23,6 +23,12 @@ class Requests extends Page
 
     public $requests = [];
 
+    public static function canAccess(): bool
+    {
+        $user = Auth::user();
+        return $user->getActiveBusinessId() && $user->getActiveContractId();
+    }
+
     public function getHeader(): ?\Illuminate\Contracts\View\View
     {
         return view('filament.pages.header.requests');

@@ -13,12 +13,7 @@ class ContractPolicy
      */
     public function viewAny(User $user): bool
     {
-        if ($user->role->name !== 'admin') {
-            return false;
-        }
-
-        $business = data_get(auth()->user()->getActiveBusiness(), 'id');
-        return $business > 0;
+        return in_array($user->role->name, ['admin', 'manager']);
     }
 
     /**
@@ -26,7 +21,7 @@ class ContractPolicy
      */
     public function view(User $user, Contract $contract): bool
     {
-        return $user->role->name === 'admin';
+        return in_array($user->role->name, ['admin', 'manager']);
     }
 
     /**
@@ -34,7 +29,7 @@ class ContractPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role->name === 'admin';
+        return in_array($user->role->name, ['admin', 'manager']);
     }
 
     /**
@@ -42,7 +37,7 @@ class ContractPolicy
      */
     public function update(User $user, Contract $contract): bool
     {
-        return $user->role->name === 'admin';
+        return in_array($user->role->name, ['admin', 'manager']);
     }
 
     /**

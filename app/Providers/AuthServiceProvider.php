@@ -6,18 +6,28 @@ namespace App\Providers;
 use App\Models\Absence;
 use App\Models\AbsenceType;
 use App\Models\Business;
+use App\Models\Calendar;
 use App\Models\Contract;
 use App\Models\ContractType;
+use App\Models\Place;
+use App\Models\Planning;
+use App\Models\Post;
 use App\Models\Role;
 use App\Models\Team;
+use App\Models\Tool;
 use App\Models\User;
 use App\Policies\AbsencePolicy;
 use App\Policies\AbsenceTypePolicy;
 use App\Policies\BusinessPolicy;
+use App\Policies\CalendarPolicy;
 use App\Policies\ContractPolicy;
 use App\Policies\ContractTypePolicy;
+use App\Policies\PlacePolicy;
+use App\Policies\PlanningPolicy;
+use App\Policies\PostPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\TeamPolicy;
+use App\Policies\ToolPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -37,6 +47,11 @@ class AuthServiceProvider extends ServiceProvider
         Team::class => TeamPolicy::class,
         Absence::class => AbsencePolicy::class,
         AbsenceType::class => AbsenceTypePolicy::class,
+        Place::class => PlacePolicy::class,
+        Planning::class => PlanningPolicy::class,
+        Post::class => PostPolicy::class,
+        Calendar::class => CalendarPolicy::class,
+        Tool::class => ToolPolicy::class,
     ];
 
     /**

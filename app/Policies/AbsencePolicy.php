@@ -13,11 +13,7 @@ class AbsencePolicy
      */
     public function viewAny(User $user): bool
     {
-        if ($user->getActiveContractId() > 0) {
-            return true;
-        }
-
-        return $user->role->name === 'admin';
+        return in_array($user->role->name, ['admin', 'manager']);
     }
 
     /**
@@ -25,11 +21,7 @@ class AbsencePolicy
      */
     public function view(User $user, Absence $absence): bool
     {
-        if ($absence->contract_id === $user->getActiveContractId()) {
-            return true;
-        }
-
-        return $user->role->name === 'admin';
+        return in_array($user->role->name, ['admin', 'manager']);
     }
 
     /**
@@ -37,11 +29,7 @@ class AbsencePolicy
      */
     public function create(User $user): bool
     {
-        if ($user->getActiveContractId() > 0) {
-            return true;
-        }
-
-        return false;
+        return in_array($user->role->name, ['admin', 'manager']);
     }
 
     /**
@@ -49,7 +37,7 @@ class AbsencePolicy
      */
     public function update(User $user, Absence $absence): bool
     {
-        return $user->role->name === 'admin';
+        return in_array($user->role->name, ['admin', 'manager']);
     }
 
     /**

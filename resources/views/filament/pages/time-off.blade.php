@@ -52,6 +52,15 @@
     <div class="grid grid-cols-2 gap-8">
         <div class="flex flex-col gap-4">
 
+            <div class="bg-gray-200 rounded p-2 text-lg py-6 px-2 mb-4">
+                In total you have
+                <span class="font-semibold">{{ data_get(Auth::user()->getActiveContract(), 'contractType.attributes.vacations') }}</span>
+
+                days a year for vacations, this year you have enjoyed
+                <span class="font-semibold">
+                    {{ count(data_get($contractAbsences, 'allowed', [])) }}
+                </span>  days already.
+            </div>
 
             <x-time-off-calendar-component
                 title="Pending"

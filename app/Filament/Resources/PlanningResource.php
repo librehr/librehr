@@ -32,7 +32,7 @@ class PlanningResource extends Resource
         $dayNames = [];
         $startOfWeek = now()->startOfWeek();
         for ($i = 0; $i < 7; $i++) {
-            $dayNames[] = $startOfWeek->copy()->addDays($i)->format('l');
+            $dayNames[$startOfWeek->copy()->addDays($i)->format('N')] = $startOfWeek->copy()->addDays($i)->format('l');
         }
 
         return $form
@@ -60,11 +60,11 @@ class PlanningResource extends Resource
                                     ->cloneable()
                                     ->schema([
                                         Forms\Components\TimePicker::make('from')
-                                            ->format('h:i')
-                                            ->displayFormat('h:i')
+                                            ->step('h')
                                             ->closeOnDateSelection()
                                             ->required(),
                                         Forms\Components\TimePicker::make('to')
+                                            ->step('h')
                                             ->required(),
                                     ])
                                     ->columns(2)

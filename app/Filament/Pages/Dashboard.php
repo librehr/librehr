@@ -31,8 +31,9 @@ class Dashboard extends Page
 
     public function mount()
     {
-        $this->contractId = \Auth::user()->getActiveContractId();
-        $this->businessId = \Auth::user()->getActiveBusinessId();
+        $this->user = \Auth::user();
+        $this->contractId = $this->user->getActiveContractId();
+        $this->businessId = $this->user->getActiveBusinessId();
         $this->posts = Post::query()
             ->where('business_id', $this->businessId)
             ->latest()

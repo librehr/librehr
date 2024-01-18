@@ -1,4 +1,5 @@
 <div class="pt-10">
+    @if($contractId && $businessId)
     <div class="grid grid-cols-3 gap-4 mb-4">
         <x-filament::section class="p-0">
             <x-slot name="heading">
@@ -27,16 +28,18 @@
             </div>
         </x-filament::section>
         <x-filament::section>
-            Requests
+            <x-slot name="heading">
+                Requests
+            </x-slot>
         </x-filament::section>
         <x-filament::section>
-            Notifications
-
-
+            <x-slot name="heading">
+                Notifications
+            </x-slot>
         </x-filament::section>
     </div>
-
-    <div class="flex flex-col gap-4">
+    @endif
+    <div class="flex flex-col gap-4 mb-4">
         @foreach($posts as $post)
             <x-filament::section>
                 <x-slot name="heading">

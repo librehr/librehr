@@ -27,7 +27,9 @@ class ContractTypeResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name'),
-                Forms\Components\TextInput::make('attributes.hours'),
+                Forms\Components\TextInput::make('attributes.vacations')
+                ->label('Nª Days for Vacations')
+                ->helperText('days per year'),
             ]);
     }
 

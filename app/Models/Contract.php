@@ -85,7 +85,7 @@ class Contract extends Model
 
     public function scopeActiveContracts($builder)
     {
-        $builder->whereNull('end')->orWhere('end', '>', now());
+        $builder->whereNull('end')->orWhere('end', '>', now())->with('contractType');
     }
 
     public function documents()

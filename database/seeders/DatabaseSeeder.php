@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
              'password' => Hash::make('12345678'),
          ]);
 
+        Role::query()->create(['name' => 'manager']);
         Role::query()->create(['name' => 'user']);
     }
 }

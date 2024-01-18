@@ -60,7 +60,7 @@ class PlaceResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])->modifyQueryUsing(fn ($query) => $query->where('business_id', \Auth::user()->getActiveBusinessId()));
+            ]);
     }
 
     public static function getRelations(): array
