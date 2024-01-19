@@ -4,11 +4,12 @@ namespace App\Services;
 
 
 use App\Models\Absence;
+use App\Models\Contract;
 use Illuminate\Support\Carbon;
 
 class Calendar extends BaseService
 {
-    public function buildCalendar($year, $absences = [])
+    public function buildCalendar($contractId, $year, $absences = [])
     {
         $date = Carbon::createFromDate($year);
         $startOfCalendar = $date->copy()->firstOfYear();
@@ -23,12 +24,14 @@ class Calendar extends BaseService
         })->toArray();
 
         $date = [];
+        $totalAbsences = [];
         while($startOfCalendar <= $endOfCalendar) {
             $holidays = data_get($calendar, $startOfCalendar->format('Y-m-d'), []);
             $absenceses = [];
             foreach ($absences as $absence) {
                 if ($startOfCalendar->between(Carbon::parse($absence->start), Carbon::parse($absence->end))) {
                     $absenceses[] = $absence;
+                    $totalAbsences[] = $absence;
                 }
             }
 
@@ -59,7 +62,51 @@ class Calendar extends BaseService
             $startOfCalendar->addDay();
         }
 
-        return $this->fillEmptyDaysInWeeks($date);
+        $date = $this->fillEmptyDaysInWeeks($date);
+        $summary = $this->getSummaryByContract($contractId, $totalAbsences);
+
+        return [$date, $summary];
+    }
+
+    protected function getSummaryByContract($contractId, $totalAbsences)
+    {
+        $contract = Contract::query()->with('contractType')->find($contractId);
+        $totalDays = data_get(
+            $contract,
+            'contractType.attributes.vacations',
+            config('librehr.default_vacations')
+        );
+
+        $allowedAbsences = count(data_get($totalAbsences, '*.allowed', []));
+        return [
+            'total_days' => $totalDays,
+            'total_days_selected' => $allowedAbsences,
+            'total_days_pending' => ($totalDays-$allowedAbsences)
+        ];
+    }
+
+    public function getOverlaps($contractId, $start, $end)
+    {
+        $contract = Contract::query()->find($contractId);
+        $absences = Absence::query()
+            ->with(['contract', 'contract.user', 'contract.team'])
+            ->whereBetween('start', [$start, $end])
+            ->whereBetween('end', [$start, $end])
+            ->get()
+            ->groupBy('contract.team.id');
+
+        $business = $absences->collapse()
+            ->where('contract.team.id', '!=', data_get($contract, 'team_id', 0))
+            ->groupBy('contract.user.name')->toArray();
+
+        $myTeam = collect(data_get($absences, data_get($contract, 'team_id'), []))
+            ->groupBy('contract.user.name')
+            ->toArray();
+
+        return [
+            'business' => $business,
+            'team' => $myTeam,
+        ];
     }
 
     protected function fillEmptyDaysInWeeks($date)

@@ -112,4 +112,10 @@ class Contract extends Model
     {
         return $this->hasMany(ContractTool::class);
     }
+
+    public function absences()
+    {
+        return $this->hasMany(Absence::class);
+    }
+
 }

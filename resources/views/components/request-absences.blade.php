@@ -18,20 +18,20 @@
                 <span>{{ data_get($request, 'requestable.start')->format('d/m/Y') }} hasta {{ data_get($request, 'requestable.end')->format('d/m/Y') }}</span>
             </div>
             @if(!empty(data_get($request, 'requestable.comments')))
-            <span class="text-gray-700 text-sm flex flex-col mt-2">
+            <div class="text-gray-700 text-sm flex flex-col mt-2">
                 <span class="font-semibold text-xs">Comments from <b>{{ ucwords(data_get($request, 'contract.user.name')) }} </b></span>
                  <p class="pl-3 border-l-4 border-primary-300 mt-1">
                     {{ data_get($request, 'requestable.comments') }}
                 </p>
-            </span>
+            </div>
             @endif
         </div>
     </div>
     <div class="flex flex-row gap-2">
         {{  $this->getAction('time-off-action')
-                     ->arguments([
-                         'id' => data_get($request, 'id')
-                     ])
+                     ->arguments(
+                         [$request]
+                     )
                      ->render() }}
     </div>
 </div>

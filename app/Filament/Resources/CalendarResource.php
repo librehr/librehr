@@ -31,8 +31,7 @@ class CalendarResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Toggle::make('workable')
-                    ->required(),
+                Forms\Components\Toggle::make('workable'),
             ]);
     }
 

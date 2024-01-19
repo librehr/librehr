@@ -35,6 +35,7 @@ class Attendances extends Page
     public $selected;
     public $currentAttendance = null;
     public $days;
+    public $summary;
     public $attendanceToBeDeleted = null;
 
     public $startValue;
@@ -206,7 +207,7 @@ class Attendances extends Page
 
     public function reloadAttendances($selected)
     {
-        $this->days = app(\App\Services\Attendances::class)
+        [$this->days, $this->summary] = app(\App\Services\Attendances::class)
             ->buildSingleContractAttendances(
                 $selected,
                 app(\App\Services\Attendances::class)

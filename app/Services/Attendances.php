@@ -138,6 +138,8 @@ class Attendances extends BaseService
     }
     public function buildSingleContractAttendances($currentDate, $data)
     {
+        $calendar = \App\Models\Calendar::query()->whereYear('date', $currentDate)->get();
+
         $buildedAttendances = [];
         $days = range(1, $currentDate->daysInMonth);
         try {
@@ -174,7 +176,6 @@ class Attendances extends BaseService
                 });
 
                 foreach ($days as $day) {
-                    //todo: meter contractid, esto no es funcional si paso varios contratos.
                     $dateAttendance = Carbon::createFromDate($currentDate->format('Y-m-') . $day);
                     $dayData = $attendances->where('date', $dateAttendance);
                     $estimated = data_get($estimatedWorkTime, $dateAttendance->format('N'));
@@ -202,9 +203,17 @@ class Attendances extends BaseService
                     }
 
                     $timesValidated = $totalTimes === $timesValids;
+                    $errors = data_get($estimated, 'seconds') > $dayData->sum('seconds') || $timesValidated === false;
+                    $calendarDay = $calendar->where('date', $dateAttendance);
+
+                    $workable = true;
+                    if ($calendarDay->where('workable', false)->count() > 0) {
+                        $workable = false;
+                    }
 
                     $buildedAttendances[data_get($contract, 'id')][$day] = [
                         'number' => $day,
+                        'calendar' => $calendarDay,
                         'date' => $dateAttendance,
                         'day_name' => str(\Carbon\Carbon::create($dateAttendance->format('Y'), $dateAttendance->format('m'), $day)->format('l'))->lower(),
                         'month_name' => str($dateAttendance->format('M'))->lower() . '.',
@@ -213,15 +222,15 @@ class Attendances extends BaseService
                         'total_time' => $this->secondsToHm(
                             $dayData->sum('seconds')
                         ),
-                        'total_seconds_estimated' => data_get($estimated, 'seconds'),
-                        'total_time_estimated' => $this->secondsToHm(
+                        'total_seconds_estimated' => $workable ? data_get($estimated, 'seconds') : 0,
+                        'total_time_estimated' => $workable ? $this->secondsToHm(
                             data_get($estimated, 'seconds')
-                        ),
+                        ) : $this->secondsToHm(),
                         'total_seconds_extra' => ($extraSeconds < 0 &&  data_get($estimated, 'seconds') > 0 ? -$extraSeconds : 0),
-                        'total_time_extra' => ($extraSeconds < 0 &&  data_get($estimated, 'seconds') > 0 ? $this->secondsToHm(
-                            -$extraSeconds
+                        'total_time_extra' => ((($extraSeconds < 0 && data_get($estimated, 'seconds') > 0) || $workable == false) ? $this->secondsToHm(
+                            $workable === false ? $dayData->sum('seconds') : -$extraSeconds
                         ) : null),
-                        'errors' =>  data_get($estimated, 'seconds') > $dayData->sum('seconds') || $timesValidated === false,
+                        'errors' => $workable ? $errors : null,
                     ];
                 }
             }
@@ -230,7 +239,31 @@ class Attendances extends BaseService
             return [];
         }
 
-        return $buildedAttendances;
+
+        $buildedAttendancesSummary = $this->buildSummary($buildedAttendances);
+        return [$buildedAttendances, $buildedAttendancesSummary];
+    }
+
+    protected function buildSummary($buildedAttendances = [])
+    {
+        $summary = [];
+        foreach ($buildedAttendances as $contract => $days) {
+            $daysCollected = collect($days);
+            $totalSeconds = $daysCollected->sum('total_seconds');
+            $totalSecondsEstimated = $daysCollected->sum('total_seconds_estimated');
+            $difference = ($totalSeconds-$totalSecondsEstimated);
+
+            $summary[$contract] = [
+                'total_seconds' => $totalSeconds,
+                'total_seconds_estimated' => $totalSecondsEstimated,
+                'total_seconds_extra' => max($difference, 0),
+                'total_time' => $this->secondsToHm($totalSeconds),
+                'total_time_estimated' => $this->secondsToHm($totalSecondsEstimated),
+                'total_time_extra' => $this->secondsToHm(max($difference, 0)),
+            ];
+        }
+
+        return $summary;
     }
 
     public function getTotalTimeByDay(string $day, array $contractIds): string
@@ -253,7 +286,7 @@ class Attendances extends BaseService
         return app(Attendances::class)->secondsToHm($attendances->sum('seconds'));
     }
 
-    public function secondsToHm($seconds)
+    public function secondsToHm($seconds = 0)
     {
         $hours = floor($seconds / 3600);
         $minutes = floor(($seconds % 3600) / 60);

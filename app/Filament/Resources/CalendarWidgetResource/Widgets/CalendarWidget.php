@@ -10,10 +10,12 @@ class CalendarWidget extends Widget
 {
     protected static string $view = 'filament.resources.calendar-widget';
 
-    public $calendar;
+    public $calendar = [];
+    public $summary = [];
 
-    public function mount($absence){
+    public function mount($contractId, $absence){
         $absences = collect([$absence])->all();
-        $this->calendar = app(Calendar::class)->buildCalendar($year ?? date('Y'), $absences);
+        [$this->calendar, $this->summary]
+            = app(Calendar::class)->buildCalendar($contractId,$year ?? date('Y'), $absences);
     }
 }

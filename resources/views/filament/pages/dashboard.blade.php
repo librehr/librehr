@@ -19,7 +19,11 @@
                         @livewire('attendance-today-summary', ['currentAttendance' => $currentAttendance])
                     @endpersist
                 </span>
-                        <span class="text-sm text-gray-700">Today Journey</span>
+                        <span class="text-sm text-gray-700 flex flex-row gap-1 items-center">
+                     <span>
+                         {{ now()->format('d \o\f F, Y') }}
+                     </span>
+                </span>
                     </div>
                     <x-filament::button color="{{ $currentAttendance && data_get($currentAttendance, 'end') === null  ? 'gray' : 'primary' }}" outlined wire:click="registerAttendanceNow">
                         {{ data_get($currentAttendance, 'start') !== null && data_get($currentAttendance, 'end') === null ? 'Finish' : 'Start' }}

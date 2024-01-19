@@ -5,12 +5,16 @@ namespace App\Filament\Pages;
 use App\Models\Absence;
 use App\Models\Request;
 use App\Models\Requestable;
+use App\Services\Calendar;
+use Carbon\Carbon;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Pages\Page;
 use Filament\Support\Enums\IconPosition;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Filament\Notifications\Notification;
 use function PHPUnit\Framework\isJson;
@@ -46,6 +50,17 @@ class Requests extends Page
                 ->slideOver()
                 ->requiresConfirmation()
                 ->form([
+                    Placeholder::make('')->content(function () {
+                        $arguments = $this->mountedActionsArguments[0][0] ?? [];
+                        $overlaps = app(Calendar::class)
+                            ->getOverlaps(
+                                data_get($arguments, 'contract_id'),
+                                Carbon::parse(data_get($arguments, 'requestable.start')),
+                                Carbon::parse(data_get($arguments, 'requestable.end')),
+                            );
+
+                        return json_encode($overlaps);
+                    }),
                     ToggleButtons::make('validated')
                         ->helperText('Once you have approved the request, you will not be able to change it again.')
                         ->label('Do you want to approve the vacation requested by the employee?')

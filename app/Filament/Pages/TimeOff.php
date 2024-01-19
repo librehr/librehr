@@ -23,12 +23,14 @@ class TimeOff extends Page
     public $contractId;
     public $year = null;
     public $calendar = [];
+    public $summary = [];
     public $from = 'ysyyas';
     public $type;
 
     public $absenceTypeId;
     public $startDate = 0;
     public $endDate;
+    public $days = 0;
     public $endDateMin;
     public $comments;
 
@@ -65,11 +67,30 @@ class TimeOff extends Page
 
         $days = Carbon::createFromFormat('Y-m-d', $this->startDate)->diffInDays(
             Carbon::createFromFormat('Y-m-d', $this->endDate)
-        );
+        ) + 1;
 
-        $overlaps = ['Anonym', 'Invite'];
-        session()->flash('days', 'Total days ' . $days + 1);
-        session()->flash('overlap', 'Overlaps with ' . implode(',', $overlaps) . ' in your team.');
+       $daysAvailable = data_get($this->summary, 'total_days_pending');
+
+       if ($days > $daysAvailable) {
+           session()->flash('error', 'You trying to schedule for ' . $days . ' days but only ' . $daysAvailable . ' days available.');
+           return;
+       }
+
+        $overlaps = app(Calendar::class)
+            ->getOverlaps($this->contractId, $this->startDate, $this->endDate);
+
+        $team = array_keys(data_get($overlaps, 'team', []));
+        $business = array_keys(data_get($overlaps, 'business', []));
+
+        session()->flash('days', 'Total days ' . $days);
+
+        if (count($team) > 0) {
+            session()->flash('overlap_team', implode(',', $team));
+        }
+
+        if (count($business) > 0) {
+            session()->flash('overlap_business', implode(',', $business));
+        }
     }
 
     public function submitRequestTimeOff()
@@ -156,7 +177,8 @@ class TimeOff extends Page
             ->orderBy('start')
             ->get();
 
-        $this->calendar = app(Calendar::class)->buildCalendar($year ?? date('Y'), $absences);
+        [$this->calendar, $this->summary] = app(Calendar::class)
+            ->buildCalendar($this->contractId, $year ?? date('Y'), $absences);
     }
 
     public function reloadAbsences()

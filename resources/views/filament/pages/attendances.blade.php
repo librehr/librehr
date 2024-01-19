@@ -45,7 +45,11 @@
                         @livewire('attendance-today-summary', ['currentAttendance' => $currentAttendance])
                     @endpersist
                 </span>
-                <span class="text-sm text-gray-700">Today Journey</span>
+                <span class="text-sm text-gray-700 flex flex-row gap-1 items-center">
+                     <span>
+                         {{ now()->format('d \o\f F, Y') }}
+                     </span>
+                </span>
             </div>
                 <x-filament::button color="{{ $currentAttendance ? 'gray' : 'primary' }}" outlined wire:click="registerAttendanceNow">
                     {{ data_get($currentAttendance, 'start') !== null ? 'Finish' : 'Start' }}
@@ -56,18 +60,18 @@
 
     <div class="flex flex-row border rounded-lg gap-0 bg-white justify-items-center items-center">
         <div class="p-4 flex flex-col">
-            <span>{{ app(\App\Services\Attendances::class)->secondsToHm(collect(data_get($days, $contractId))->sum('total_seconds')) }}</span>
+            <span>{{ data_get($summary, $contractId . '.total_time') }}</span>
             <span class="text-xs">Total</span>
         </div>
         <div class="p-4 flex flex-col">
-            <span>{{ app(\App\Services\Attendances::class)->secondsToHm(collect(data_get($days, $contractId))->sum('total_seconds_estimated')) }}</span>
+            <span>{{ data_get($summary, $contractId . '.total_time_estimated') }}</span>
             <span class="text-xs">Estimate</span>
         </div>
         <div class="flex-grow p-4">
                 @livewire(App\Filament\Widgets\AttendancesChart::class)
         </div>
         <div class="p-4 flex flex-col">
-            <span>0h</span>
+            <span>{{ data_get($summary, $contractId . '.total_time_extra') }}</span>
             <span class="text-xs">Extra</span>
         </div>
     </div>
@@ -108,6 +112,17 @@
 
             <div class="col-span-6 p-4 {{ $dayError }}">
                 <div class="flex-grow w-full flex flex-col col-span-3 p-4 gap-2">
+                    <div class="flex flex-row gap-4">
+                    @foreach(data_get($day, 'calendar', []) as $calendar)
+                        <span class="bg-info-100 px-3 py-1 rounded-lg text-xs flex flex-row gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+</svg>
+
+                            {{ data_get($calendar, 'name') }}
+                        </span>
+                    @endforeach
+                    </div>
                     @foreach($day['attendances'] as $attendance)
                         <div class="flex flex-row gap-4 items-baseline">
 

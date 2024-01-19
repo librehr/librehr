@@ -34,4 +34,9 @@ class ContractType extends Model
     ];
 
     protected $guarded = [];
+
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class);
+    }
 }

@@ -1,6 +1,6 @@
 <x-filament-panels::page>
     <div class="flex justify-end">
-        <x-filament::button wire:click="dispatch('open-modal', { id: 'request-absence' })" icon="heroicon-m-plus" outlined>
+        <x-filament::button wire:click="dispatch('open-modal', { id: 'request-absence' })" icon="heroicon-m-plus">
             Request absence
         </x-filament::button>
 
@@ -15,24 +15,39 @@
                         </option>
                     @endforeach
                 </select>
-                <x-date-picker :startDate="$startDate"/>
+
+                    <x-date-picker :startDate="$startDate"/>
+
 
                 <label for="comments" class="font-semibold">Comments</label>
                 <textarea wire:model="comments" id="comments" class="border border-gray-300 rounded-lg"></textarea>
 
                 @if (session()->has('days'))
-                    <div>
+                    <div class="font-semibold">
                         {{ session('days') }}
                     </div>
                 @endif
 
-                @if (session()->has('overlap'))
+                @if (session()->has('overlap_team'))
                     <div>
-                        {{ session('overlap') }}
+                        Overlaps with your team mates: {{ session('overlap_team') }}
                     </div>
                 @endif
-                {{ json_encode($errors->any()) }}
-                <x-filament::button :disabled="empty($startDate) || empty($endDate) || $errors->any() ? 'disabled' : false" wire:click="submitRequestTimeOff">
+
+                @if (session()->has('overlap_business'))
+                    <div>
+                        Overlaps with your team mates: {{ session('overlap_team') }}
+                    </div>
+                @endif
+
+                @if (session()->has('error'))
+                    <div class="text-danger-600">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+
+                <x-filament::button :disabled="empty($startDate) || empty($endDate) || $errors->any() ||  session()->has('error') ? 'disabled' : false" wire:click="submitRequestTimeOff">
                     Submit Request
                 </x-filament::button>
             </div>
@@ -52,14 +67,27 @@
     <div class="grid grid-cols-2 gap-8">
         <div class="flex flex-col gap-4">
 
-            <div class="bg-gray-200 rounded p-2 text-lg py-6 px-2 mb-4">
-                In total you have
-                <span class="font-semibold">{{ data_get(Auth::user()->getActiveContract(), 'contractType.attributes.vacations') }}</span>
+            <div class="bg-warning-200 rounded-lg p-2 py-5 px-2 mb-4 flex flex-col gap-1 items-center justify-center text-lg">
+                <span>
+                      In total you have generated <span class="font-semibold">{{ data_get($summary, 'total_days') }} days</span>
+                    this year
+                </span>
+                <span>
+                    scheduled
+                    <span class="font-semibold">
+                    {{ data_get($summary, 'total_days_selected') }} days
+                </span>
+                </span>
+                @if(data_get($summary, 'total_days_pending') > 0)
+                    <span>
+                        and still have <span class="font-semibold">{{ data_get($summary, 'total_days_pending') }} days</span> available.
+                </span>
+                @else
+                    <span>
+                        You don't have more days.
+                    </span>
+                @endif
 
-                days a year for vacations, this year you have enjoyed
-                <span class="font-semibold">
-                    {{ count(data_get($contractAbsences, 'allowed', [])) }}
-                </span>  days already.
             </div>
 
             <x-time-off-calendar-component
@@ -113,7 +141,7 @@
 
 
         </div>
-        <div class="bg-gray-100 h-full p-4">
+        <div class="bg-gray-100 h-full p-4 rounded-lg">
             <ul class="p-4 border-b mb-4 flex flex-row justify-center items-center gap-8">
                 <button wire:click="updateYear('previous')">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -131,7 +159,7 @@
                 </button>
             </ul>
 
-            <x-calendar-component :calendar="$calendar" :months="[]" :xsColumns="2" :smColumns="2"/>
+            <x-calendar-component :contractId="$contractId" :calendar="$calendar" :months="[]" :xsColumns="2" :smColumns="2"/>
         </div>
     </div>
 

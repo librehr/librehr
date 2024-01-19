@@ -14,6 +14,7 @@ class AttendancesChart extends ChartWidget
 
     public $selected;
     public $days;
+    public $summary;
 
     public function mount(): void
     {
@@ -47,7 +48,7 @@ class AttendancesChart extends ChartWidget
             $selected = Carbon::parse($selected);
         }
 
-        $this->days = app(\App\Services\Attendances::class)
+        [$this->days, $this->summary] = app(\App\Services\Attendances::class)
             ->buildSingleContractAttendances(
                 $selected,
                 app(\App\Services\Attendances::class)
