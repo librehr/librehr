@@ -8,44 +8,44 @@
             display: inline-block;
         }
     </style>
+    @vite('resources/css/filament/app/theme.css')
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fabric-history@1.7.0/src/index.min.js"></script>
-</head>
+    <script src="https://cdn.jsdelivr.net/npm/@1nd/fabric-history-pure-browser@1.6.0/src/index.min.js"></script></head>
 <body>
-<div class="controls">
-
-        <div>
-        <button id="rotateChunks" onclick="RotateChunks()">Rotate Selected</button>
-        <button id="rotateChunks" onclick="ChangeNumber()">Change Number</button>
-        <button id="toggleEdit" onclick="ToggleEdit()">Toggle <span id="editStatus">Editing: Enabled</span></button>
-        <button id="resetZoom" onclick="ResetZoom()">Reset Zoom</button>
+<div class="flex flex-col gap-2 editor">
+    <div class="flex flex-row gap-4">
         <button id="save" onclick="SaveCanvas()">Save Canvas</button>
         <button id="load" onclick="LoadCanvas()">Load Canvas</button>
+      <button id="toggleEdit" onclick="ToggleEdit()">Toggle <span id="editStatus">Editing: Enabled</span></button>
+        <button id="resetZoom" onclick="ResetZoom()">Reset Zoom</button>
     </div>
 
-    <div>
-        <button id="toggleDrawing"><span id="drawingStatus">Not Drawing</span></button>
-        <input type="range" id="brushSizeSlider" min="1" max="50" step="1" value="5">
-        <span id="brushSizeLabel">Brush Size: 5</span>
-        <label for="drawingColor">Drawing Color:</label>
-        <input type="color" id="drawingColor" value="#000000">
-    </div>
-    <div>
+    <div class="flex flex-row gap-4">
+        <button id="undo" onclick="undo()" class="text-red-600 bg-red-300">Undo</button>
+        <button id="redo" onclick="redo()">Redo</button>
+        <button id="deleteSelected" onclick="deleteSelectedObjects()">Delete Selected</button>
+
+        <button id="rotateChunks" onclick="RotateChunks()">Rotate Selected</button>
         <button id="add" onclick="Add()">Add a wall</button>
+        <button id="addRoom" onclick="AddRoom()">Add a Room</button>
         <button id="addSvg" onclick="AddSvg()">Add SVG</button>
         <button id="addCircle" onclick="AddCircle()">Add Circle</button>
+        <button id="rotateChunks" onclick="ChangeNumber()">Change Circle Number</button>
+
     </div>
 
-
-
-    <div class="controls">
-        <!-- Otros controles -->
-
-        <label for="drawingColor">Drawing Color:</label>
-        <input type="color" id="drawingColor" value="#000000">
-    </div>
 </div>
 <canvas id="c" width="800" height="500" style="border: 1px solid #ccc;"></canvas>
+
+<div>
+    <button id="toggleDrawing"><span id="drawingStatus">Not Drawing</span></button>
+    <input type="range" id="brushSizeSlider" min="1" max="50" step="1" value="5">
+    <span id="brushSizeLabel">Brush Size: 5</span>
+    <label for="drawingColor">Drawing Color:</label>
+    <input type="color" id="drawingColor" value="#000000">
+</div>
 
 <script>
     var canvas = new fabric.Canvas('c');
@@ -56,60 +56,119 @@
 
 
 
-    fabric.Object.prototype.transparentCorners = true;
-    fabric.Object.prototype.borderColor = 'red';
-    fabric.Object.prototype.cornerColor = 'green';
-    fabric.Object.prototype.cornerSize = 5;
-    fabric.Object.prototype.transparentCorners = false;
+    // Array to store the history of canvas states
+    var canvasHistory = [];
+    var currentStateIndex = -1;
 
-    fabric.Grid = fabric.util.createClass(fabric.Rect, {
-        type: 'grid',
-        initialize: function(options) {
-            options || (options = {});
 
-            this.callSuper('initialize', options);
-            this.set({
-                fill: 'white',
-                stroke: options.lineColor || 'rgba(0, 0, 0, 0.3)',
-                strokeWidth: options.lineWidth || 1,
-                selectable: false
-            });
-        },
-        toObject: function() {
-            return fabric.util.object.extend(this.callSuper('toObject'));
+
+    canvas.on('after:render', function () {
+        var ctx = canvas.getContext('2d');
+        var gridSize = canvas.grid;
+
+        // Configura las reglas del grid con un patrón de líneas
+        ctx.strokeStyle = createGridPattern();
+        ctx.lineWidth = 1;
+
+        // Dibuja las reglas verticales
+        for (var i = gridSize; i < canvas.width; i += gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i, canvas.height);
+            ctx.stroke();
+        }
+
+        // Dibuja las reglas horizontales
+        for (var j = gridSize; j < canvas.height; j += gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(0, j);
+            ctx.lineTo(canvas.width, j);
+            ctx.stroke();
         }
     });
 
-    fabric.Grid.fromObject = function(object, callback) {
-        return callback(new fabric.Grid(object));
-    };
+    // Configura el tamaño del grid
+    canvas.grid = 12;  // Puedes ajustar el tamaño del grid según tus necesidades
+
+    // Función para crear un patrón de líneas para el grid
 
 
-    // Crear un fondo de cuadrícula no editable
-    var grid = new fabric.Grid({
-        width: canvas.width,
-        height: canvas.height,
-        lineColor: 'rgba(0, 0, 0, 0.5)',  // Color de las líneas de la cuadrícula
-        lineWidth: 1,                       // Ancho de las líneas de la cuadrícula
-        selectable: false                   // Hace que la cuadrícula no sea seleccionable
+
+    // Function to save the current state of the canvas
+    function saveCanvasState() {
+        currentStateIndex++;
+        canvasHistory[currentStateIndex] = JSON.stringify(canvas.toDatalessObject());
+        canvasHistory = canvasHistory.slice(0, currentStateIndex + 1);  // Remove redo states
+    }
+
+    // Function to undo the last action
+    function undo() {
+
+        if (currentStateIndex > 0) {
+            currentStateIndex--;
+            loadCanvasState();
+        }
+    }
+
+    // Function to redo the undone action
+    function redo() {
+        if (currentStateIndex < canvasHistory.length - 1) {
+            currentStateIndex++;
+            loadCanvasState();
+        }
+    }
+
+    // Function to load a specific state into the canvas
+    function loadCanvasState() {
+        canvas.loadFromJSON(canvasHistory[currentStateIndex], function () {
+            canvas.renderAll();
+        });
+    }
+
+    // Your existing functions...
+
+    // Add event listeners for undo and redo buttons
+    document.getElementById('undo').addEventListener('click', undo);
+    document.getElementById('redo').addEventListener('click', redo);
+
+    // Your existing script...
+
+    var grid = 12;
+
+    // create grid
+
+
+
+
+
+    canvas.on('object:moving', function(options) {
+        if (Math.round(options.target.left / grid * 2) % 1 == 0 &&
+            Math.round(options.target.top / grid * 2) % 1 == 0) {
+            options.target.set({
+                left: Math.round(options.target.left / grid) * grid,
+                top: Math.round(options.target.top / grid) * grid
+            }).setCoords();
+        }
     });
 
-    // Añadir la cuadrícula al lienzo como fondo
-    canvas.setBackgroundImage(grid.toDataURL(), canvas.renderAll.bind(canvas));
+
 
 
     function Add() {
         if (editingEnabled) {
             var rect = new fabric.Rect({
-                left: 100,
-                top: 50,
+                left: Math.round(canvas.width / 3.5 / grid) * grid, // Snap to grid horizontally
+                top: Math.round(canvas.height / 3.5 / grid) * grid, // Snap to grid vertically
+
                 fill: 'lightgray',
                 width: 300,
-                height: 10,
+                height: 12,
                 objectCaching: false,
                 stroke: 'gray',
                 strokeWidth: 1,
+                resizable: false,
                 selectable: true,
+                hasControls: true,  // Activa los controles predeterminados
             });
 
 
@@ -119,15 +178,23 @@
         }
     }
 
-    function AddSvg() {
-        var svgElement = '<svg width="100" height="50" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="50" fill="lightgray" /></svg>';
 
+
+    function AddSvg() {
+        var svgElement = '<svg width="80" height="30" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="24" fill="lightgray" /></svg>';
+
+        var ventana = '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"> <!-- Marco de la ventana --> <rect x="10" y="10" width="80" height="80" fill="#c0c0c0" stroke="#000" stroke-width="1"/> <!-- Vidrio de la ventana --> <rect x="20" y="20" width="60" height="60" fill="#a0dfff" stroke="#000" stroke-width="1"/> <!-- Representación de la vista superior --> <line x1="50" y1="0" x2="50" y2="100" stroke="#000" stroke-width="0.5"/> <line x1="0" y1="50" x2="100" y2="50" stroke="#000" stroke-width="0.5"/> </svg>'
+
+        var puerta = '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"> <!-- Pared izquierda --> <rect x="0" y="0" width="10" height="200" fill="#c0c0c0" stroke="#000" stroke-width="2"/> <!-- Pared derecha --> <rect x="190" y="0" width="10" height="200" fill="#c0c0c0" stroke="#000" stroke-width="2"/> <!-- Pared superior --> <rect x="10" y="0" width="180" height="10" fill="#c0c0c0" stroke="#000" stroke-width="2"/> <!-- Pared inferior --> <rect x="10" y="190" width="180" height="10" fill="#c0c0c0" stroke="#000" stroke-width="2"/> <!-- Puerta --> <rect x="80" y="180" width="40" height="5" fill="#8b4513" stroke="#000" stroke-width="1"/> <rect x="100" y="120" width="5" height="60" fill="#8b4513" stroke="#000" stroke-width="1"/> <!-- Manija de la puerta --> <circle cx="105" cy="185" r="2" fill="#000"/> <!-- Representación de la vista superior --> <line x1="100" y1="0" x2="100" y2="200" stroke="#000" stroke-width="0.5"/> <line x1="0" y1="100" x2="200" y2="100" stroke="#000" stroke-width="0.5"/> </svg>';
+
+        var svgElement = '<svg width="12" height="12" xmlns="http://www.w3.org/2000/svg"> <rect width="12" height="12" style="fill:white;stroke:black;stroke-width:2" /> <rect width="6" height="12" x="6" style="fill:white;stroke:black;stroke-width:2" /> </svg>'
         fabric.loadSVGFromString(svgElement, function(objects, options) {
             var svg = fabric.util.groupSVGElements(objects, options);
             svg.set({
-                left: 50,
-                top: 150,
-                selectable: editingEnabled
+                left: Math.round(canvas.width / 3.5 / grid) * grid, // Snap to grid horizontally
+                top: Math.round(canvas.height / 3.5 / grid) * grid, // Snap to grid vertically
+                selectable: editingEnabled,
+                showControls: false
             });
             canvas.add(svg);
             canvas.setActiveObject(svg);
@@ -139,8 +206,9 @@
     function AddCircle() {
         if (editingEnabled) {
             var circle = new fabric.Circle({
-                left: 200,
-                top: 150,
+                left: Math.round(canvas.width / 3.5 / grid) * grid, // Snap to grid horizontally
+                top: Math.round(canvas.height / 3.5 / grid) * grid, // Snap to grid vertically
+
                 radius: 15,
                 fill: 'red',
                 cursorStyle: 'pointer',
@@ -440,7 +508,7 @@
         // Verifica si la tecla presionada es el código de la tecla "Backspace" (8)
         if (e.keyCode === 8) {
             e.preventDefault(); // Evita el comportamiento predeterminado (por ejemplo, retroceder en la página)
-            deleteSelectedObject();
+            deleteSelectedObjects();
         }
     });
 
@@ -639,6 +707,36 @@
     function updateDrawingColor(newColor) {
         canvas.freeDrawingBrush.color = newColor;
     }
+
+
+    // Event listener for object added to the canvas
+    canvas.on('object:added', function () {
+        saveCanvasState();
+    });
+
+    // Event listener for object modified on the canvas
+    canvas.on('object:modified', function () {
+        saveCanvasState();
+    });
+
+
+
+    function deleteSelectedObjects() {
+        var activeObjects = canvas.getActiveObjects();
+
+        if (activeObjects && activeObjects.length > 0) {
+            activeObjects.forEach(function(obj) {
+                canvas.remove(obj);
+            });
+
+            canvas.discardActiveObject();
+            canvas.requestRenderAll();
+            saveCanvasState();
+        }
+    }
+
+
+
 
 </script>
 </body>

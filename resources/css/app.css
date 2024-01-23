@@ -1,3 +1,7 @@
 .tooltip-hr{
     @apply relative px-2 py-1 text-white bg-black rounded bg-opacity-90;
 }
+
+.editor button{
+    @apply hover:bg-red-100 bg-red-50;
+}
