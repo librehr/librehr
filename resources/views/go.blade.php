@@ -1,244 +1,168 @@
 <!DOCTYPE html>
-<html lang="es">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imagen Interactiva con Alpine.js</title>
-    <script src="//unpkg.com/alpinejs" defer></script>
-    @vite('resources/css/filament/app/theme.css')
-
+    <title>Seat Reservation</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
-        #container {
-            position: relative;
-            width: 600px;
+        #map {
             height: 600px;
-            display: grid;
-            grid-template-columns: repeat(16, 1fr);
-            grid-template-rows: repeat(16, 1fr);
-        }
-
-        .number {
-            position: absolute;
-            cursor: pointer;
-        }
-
-        .preview {
-            position: absolute;
-            background-color: rgba(0, 255, 0, 0.3);
-            border: 2px solid #00FF00;
-            pointer-events: none;
+            background-image: url('{{ asset('images/grid.webp') }}');
+            background-size: auto auto;
+            background-repeat: repeat;
         }
     </style>
+    @vite('resources/css/filament/app/theme.css')
+
 </head>
+<body>
 
-<body x-data="app"
-      class="font-sans">
-
-<select x-model="selectedNumber" class="p-2 m-2 bg-blue-500 text-white rounded">
-    <template x-for="number in numbers">
-        <option :value="number" x-text="number"></option>
-    </template>
-</select>
-
-<button @click="saveToJson" class="p-2 m-2 bg-green-500 text-white rounded">Guardar Posiciones</button>
-<button @click="loadFromJson" class="p-2 m-2 bg-blue-500 text-white rounded">Cargar Posiciones</button>
-
-
-<div id="container" @mousemove="updatePreviewPosition" @click="addNumber" class="relative">
-    <img src="{{ asset('css/map.png') }}" alt="Imagen Interactiva" width="600" height="600"
-         class="absolute border shadow">
-
-    <!-- Vista previa -->
-    <div x-show="showPreview" class="preview" :style="{ left: previewPosition.x + 'px', top: previewPosition.y + 'px', width: container.offsetWidth / 16 + 'px', height: container.offsetHeight / 16 + 'px' }"></div>
+<div class="flex flex-row overflow-auto">
+    <div class="font-semibold mr-2">Available desks:</div> <ul id="circleList" class="flex flex-row gap-4"></ul>
 </div>
+
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
-    const app = {
-        gridSize: 16,
-        maxElements: 16,
-        numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        selectedNumber: 1,
-        selectedNumbers: [],
-        history: [],
-        showPreview: false,
-        previewPosition: { x: 0, y: 0 },
-        container: null,
-
-        saveToJson() {
-            const jsonData = JSON.stringify(this.selectedNumbers);
-            const blob = new Blob([jsonData], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'positions.json';
-            a.click();
-            URL.revokeObjectURL(url);
-        },
-
-        async loadFromJson() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'application/json';
-            input.addEventListener('change', async (event) => {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = async () => {
-                        // Limpiar las posiciones existentes
-                        this.selectedNumbers = [];
-                       // await this.updateSelectAndNextNumber();
-
-                        const jsonData = JSON.parse(reader.result);
-                        this.selectedNumbers = jsonData;
-
-                        await this.updateSelectAndNextNumber();
-                        this.renderNumbers();
-                    };
-                    reader.readAsText(file);
-                }
-            });
-            input.click();
-        },
-
-        // ... (código anterior) ...
-
-        async updateSelectAndNextNumber() {
-            // Eliminar los números seleccionados de la lista
-            this.selectedNumbers.forEach(selectedNumber => {
-                const index = this.numbers.indexOf(selectedNumber.number);
-                if (index !== -1) {
-                    this.numbers.splice(index, 1);
-                }
-            });
-
-
-
-            await this.$nextTick();
-
-            // Establecer el próximo número después de cargar las posiciones
-            this.selectedNumber = this.numbers.length > 0 ? this.numbers[0] : null;
-        },
-
-        renderNumbers() {
-            // Limpiar la pantalla antes de renderizar los números
-            //this.container.innerHTML = '';
-
-            // Renderizar los números guardados
-            this.selectedNumbers.forEach(num => {
-                // Eliminar el número de this.numbers si ya está presente
-                const numIndex = this.numbers.indexOf(num.number);
-                if (numIndex !== -1) {
-                    this.numbers.splice(numIndex, 1);
-                }
-
-                const numberDiv = document.createElement('div');
-                numberDiv.className = 'number bg-green-500 flex justify-center items-center w-6 h-6 ml-1.5 mt-1.5 rounded-full absolute hover:bg-red-400';
-                numberDiv.textContent = num.number;
-                numberDiv.style.left = `${num.x}px`;
-                numberDiv.style.top = `${num.y}px`;
-
-                numberDiv.addEventListener('click', async () => {
-                    await new Promise(resolve => setTimeout(resolve, 0));
-
-                    this.numbers.push(num.number);
-                    this.container.removeChild(numberDiv);
-                    this.updateSelect();
-
-                    // Eliminar el número de la lista this.selectedNumbers
-                    this.selectedNumbers = this.selectedNumbers.filter(num => num.number !== num.number);
-                });
-
-                this.container.appendChild(numberDiv);
-            });
-        },
-
-
-        addNumber() {
-            if (this.showPreview && this.selectedNumber <= this.maxElements) {
-                const gridSize = this.gridSize;
-                const gridX = Math.floor(this.previewPosition.x / (this.container.offsetWidth / gridSize));
-                const gridY = Math.floor(this.previewPosition.y / (this.container.offsetHeight / gridSize));
-
-                const isOccupied = this.selectedNumbers.some(num => {
-                    const numGridX = Math.floor(num.x / (this.container.offsetWidth / gridSize));
-                    const numGridY = Math.floor(num.y / (this.container.offsetHeight / gridSize));
-                    return numGridX === gridX && numGridY === gridY;
-                });
-
-                if (!isOccupied) {
-                    this.history.push([...this.selectedNumbers]);
-
-                    const newNumber = {
-                        number: this.selectedNumber,
-                        x: gridX * (this.container.offsetWidth / gridSize),
-                        y: gridY * (this.container.offsetHeight / gridSize)
-                    };
-
-                    this.selectedNumbers.push(newNumber);
-
-                    const numberDiv = document.createElement('div');
-                    numberDiv.className = 'number bg-green-500 flex justify-center items-center w-6 h-6 ml-1.5 mt-1.5 rounded-full absolute hover:bg-red-400';
-                    numberDiv.textContent = this.selectedNumber;
-                    numberDiv.style.left = `${newNumber.x}px`;
-                    numberDiv.style.top = `${newNumber.y}px`;
-
-                    numberDiv.addEventListener('click', async () => {
-                        await new Promise(resolve => setTimeout(resolve, 0));
-
-                        this.numbers.push(newNumber.number);
-                        this.container.removeChild(numberDiv);
-                        this.updateSelect();
-
-                        // Eliminar el número de la lista this.selectedNumbers
-                        this.selectedNumbers = this.selectedNumbers.filter(num => num.number !== newNumber.number);
-                    });
-
-
-                    this.container.appendChild(numberDiv);
-
-                    this.numbers = this.numbers.filter(num => num !== newNumber.number);
-                    this.updateSelect();
-
-                    this.showPreview = false;
-                }
-            }
-        },
-
-
-        updatePreviewPosition(event) {
-            if (!this.container) {
-                return; // Salir si el contenedor aún no está disponible
-            }
-
-            const x = event.clientX - this.container.getBoundingClientRect().left;
-            const y = event.clientY - this.container.getBoundingClientRect().top;
-
-            const gridSize = this.gridSize;
-            const gridX = Math.floor(x / (this.container.offsetWidth / gridSize)) * (this.container.offsetWidth / gridSize);
-            const gridY = Math.floor(y / (this.container.offsetHeight / gridSize)) * (this.container.offsetHeight / gridSize);
-
-            this.previewPosition = { x: gridX, y: gridY };
-            this.showPreview = true;
-        },
-
-        updateSelect() {
-            // Actualizar el select después de realizar cambios en los números
-            this.numbers.sort((a, b) => a - b); // Ordenar la lista de números de menor a mayor
-
-            // Actualizar el select con los números ordenados
-            this.$nextTick(() => {
-                this.selectedNumber = this.numbers[0];
-            });
-        },
-    };
-
-    document.addEventListener('DOMContentLoaded', () => {
-        app.container = document.getElementById('container');
-        Alpine.data('app', () => app);
+    const bookings = false;
+    var map = L.map('map', {
+        crs: L.CRS.Simple,
+        minZoom: -5
     });
+
+    var bounds = [[0, 0], [600, 600]]; // Adjust according to your image size
+
+    L.imageOverlay('{{ asset('css/plano.png') }}', bounds)
+        .addTo(map);
+
+    map.fitBounds(bounds);
+
+    var circles = L.layerGroup().addTo(map);
+    var availableCircleNames = ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'A9', 'A10'];
+
+    // Add some predefined circles on page load
+    var preDefinedCircles = [
+        {latlng: [100, 100], name: 'A1'},
+        {latlng: [200, 200], name: 'A3', booking: {userName: 'Borja', userId: '1', selfBooked: true}},
+    ];
+
+    preDefinedCircles.forEach(function(circleData) {
+        addCircle(circleData);
+        // Remove predefined seats from the list of available seats
+        var index = availableCircleNames.indexOf(circleData.name);
+        if (index !== -1) {
+            availableCircleNames.splice(index, 1);
+        }
+    });
+
+    updateCircleList();
+
+    map.on('click', function (e) {
+        if (availableCircleNames.length > 0) {
+            // Find the smallest available name
+            var smallestIndex = 0;
+            var smallestNumber = parseInt(availableCircleNames[0].replace(/\D/g, ''));
+
+            for (var i = 1; i < availableCircleNames.length; i++) {
+                var currentNumber = parseInt(availableCircleNames[i].replace(/\D/g, ''));
+                if (currentNumber < smallestNumber) {
+                    smallestNumber = currentNumber;
+                    smallestIndex = i;
+                }
+            }
+
+            var smallestName = availableCircleNames[smallestIndex];
+            // Remove the smallest name from the list
+            availableCircleNames.splice(smallestIndex, 1);
+            const circleData = {latlng: e.latlng, name: smallestName}
+            addCircle(circleData);
+            updateCircleList();
+        }
+    });
+
+    function addCircle(circleData) {
+        let booking;
+        let fillColor = '#088F8F'
+        let color = '#0FFF50'
+        if (circleData.booking) {
+            fillColor = '#FF0000'
+            color = '#FF0000'
+            booking = '<div class="flex flex-col"><div class="">Desk taken by ' +
+                '<span class="font-semibold">' + circleData.booking.userName + '</span>' +
+                '</div>' +
+                (circleData.booking.selfBooked ? '<button class="mt-2 bg-red-600 hover:bg-red-500 text-white rounded p-2">Free desk!</button>' : '') +
+                '</div>'
+        } else {
+            booking = '<button class="mt-2 bg-red-600 hover:bg-red-500 text-white rounded p-2">Book</button>'
+        }
+
+        var circle = L.circleMarker(circleData.latlng, {
+            color: color,
+            fillColor: fillColor,
+            fillOpacity: 0.5,
+            draggable: true,
+            radius: 9
+        }).bindPopup('<div class="flex flex-col gap-2 p-4 min-w-[150px] text-lg">' +
+            '<div class="">' + circleData.name + '</div>' +
+            (booking ? booking : '') +
+            (bookings === false ?
+            '<button onclick="deleteCircle(\'' + circleData.name + '\')" class="bg-red-600 hover:bg-red-500 text-white rounded  p-2">Delete</button>' : '') +
+            '</div>')
+            .bindTooltip("Desk <b>" + circleData.name + '</b>').openTooltip();
+
+        circles.addLayer(circle);
+    }
+
+    function deleteCircle(circleName) {
+        circles.eachLayer(function (circle) {
+            if (circle.getPopup().getContent().includes(circleName)) {
+                circles.removeLayer(circle);
+                availableCircleNames.push(circleName);
+            }
+        });
+
+        updateCircleList();
+    }
+
+    function updateCircleList() {
+        var circleListElement = document.getElementById('circleList');
+        circleListElement.innerHTML = '';
+
+        // Sort circle names alphabetically, considering numbers
+        availableCircleNames.sort(function(a, b) {
+            // Function to extract numeric part from name
+            function extractNumber(name) {
+                var match = name.match(/\d+/); // Find digit sequence
+                return match ? parseInt(match[0]) : NaN; // Convert digit sequence to number
+            }
+
+            // Function to extract alphabetical part from name
+            function extractAlpha(name) {
+                return name.replace(/\d+/g, ''); // Remove digits and leave only letters
+            }
+
+            // Compare numeric parts of names
+            var numA = extractNumber(a);
+            var numB = extractNumber(b);
+            if (numA !== numB) {
+                return numA - numB; // Sort numerically if numeric parts are different
+            }
+
+            // If numeric parts are equal, compare alphabetical parts
+            var alphaA = extractAlpha(a);
+            var alphaB = extractAlpha(b);
+            return alphaA.localeCompare(alphaB);
+        });
+
+        availableCircleNames.forEach(function (name) {
+            circleListElement.innerHTML += '<li>' + name + '</li>';
+        });
+    }
+
 </script>
 
-
 </body>
-
 </html>

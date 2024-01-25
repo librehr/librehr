@@ -5,3 +5,10 @@
 .editor button{
     @apply hover:bg-red-100 bg-red-50;
 }
+
+.fabricjs button{
+    @apply px-2 py-1 hover:bg-red-600 hover:text-white;
+}
+.btn-map {
+    @apply bg-primary-600 text-white rounded;
+}
