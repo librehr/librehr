@@ -1,3 +1,6 @@
+@import "leaflet.css";
+
+
 .tooltip-hr{
     @apply relative px-2 py-1 text-white bg-black rounded bg-opacity-90;
 }
@@ -10,5 +13,5 @@
     @apply px-2 py-1 hover:bg-red-600 hover:text-white;
 }
 .btn-map {
-    @apply bg-primary-600 text-white rounded;
+    @apply bg-red-600 text-white rounded;
 }

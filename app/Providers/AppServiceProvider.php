@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Carbon\Carbon;
 use Filament\Facades\Filament;
+use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
@@ -56,7 +57,9 @@ class AppServiceProvider extends ServiceProvider
         );**/
 
         FilamentAsset::register([
-            Js::make('alpinejs-tooltip', __DIR__ . '/../../resources/js/alpinejs-tooltip.js')
+            Js::make('alpinejs-tooltip', __DIR__ . '/../../resources/js/alpinejs-tooltip.js'),
+            Css::make('leaflet-stylesheet', resource_path('css/leaflet.css')),
+            Js::make('leaflet-script', resource_path('js/leaflet.js')),
         ]);
     }
 

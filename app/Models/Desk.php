@@ -6,15 +6,21 @@ use App\Models\Scopes\BusinessScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Place extends Model
+class Desk extends Model
 {
     use HasFactory;
 
     protected $casts = [
-        'attributes' => 'array'
+        'attributes' => 'array',
+        'active' => 'boolean'
     ];
 
     protected $guarded = [];
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
+    }
 
     /**
      * The "booted" method of the model.
@@ -27,10 +33,5 @@ class Place extends Model
     public function business()
     {
         return $this->belongsTo(Business::class);
-    }
-
-    public function floors()
-    {
-        return $this->hasMany(Floor::class);
     }
 }

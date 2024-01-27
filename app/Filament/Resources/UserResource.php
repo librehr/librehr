@@ -79,7 +79,7 @@ class UserResource extends Resource
             'contracts' => Pages\ManageUserContracts::route('/{record}/contracts'),
             'absences' => Pages\ManageUserAbsences::route('/{record}/absences'),
             'tools' => Pages\ManageUserTools::route('/{record}/tools'),
-            ];
+        ];
     }
 
     public static function getRecordSubNavigation(Page $page): array

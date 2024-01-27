@@ -3,15 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PlaceResource\Pages;
-use App\Filament\Resources\PlaceResource\RelationManagers;
+use App\Filament\Resources\PlaceResource\RelationManagers\FloorsRelationManager;
 use App\Models\Place;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PlaceResource extends Resource
 {
@@ -21,7 +19,6 @@ class PlaceResource extends Resource
     protected static ?string $navigationIcon = null;
 
     protected static ?string $navigationGroup = 'Business Configuration';
-
     public static function form(Form $form): Form
     {
         return $form
@@ -66,7 +63,7 @@ class PlaceResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            FloorsRelationManager::class
         ];
     }
 
