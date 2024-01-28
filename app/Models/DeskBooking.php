@@ -2,24 +2,25 @@
 
 namespace App\Models;
 
-use App\Filament\Resources\RoomResource\Pages\DeskBookings;
 use App\Models\Scopes\BusinessScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Room extends Model
+class DeskBooking extends Model
 {
     use HasFactory;
 
     protected $casts = [
-        'attributes' => 'array'
+        'attributes' => 'array',
+        'start' => 'DateTime',
+        'end' => 'DateTime',
     ];
 
     protected $guarded = [];
 
-    public function floor()
+    public function contract()
     {
-        return $this->belongsTo(Floor::class);
+        return $this->belongsTo(Contract::class);
     }
 
     /**
@@ -35,13 +36,8 @@ class Room extends Model
         return $this->belongsTo(Business::class);
     }
 
-    public function desks()
+    public function desk()
     {
-        return $this->hasMany(Desk::class);
-    }
-
-    public function deskBookings()
-    {
-        return $this->hasManyThrough(DeskBooking::class, Desk::class);
+        return $this->belongsTo(Desk::class);
     }
 }

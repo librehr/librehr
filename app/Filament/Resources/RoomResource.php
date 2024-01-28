@@ -120,6 +120,7 @@ class RoomResource extends Resource
             'create' => Pages\CreateRoom::route('/create'),
             'edit' => Pages\EditRoom::route('/{record}/edit'),
             'map' => Pages\EditRoomMap::route('/{record}/map'),
+            'bookings' => Pages\DeskBookings::route('/{record}/bookings'),
         ];
     }
 
@@ -128,6 +129,7 @@ class RoomResource extends Resource
         return $page->generateNavigationItems([
             Pages\EditRoom::class,
             Pages\EditRoomMap::class,
+            Pages\DeskBookings::class,
         ]);
     }
 }
