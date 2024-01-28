@@ -10,22 +10,19 @@
 @endphp
 <div>
 
-    <style>
-        #map {
+    <div class="flex justify-between overflow-auto">
+        <div class="font-semibold mr-2">Available desks:</div>
+        <ul id="circleList" class="flex-grow flex flex-row gap-4"></ul>
+        <button id="saveChanges" class="bg-primary-600 text-white p-2 rounded">Save</button>
+    </div>
+
+    <div id="map" style="
             width: 850px;
             height: 600px;
             background-image: url('{{ asset('images/grid.webp') }}');
             background-size: auto auto;
             background-repeat: repeat;
-        }
-    </style>
-
-    <div class="flex flex-row overflow-auto">
-        <div class="font-semibold mr-2">Available desks:</div>
-        <ul id="circleList" class="flex flex-row gap-4"></ul>
-    </div>
-    <button id="saveChanges">save</button>
-    <div id="map"></div>
+        "></div>
 
 </div>
 
@@ -36,7 +33,7 @@
 
     document.addEventListener('livewire:initialized', () => {
         document.getElementById("saveChanges").addEventListener("click", function () {
-            window.Livewire.dispatch('add-circle', { refreshPosts: true });
+            window.Livewire.dispatch('add-circle', { circles: app.circles });
         });
     })
 
@@ -46,13 +43,9 @@
         circles: [],
         circlesLayer: null,
         mapper: null,
-        predefinedCircles: [
-            { latlng: [100, 100], name: 'A1', booking: { userName: 'User 1', selfBooked: true } },
-            { latlng: [200, 200], name: 'A2', booking: { userName: 'User 2', selfBooked: false } },
-            // Add more circles as needed
-        ],
+        predefinedCircles: @json($record->desks->whereNotNull('attributes.latlng')),
         addCircle: function(circleData) {
-            this.circles.push(circleData.name);
+            this.circles.push(circleData);
             this.updateCircleList();
         },
         deleteCircle: function(circleString) {
@@ -93,6 +86,18 @@
                 circleList.appendChild(listItem);
             });
         },
+        getHtmlCircleData(circleData) {
+            let bookingHtml = circleData.booking ? `
+                        <div>Desk taken by <span class="font-semibold">${circleData.booking.userName}</span></div>
+                        ${circleData.booking.selfBooked ? `<button class="mt-2 bg-red-600 hover:bg-red-500 text-white rounded p-2">Free desk!</button>` : ''}
+                    ` : `
+                        <button class="mt-2 bg-red-600 hover:bg-red-500 text-white rounded p-2">Book</button>
+                    `
+
+            let editHtml = `<button onclick="app.deleteCircle('${base64Encode(JSON.stringify(circleData))}')" class="bg-red-600 hover:bg-red-500 text-white rounded p-2">Delete</button>`
+
+            return '<div class="flex flex-col gap-2 p-4 min-w-[150px] text-lg"><div>Desk: <b>' + circleData.name + '</b></div> ' + (this.bookings ? bookingHtml : editHtml) + '</div>';
+        },
         initMap: function() {
             this.availableCircleNames = this.availableCircleNames.filter(circle => {
                 return !this.predefinedCircles.find(predefinedCircle => predefinedCircle.name === circle.name);
@@ -118,16 +123,9 @@
                     radius: 9,
                     name: circleData.name
                 }).addTo(this.circlesLayer)
-                    .bindPopup(`<div class="flex flex-col gap-2 p-4 min-w-[150px] text-lg">
-                    <div>${circleData.name}</div>
-                    ${circleData.booking ? `
-                        <div>Desk taken by <span class="font-semibold">${circleData.booking.userName}</span></div>
-                        ${circleData.booking.selfBooked ? `<button class="mt-2 bg-red-600 hover:bg-red-500 text-white rounded p-2">Free desk!</button>` : ''}
-                    ` : `
-                        <button class="mt-2 bg-red-600 hover:bg-red-500 text-white rounded p-2">Book</button>
-                    `}
-                    ${this.bookings === false ? `<button onclick="app.deleteCircle('${base64Encode(JSON.stringify(circleData))}')" class="bg-red-600 hover:bg-red-500 text-white rounded p-2">Delete</button>` : ''}
-                </div>`).bindTooltip(`Desk <b>${circleData.name}</b>`).openTooltip();
+                    .bindPopup(this.getHtmlCircleData(circleData))
+                    .bindTooltip(`Desk <b>${circleData.name}</b>`)
+                    .openTooltip();
                 this.addCircle(circleData);
             });
 
@@ -145,16 +143,9 @@
                         radius: 9,
                         name: circleData.name
                     }).addTo(this.circlesLayer)
-                        .bindPopup(`<div class="flex flex-col gap-2 p-4 min-w-[150px] text-lg">
-                        <div>${circleData.name}</div>
-                        ${circleData.booking ? `
-                            <div>Desk taken by <span class="font-semibold">${circleData.booking.userName}</span></div>
-                            ${circleData.booking.selfBooked ? `<button class="mt-2 bg-red-600 hover:bg-red-500 text-white rounded p-2">Free desk!</button>` : ''}
-                        ` : `
-                            <button class="mt-2 bg-red-600 hover:bg-red-500 text-white rounded p-2">Book</button>
-                        `}
-                        ${this.bookings === false ? `<button onclick="app.deleteCircle('${base64Encode(JSON.stringify(circleData))}')" class="bg-red-600 hover:bg-red-500 text-white rounded p-2">Delete</button>` : ''}
-                    </div>`).bindTooltip(`Desk <b>${circleData.name}</b>`).openTooltip();
+                        .bindPopup(this.getHtmlCircleData(circleData))
+                        .bindTooltip(`Desk <b>${circleData.name}</b>`)
+                        .openTooltip();
                     this.addCircle(circleData);
                 }
             });

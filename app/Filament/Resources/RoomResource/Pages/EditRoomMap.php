@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\RoomResource\Pages;
 
 use App\Filament\Resources\RoomResource;
+use App\Models\Desk;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
 use Illuminate\Database\Eloquent\Model;
@@ -26,9 +27,14 @@ class EditRoomMap extends Page
 
 
     #[On('add-circle')]
-    public function addCircle()
+    public function addCircle($circles)
     {
-        $this->dispatch('refreshMap');
+        foreach ($circles as $circle) {
+            Desk::query()->find(data_get($circle, 'id'))->update([
+                'attributes->latlng' => data_get($circle, 'latlng')
+            ]);
+        }
+        //$this->dispatch('refreshMap');
     }
 
     #[On('delete-circle')]

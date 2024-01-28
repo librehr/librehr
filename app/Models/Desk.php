@@ -17,6 +17,13 @@ class Desk extends Model
 
     protected $guarded = [];
 
+    protected $appends = ['latlng'];
+
+    public function getLatlngAttribute()
+    {
+        return data_get($this, 'attributes.latlng');
+    }
+
     public function room()
     {
         return $this->belongsTo(Room::class);
