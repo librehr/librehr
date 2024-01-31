@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('desks', function (Blueprint $table) {
             $table->boolean('active')->default(true)->index();
-            $table->unique(['name', 'floor_id', 'business_id']);
+            $table->unique(['name', 'room_id', 'business_id']);
         });
     }
 

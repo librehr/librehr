@@ -77,6 +77,10 @@ class User extends Authenticatable implements FilamentUser
         'role',
     ];
 
+    protected $appends = [
+        'isAdmin'
+    ];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -97,6 +101,11 @@ class User extends Authenticatable implements FilamentUser
         'password' => 'hashed',
         'attributes' => 'array'
     ];
+
+    public function getIsAdminAttribute()
+    {
+        return data_get($this, 'role.name') == 'admin';
+    }
 
     public function contracts()
     {

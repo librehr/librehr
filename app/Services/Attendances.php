@@ -4,6 +4,7 @@ namespace App\Services;
 
 
 use App\Models\Attendance;
+use App\Models\AttendanceValidation;
 use App\Models\User;
 use Carbon\Carbon;
 use Filament\Forms\Get;
@@ -102,12 +103,17 @@ class Attendances extends BaseService
         $currentDate = Carbon::parse($day);
         $contractFilterIds = $singleContract ? [$contractIds] : $contractIds;
         return User::query()
+            ->where('id', Auth::user()->id)
             ->with(
                 [
                     'contracts' => function ($q) use ($contractFilterIds) {
                         $q->whereIn('id', $contractFilterIds);
                     },
                     'contracts.attendances' => function ($q) use ($currentDate) {
+                        $q->whereMonth('date', $currentDate->format('m'))
+                            ->whereYear('date', $currentDate->format('Y'));
+                    },
+                    'contracts.attendancesValidations' => function ($q) use ($currentDate) {
                         $q->whereMonth('date', $currentDate->format('m'))
                             ->whereYear('date', $currentDate->format('Y'));
                     },
@@ -138,13 +144,30 @@ class Attendances extends BaseService
     }
     public function buildSingleContractAttendances($currentDate, $data)
     {
+        if ($currentDate === null) {
+            $currentDate = now();
+        }
         $calendar = \App\Models\Calendar::query()->whereYear('date', $currentDate)->get();
 
         $buildedAttendances = [];
         $days = range(1, $currentDate->daysInMonth);
+        $contractInfo = [];
         try {
             foreach ($data as $user) {
                 $contract = $user->contracts->first();
+                if ($contract === null) {
+                    continue;
+                }
+                $validations = $contract->attendancesValidations->first();
+                $contractInfo[data_get($contract, 'id')] = [
+                    'user_id' => data_get($user, 'id'),
+                    'name' => data_get($user, 'name'),
+                    'team' => data_get($contract, 'team.name'),
+                    'contract_id' => data_get($contract, 'id'),
+                    'business_id' => data_get($contract, 'business_id'),
+                    'validations' => (!empty($validations) ? $validations->toArray() : null),
+                ];
+
                 $attendances = data_get($contract, 'attendances');
                 $periods = data_get($contract, 'planning.attributes.periods');
 
@@ -240,11 +263,11 @@ class Attendances extends BaseService
         }
 
 
-        $buildedAttendancesSummary = $this->buildSummary($buildedAttendances);
+        $buildedAttendancesSummary = $this->buildSummary($buildedAttendances, $contractInfo);
         return [$buildedAttendances, $buildedAttendancesSummary];
     }
 
-    protected function buildSummary($buildedAttendances = [])
+    protected function buildSummary($buildedAttendances = [], $contractInfo = [])
     {
         $summary = [];
         foreach ($buildedAttendances as $contract => $days) {
@@ -254,6 +277,7 @@ class Attendances extends BaseService
             $difference = ($totalSeconds-$totalSecondsEstimated);
 
             $summary[$contract] = [
+                'user' => $contractInfo[$contract] ?? [],
                 'total_seconds' => $totalSeconds,
                 'total_seconds_estimated' => $totalSecondsEstimated,
                 'total_seconds_extra' => max($difference, 0),
@@ -261,6 +285,8 @@ class Attendances extends BaseService
                 'total_time_estimated' => $this->secondsToHm($totalSecondsEstimated),
                 'total_time_extra' => $this->secondsToHm(max($difference, 0)),
             ];
+
+            $summary[$contract]['status'] = $this->statusTime($summary[$contract]);
         }
 
         return $summary;
@@ -300,5 +326,24 @@ class Attendances extends BaseService
         $to = Carbon::createFromFormat('H:i:s', $to);
 
         return $to->diffInSeconds($from);
+    }
+
+    public function statusTime($record)
+    {
+        $status = 3;
+
+        if (data_get($record, 'total_seconds_estimated') == data_get($record, 'total_seconds')) {
+            $status = 0;
+        }
+
+        if (data_get($record, 'total_seconds_extra') > 0) {
+            $status = 1;
+        }
+
+        if (data_get($record, 'total_seconds_estimated') < data_get($record, 'total_seconds')) {
+            $status = 2;
+        }
+
+        return $status;
     }
 }

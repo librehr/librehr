@@ -39,9 +39,11 @@ class ContractTypeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('attributes.vacations')
+                ->label('Vacations per year'),
                 Tables\Columns\TextColumn::make('contracts')
-                    ->label('Assigned')
-                ->formatStateUsing(fn ($record) => $record->count()),
+                    ->label('Contract Assigned')
+                ->formatStateUsing(fn ($record) => data_get($record, 'contracts')->count()),
             ])
             ->filters([
                 //

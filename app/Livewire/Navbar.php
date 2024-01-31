@@ -16,7 +16,8 @@ class Navbar extends Component
 
     public function mount()
     {
-        $this->businesses = Business::query()->where('active', true)->get();
+        $user = Auth::user();
+        $this->businesses = $user->isAdmin ? Business::query()->where('active', true)->get() : $this->getBusinesses($user->id);
         $this->getActiveBusiness();
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Filament\Pages\AttendancesControl;
 use App\Models\Scopes\BusinessScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -98,6 +99,11 @@ class Contract extends Model
         return $this->hasMany(Attendance::class);
     }
 
+    public function attendancesValidations()
+    {
+        return $this->hasMany(AttendanceValidation::class);
+    }
+
     public function place()
     {
         return $this->belongsTo(Place::class);
@@ -122,4 +128,5 @@ class Contract extends Model
     {
         return $this->belongsTo(Business::class);
     }
+
 }

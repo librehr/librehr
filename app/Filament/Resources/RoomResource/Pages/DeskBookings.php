@@ -22,7 +22,7 @@ class DeskBookings extends ManageRelatedRecords
 
     public static function getNavigationLabel(): string
     {
-        return 'Desks';
+        return 'Bookings';
     }
 
     public function form(Form $form): Form

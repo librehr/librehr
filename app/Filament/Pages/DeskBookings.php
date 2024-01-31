@@ -35,6 +35,7 @@ class DeskBookings extends Page
 
     protected static string $view = 'filament.pages.desk-bookings';
 
+    public $date;
     public $selected;
     public $record = [];
     public $places = [];
@@ -43,7 +44,7 @@ class DeskBookings extends Page
     public $floor = null;
     public $rooms = [];
     public $room = null;
-
+    public $todayBooked = 0;
     public static function canAccess(): bool
     {
         $user = Auth::user();
@@ -67,12 +68,17 @@ class DeskBookings extends Page
         $data = json_decode(base64_decode($seat), true);
         $bookingId = data_get($data, 'bookings.0.id');
 
-        DeskBooking::query()
+        $booking = DeskBooking::query()
             ->where('id', $bookingId)
             ->where('contract_id', Auth::user()->getActiveContractId())
-            ->delete();
-
-        $this->updatedRoom(data_get($this->record, 'id'));
+            ->with('desk')
+            ->first();
+        $originalBooking = $booking;
+        $booking->delete();
+        $this->redirectRoute('filament.app.pages.desk-bookings', [
+            'date' => $this->date,
+            'room' => data_get($originalBooking, 'desk.room_id')
+        ], navigate: false);
     }
     #[On('book-seat')]
     public function bookSeat($seat)
@@ -83,8 +89,8 @@ class DeskBookings extends Page
             'desk_id' => data_get($data, 'id'),
             'contract_id' => Auth::user()->getActiveContractId(),
             'business_id' => Auth::user()->getActiveBusinessId(),
-            'start' => Carbon::parse($this->selected)->startOfDay(),
-            'end' => Carbon::parse($this->selected)->endOfDay(),
+            'start' => Carbon::parse($this->date)->startOfDay(),
+            'end' => Carbon::parse($this->date)->endOfDay(),
         ]);
 
         // fee other desks
@@ -92,6 +98,7 @@ class DeskBookings extends Page
             $deleted = DeskBooking::query()
                 ->where('id', '!=', data_get($booking, 'id'))
                 ->where('contract_id', Auth::user()->getActiveContractId())
+                ->whereDate('start', $this->date)
                 ->delete();
         }
 
@@ -102,11 +109,9 @@ class DeskBookings extends Page
         );
 
         $this->redirectRoute('filament.app.pages.desk-bookings', [
-            'y' => Carbon::parse($this->selected)->format('Y'),
-            'm' => Carbon::parse($this->selected)->format('m'),
-            'd' => Carbon::parse($this->selected)->format('d'),
+            'date' => $this->date,
             'room' => data_get($booking, 'desk.room_id')
-        ], navigate: true);
+        ], navigate: false);
     }
     public function updatedRoom($value = null)
     {
@@ -122,24 +127,29 @@ class DeskBookings extends Page
 
     public static function getNavigationBadge(): ?string
     {
-        return Requestable::query()->where('user_id', Auth::id())->count();
+        $count = app(self::class)->getBookedToday()->count();
+        return $count > 0  ? $count : null;
     }
-
 
     public function mount()
     {
         $contract = Auth::user()->getActiveContract();
-        $this->getSelectedDate();
+        $this->todayBooked = app(self::class)->getBookedToday()->first();
         $this->places = $contract->place;
         $this->floors = $this->places->floors;
-        $this->getSelectedRoom();
 
+        if (request()->get('date')) {
+            $this->date = Carbon::parse(\request()->get('date'))->format('Y-m-d');
+        } else {
+            $this->date = now()->format('Y-m-d');
+        }
+
+        $this->getSelectedRoom();
     }
 
-
-    protected function getDate()
+    public function updatedDate()
     {
-        return now();
+
     }
 
     protected function getSelectedDate()
@@ -182,12 +192,29 @@ class DeskBookings extends Page
     public function getBookings($value)
     {
         $this->record = Room::query()->with(['desks', 'desks.bookings' => function ($query) {
-            $query->whereDate('start', '<', $this->selected)
-                ->with('contract.user:id,name')
-                ->whereDate('end', '>', $this->selected)
-                ->limit(1);
+            $query->whereDate('start', $this->date)
+                ->with('contract.user:id,name');
         }])->find($value);
 
         $this->room = $value;
+    }
+
+    public function resetAll()
+    {
+        $this->redirectRoute('filament.app.pages.desk-bookings', [
+            'date' => Carbon::parse($this->date)->format('Y-m-d'),
+        ]);
+    }
+
+    public function getBookedToday()
+    {
+        return DeskBooking::query()
+            ->whereDate('start', now())
+            ->where('contract_id', Auth::user()->getActiveContractId());
+    }
+
+    public function goToDeskBookings($room = null)
+    {
+        $this->redirectRoute('filament.app.pages.desk-bookings', $room !== null ? ['room' => $room] : null);
     }
 }

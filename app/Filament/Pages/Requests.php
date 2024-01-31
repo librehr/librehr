@@ -8,6 +8,7 @@ use App\Models\Requestable;
 use App\Services\Calendar;
 use Carbon\Carbon;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\ToggleButtons;
@@ -27,6 +28,8 @@ class Requests extends Page
 
     public $requests = [];
 
+    public $user;
+
     public static function canAccess(): bool
     {
         $user = Auth::user();
@@ -40,7 +43,6 @@ class Requests extends Page
 
     protected function getActions(): array
     {
-        $user = Auth::user();
         return [
             Action::make('time-off-action')
                 ->icon('heroicon-m-arrow-right')
@@ -51,6 +53,7 @@ class Requests extends Page
                 ->slideOver()
                 ->requiresConfirmation()
                 ->form([
+                    Hidden::make('user')->default(data_get( $this->user, 'id')),
                     ToggleButtons::make('validated')
                         ->helperText('Once you have approved the request, you will not be able to change it again.')
                         ->label('Do you want to approve the vacation requested by the employee?')
@@ -58,9 +61,9 @@ class Requests extends Page
                         ->required()
                         ->boolean()
                 ])
-                ->action(function (array $arguments, $data) use($user) {
+                ->action(function (array $arguments, $data) {
                     $record = Absence::query()->find(data_get($arguments, '0.id'));
-                    $record->status_by = data_get($user, 'id');
+                    $record->status_by = data_get($data, 'user');
                     $record->status_at = now();
 
                     $message = 'Declined';
@@ -85,12 +88,14 @@ class Requests extends Page
 
     public static function getNavigationBadge(): ?string
     {
-        return Requestable::query()->where('user_id', Auth::id())->count();
+        $count = Requestable::query()->where('user_id', Auth::id())->count();
+        return $count > 0 ? $count : null;
     }
 
 
     public function mount()
     {
+        $this->user = Auth::user();
         $this->reloadRequests();
     }
 

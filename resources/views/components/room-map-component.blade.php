@@ -4,7 +4,7 @@
     'selected'
 ])
 @if (data_get($record, 'attributes.image', null) === null)
-No image map uploaded.
+    No image map uploaded.
 @endif
 @if ($record && data_get($record, 'attributes.image', null) !== null)
 <div class="flex flex-col items-center">
@@ -33,13 +33,20 @@ No image map uploaded.
         $imagePath = $image->path(data_get($record, 'attributes.image'));
         list($width, $height) = getimagesize($imagePath);
     @endphp
-    @script
-        <script>
-        document.addEventListener('livewire:initialized', () => {
-            document.getElementById("saveChanges").addEventListener("click", function () {
-                window.Livewire.dispatch('add-circle', { circles: app.circles });
-            });
-        })
+
+@assets
+    <script>
+        // Función para codificar en Base64
+        function base64Encode(str) {
+            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode(parseInt(p1, 16))));
+        }
+
+        // Función para decodificar Base64
+        function base64Decode(str) {
+            return decodeURIComponent(Array.prototype.map.call(atob(str), c => {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+        }
 
         let app = {
             bookings: @json($bookings),
@@ -91,7 +98,7 @@ No image map uploaded.
                 });
             },
             getHtmlCircleData(circleData) {
-                let bookingHtml = circleData.bookings.length > 0 ? `
+                let bookingHtml = circleData.bookings !== undefined && circleData.bookings.length > 0 ? `
                         <div>Desk taken by <span class="font-semibold">${(circleData.bookings[0].contract.user.name)}</span></div>
  <hr class="my-2">
                         <div class="flex flex-row gap-2">
@@ -102,7 +109,7 @@ No image map uploaded.
 <span class="text-red-600">Not available</span>
                         </div>
 
-                        ${circleData.bookings.length > 0 && circleData.bookings[0].contract.user_id === {{ $myUserId }} ? `<button class="mt-2 bg-red-600 hover:bg-red-500 text-white rounded p-2" onclick="window.Livewire.dispatch('free-seat', { seat: '${base64Encode(JSON.stringify(circleData))}' })">Free desk!</button>` : ''}
+                        ${circleData.bookings !== undefined && circleData.bookings.length > 0 && circleData.bookings[0].contract.user_id === {{ $myUserId }} ? `<button class="mt-2 bg-red-600 hover:bg-red-500 text-white rounded p-2" onclick="window.Livewire.dispatch('free-seat', { seat: '${base64Encode(JSON.stringify(circleData))}' })">Free desk!</button>` : ''}
                     ` : `
                         <hr class="my-2">
                         <div class="flex flex-row gap-2">
@@ -135,8 +142,8 @@ No image map uploaded.
                 this.mapper.fitBounds(bounds);
 
                 this.predefinedCircles.forEach(circleData => {
-                    const fillColor = circleData.bookings.length > 0 ? '#FF0000' : '#088F8F';
-                    const color = circleData.bookings.length > 0 ? '#FF0000' : '#0FFF50';
+                    const fillColor = circleData.bookings !== undefined && circleData.bookings.length > 0 ? '#FF0000' : '#088F8F';
+                    const color = circleData.bookings !== undefined && circleData.bookings.length > 0 ? '#FF0000' : '#0FFF50';
                     const circleMarker = L.circleMarker(circleData.latlng, {
                         color: color,
                         fillColor: fillColor,
@@ -173,6 +180,16 @@ No image map uploaded.
             }
         };
 
+    </script>
+@endassets
+    @script
+        <script>
+        document.addEventListener('livewire:initialized', () => {
+            document.getElementById("saveChanges").addEventListener("click", function () {
+                window.Livewire.dispatch('add-circle', { circles: app.circles });
+            });
+        })
+
         setTimeout(function () {
             if (app.mapper) {
                 app.mapper.remove()
@@ -180,7 +197,9 @@ No image map uploaded.
 
             app.mapper = L.map('map', {
                 crs: L.CRS.Simple,
-                minZoom: -5
+                minZoom: -5,
+                scrollWheelZoom: false
+
             });
 
             app.initMap();
@@ -193,25 +212,14 @@ No image map uploaded.
                 }
                 app.mapper = L.map('map', {
                     crs: L.CRS.Simple,
-                    minZoom: -5
+                    minZoom: -5,
+                    scrollWheelZoom: false
                 });
                 // problema aqui
                 app.predefinedCircles = @js($record->desks->whereNotNull('attributes.latlng'));
                 app.initMap();
             },100)
         });
-
-        // Función para codificar en Base64
-        function base64Encode(str) {
-            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode(parseInt(p1, 16))));
-        }
-
-        // Función para decodificar Base64
-        function base64Decode(str) {
-            return decodeURIComponent(Array.prototype.map.call(atob(str), c => {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-        }
     </script>
     @endscript
 @endif

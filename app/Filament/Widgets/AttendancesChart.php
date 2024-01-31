@@ -57,7 +57,7 @@ class AttendancesChart extends ChartWidget
 
         $data = collect(data_get($this->days, $contractId))
             ->map(function ($day) {
-            return format_number(data_get($day, 'total_seconds')/60/60);
+            return round(data_get($day, 'total_seconds')/60/60, 2);
         })->toArray();
 
         $totalDays = range(1, $selected->daysInMonth);

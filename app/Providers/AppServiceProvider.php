@@ -54,8 +54,10 @@ class AppServiceProvider extends ServiceProvider
 
 
         $this->registerCalendar(
-            \App\Filament\Pages\DeskBookings::class,
+            \App\Filament\Pages\AttendancesControl::class,
+            true
         );
+
 
         FilamentAsset::register([
             Js::make('alpinejs-tooltip', __DIR__ . '/../../resources/js/alpinejs-tooltip.js'),
@@ -85,41 +87,44 @@ class AppServiceProvider extends ServiceProvider
         );
     }
 
-    private function registerCalendar($myProfileNavigationClass)
+    private function registerCalendar($myProfileNavigationClass, $month = false)
     {
-        $selectedMonth = request('m');
-        $selectedYear = request('y');
-        $selectedDay = request('d');
+        $date = request('date');
 
         $selected = Carbon::today();
         $next = null;
-        if ($selectedYear !== null && $selectedMonth !== null && $selectedDay) {
-            $selected = Carbon::create(
-                $selectedYear,
-                $selectedMonth,
-                $selectedDay
+        if ($date !== null) {
+            $selected = Carbon::parse(
+                $date
             );
-            $previous = Carbon::parse($selected)->subDay();
-            $next = Carbon::parse($selected)->addDay();
+            if ($month) {
+                $previous = Carbon::parse($selected)->subMonth()->startOfMonth();
+                $next = Carbon::parse($selected)->addMonth()->startOfMonth();
+            } else {
+                $previous = Carbon::parse($selected)->subDay();
+                $next = Carbon::parse($selected)->addDay();
+            }
         } else {
-            $previous = Carbon::today()->subDay();
-            $next = Carbon::parse($selected)->addDay();
+            if ($month) {
+                $previous = Carbon::parse($selected)->subMonth()->startOfMonth();
+                $next = Carbon::parse($selected)->addMonth()->startOfMonth();
+            } else {
+                $previous = Carbon::today()->subDay();
+                $next = Carbon::parse($selected)->addDay();
+            }
         }
 
         $route = $myProfileNavigationClass::getRouteName('app');
         FilamentView::registerRenderHook(
             'panels::page.start',
             fn (): View => view('filament.pages.header.calendar', [
-                'selected' => $selected->format('D d, F, Y'),
-                'previous' =>  ($previous !== null && $previous < now()->startOfDay()  ? [
-                    'y' => $previous->format('Y'),
-                    'm' => $previous->format('m'),
-                    'd' => $previous->format('d'),
+                'month' => $month,
+                'selected' => $month ? $selected->format('F, Y') : $selected->format('D d, F, Y'),
+                'previous' =>  ($previous !== null && $previous < now()->startOfMonth()->startOfDay()  ? [
+                    'date' => $previous->format('Y-m-d'),
                 ] : null),
-                'next' => ($next !== null && $next < now()->addDays(30)  ? [
-                    'y' => $next->format('Y'),
-                    'm' => $next->format('m'),
-                    'd' => $next->format('d'),
+                'next' => ($next !== null && $next < now()  ? [
+                    'date' => $next->format('Y-m-d'),
                 ] : null),
                 'route' => $route
             ]),
