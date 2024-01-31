@@ -40,6 +40,7 @@ class Requests extends Page
 
     protected function getActions(): array
     {
+        $user = Auth::user();
         return [
             Action::make('time-off-action')
                 ->icon('heroicon-m-arrow-right')
@@ -50,17 +51,6 @@ class Requests extends Page
                 ->slideOver()
                 ->requiresConfirmation()
                 ->form([
-                    Placeholder::make('')->content(function () {
-                        $arguments = $this->mountedActionsArguments[0][0] ?? [];
-                        $overlaps = app(Calendar::class)
-                            ->getOverlaps(
-                                data_get($arguments, 'contract_id'),
-                                Carbon::parse(data_get($arguments, 'requestable.start')),
-                                Carbon::parse(data_get($arguments, 'requestable.end')),
-                            );
-
-                        return json_encode($overlaps);
-                    }),
                     ToggleButtons::make('validated')
                         ->helperText('Once you have approved the request, you will not be able to change it again.')
                         ->label('Do you want to approve the vacation requested by the employee?')
@@ -68,9 +58,9 @@ class Requests extends Page
                         ->required()
                         ->boolean()
                 ])
-                ->action(function (array $arguments, $data) {
-                    $record = Absence::query()->find(data_get($arguments, 'id'));
-                    $record->status_by = \Auth::id();
+                ->action(function (array $arguments, $data) use($user) {
+                    $record = Absence::query()->find(data_get($arguments, '0.id'));
+                    $record->status_by = data_get($user, 'id');
                     $record->status_at = now();
 
                     $message = 'Declined';

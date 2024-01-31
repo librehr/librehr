@@ -27,7 +27,7 @@ class Attendances extends Page
     protected static ?string $navigationIcon = 'heroicon-o-clock';
 
     protected static string $view = 'filament.pages.attendances';
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 1;
 
     public $contractId;
     public $year;

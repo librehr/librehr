@@ -4,10 +4,14 @@ namespace App\Filament\Pages;
 
 use App\Filament\Resources\PlaceResource\Pages\Floors;
 use App\Models\Absence;
+use App\Models\DeskBooking;
+use App\Models\Floor;
 use App\Models\Place;
 use App\Models\Request;
 use App\Models\Requestable;
 use App\Models\Room;
+use App\Models\User;
+use App\Notifications\DeskBooked;
 use App\Services\Calendar;
 use Carbon\Carbon;
 use Filament\Actions\Action;
@@ -17,20 +21,24 @@ use Filament\Forms\Components\ToggleButtons;
 use Filament\Pages\Page;
 use Filament\Support\Enums\IconPosition;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Filament\Notifications\Notification;
+use Livewire\Attributes\On;
 use function PHPUnit\Framework\isJson;
 
 class DeskBookings extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-computer-desktop';
+    protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
     protected $listeners = ['floorsUpdated' => 'floorsUpdated'];
 
     protected static string $view = 'filament.pages.desk-bookings';
 
+    public $selected;
     public $record = [];
     public $places = [];
+    public $place = null;
     public $floors = [];
     public $floor = null;
     public $rooms = [];
@@ -53,65 +61,63 @@ class DeskBookings extends Page
         $this->rooms = Room::query()->with('desks')->where('floor_id', $value)->get();
     }
 
-    public function updatedRoom($value)
+    #[On('free-seat')]
+    public function freeSeat($seat)
     {
-        $this->record = Room::query()->with('desks')->find($value);
-        $this->dispatch('render-map');
+        $data = json_decode(base64_decode($seat), true);
+        $bookingId = data_get($data, 'bookings.0.id');
+
+        DeskBooking::query()
+            ->where('id', $bookingId)
+            ->where('contract_id', Auth::user()->getActiveContractId())
+            ->delete();
+
+        $this->updatedRoom(data_get($this->record, 'id'));
     }
-
-    protected function getActions(): array
+    #[On('book-seat')]
+    public function bookSeat($seat)
     {
-        return [
-            Action::make('time-off-action')
-                ->icon('heroicon-m-arrow-right')
-                ->iconPosition(IconPosition::After)
-                ->iconButton()
-                ->label('Manage Time Off')
-                ->color('primary')
-                ->slideOver()
-                ->requiresConfirmation()
-                ->form([
-                    Placeholder::make('')->content(function () {
-                        $arguments = $this->mountedActionsArguments[0][0] ?? [];
-                        $overlaps = app(Calendar::class)
-                            ->getOverlaps(
-                                data_get($arguments, 'contract_id'),
-                                Carbon::parse(data_get($arguments, 'requestable.start')),
-                                Carbon::parse(data_get($arguments, 'requestable.end')),
-                            );
+        $data = json_decode(base64_decode($seat), true);
 
-                        return json_encode($overlaps);
-                    }),
-                    ToggleButtons::make('validated')
-                        ->helperText('Once you have approved the request, you will not be able to change it again.')
-                        ->label('Do you want to approve the vacation requested by the employee?')
-                        ->inline()
-                        ->required()
-                        ->boolean()
-                ])
-                ->action(function (array $arguments, $data) {
-                    $record = Absence::query()->find(data_get($arguments, 'id'));
-                    $record->status_by = \Auth::id();
-                    $record->status_at = now();
+        $booking = DeskBooking::query()->create([
+            'desk_id' => data_get($data, 'id'),
+            'contract_id' => Auth::user()->getActiveContractId(),
+            'business_id' => Auth::user()->getActiveBusinessId(),
+            'start' => Carbon::parse($this->selected)->startOfDay(),
+            'end' => Carbon::parse($this->selected)->endOfDay(),
+        ]);
 
-                    $message = 'Declined';
-                    $record->status = 'denied';
-                    if (data_get($data, 'validated', 0) == 1) {
-                        $record->status = 'allowed';
-                        $message = 'Approved';
-                    }
-                    $record->save();
+        // fee other desks
+        if ($booking) {
+            $deleted = DeskBooking::query()
+                ->where('id', '!=', data_get($booking, 'id'))
+                ->where('contract_id', Auth::user()->getActiveContractId())
+                ->delete();
+        }
 
-                    $record->requests()->detach();
+        Auth::user()->notify(
+            Notification::make()
+                ->title('Seat #' . data_get($data, 'name') . ' reserved for ' . $this->selected)
+                ->toDatabase()
+        );
 
-                    Notification::make('ok')
-                        ->title($message . ' successfully.')
-                        ->success()
-                        ->send();
-                })->after(function () {
-                    $this->reloadRequests();
-                }),
-        ];
+        $this->redirectRoute('filament.app.pages.desk-bookings', [
+            'y' => Carbon::parse($this->selected)->format('Y'),
+            'm' => Carbon::parse($this->selected)->format('m'),
+            'd' => Carbon::parse($this->selected)->format('d'),
+            'room' => data_get($booking, 'desk.room_id')
+        ], navigate: true);
+    }
+    public function updatedRoom($value = null)
+    {
+        $this->getSelectedDate();
+        if ($value === null) {
+            $value = data_get($this->record, 'id');
+        }
+
+        $this->getBookings($value);
+
+        $this->dispatch('render-map', ['record' => $this->record]);
     }
 
     public static function getNavigationBadge(): ?string
@@ -123,13 +129,65 @@ class DeskBookings extends Page
     public function mount()
     {
         $contract = Auth::user()->getActiveContract();
+        $this->getSelectedDate();
         $this->places = $contract->place;
         $this->floors = $this->places->floors;
-        $this->loadBookings();
+        $this->getSelectedRoom();
+
     }
 
-    protected function loadBookings()
+
+    protected function getDate()
     {
-        $this->record = [];
+        return now();
+    }
+
+    protected function getSelectedDate()
+    {
+        $request =  \request()->all();
+        $this->selected = now();
+        if (
+            in_array('y', array_keys($request))
+            && in_array('d', array_keys($request))
+            && in_array('m', array_keys($request))
+        ) {
+            $this->selected = Carbon::create($request['y'],$request['m'], $request['d']);
+        }
+    }
+
+    protected function getSelectedRoom()
+    {
+        $roomId = \request()->get('room');
+
+        $room = Room::query()->with(['floor:id,place_id'])->find($roomId);
+
+        if (!$room) {
+            return;
+        }
+
+        $placeId = data_get($room, 'floor.place_id');
+        $floorId = data_get($room, 'floor.id');
+        $place = Place::query()->with(['floors', 'floors.rooms'])->find($placeId);
+
+        $this->place = $place;
+        $this->floors = data_get($place, 'floors');
+        $floor = collect($this->floors)->where('id', $floorId)->first();
+        $this->floor = data_get($floor, 'id');
+
+        $this->rooms = collect(data_get($floor, 'rooms', []))->where('floor_id', $floorId)->all();
+
+        $this->getBookings(data_get($room, 'id'));
+    }
+
+    public function getBookings($value)
+    {
+        $this->record = Room::query()->with(['desks', 'desks.bookings' => function ($query) {
+            $query->whereDate('start', '<', $this->selected)
+                ->with('contract.user:id,name')
+                ->whereDate('end', '>', $this->selected)
+                ->limit(1);
+        }])->find($value);
+
+        $this->room = $value;
     }
 }

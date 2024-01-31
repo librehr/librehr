@@ -12,8 +12,8 @@ class DeskBooking extends Model
 
     protected $casts = [
         'attributes' => 'array',
-        'start' => 'DateTime',
-        'end' => 'DateTime',
+        'start' => 'datetime',
+        'end' => 'datetime',
     ];
 
     protected $guarded = [];
@@ -40,4 +40,5 @@ class DeskBooking extends Model
     {
         return $this->belongsTo(Desk::class);
     }
+
 }

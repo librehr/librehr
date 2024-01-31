@@ -3,6 +3,9 @@
 namespace App\Livewire;
 
 use App\Models\Business;
+use App\Models\Contract;
+use App\Models\Scopes\BusinessScope;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -13,8 +16,7 @@ class Navbar extends Component
 
     public function mount()
     {
-        $this->businesses = Business::query()
-            ->where('active', true)->get();
+        $this->businesses = Business::query()->where('active', true)->get();
         $this->getActiveBusiness();
     }
 
@@ -76,11 +78,21 @@ class Navbar extends Component
 
     private function getActiveBusiness($uuid = null)
     {
-        if ($uuid === null) {
-            $uuid = data_get(Auth::user(), 'attributes.default_business');
-        }
-        $this->activeBusiness = Business::query()
-            ->where('active', true)
-            ->where('uuid', $uuid)->first();
+        $userId = Auth::id();
+        $business = $this->getBusinesses($userId);
+
+        $this->activeBusiness = $business->where('uuid', $uuid)
+            ->first();
+    }
+
+    private function getBusinesses($userId)
+    {
+        return Contract::withoutGlobalScope(BusinessScope::class)
+            ->with('business')
+            ->where('user_id', $userId)
+            ->get()
+            ->pluck('business')
+            ->unique()
+            ->where('active', true);
     }
 }

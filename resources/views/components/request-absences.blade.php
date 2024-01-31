@@ -7,15 +7,14 @@
             <div class="flex flex-col gap-1">
                 <div class="text-xs mb-2"><span class="font-semibold text-gray-700">Absence Request</span> on  {{ data_get($request, 'requestable.created_at')->format('d/m/Y H:i') }}</div>
                 <span>
-                    <b>{{ ucwords(data_get($request, 'contract.user.name')) }} </b>
+                    New vacation request from <b>{{ ucwords(data_get($request, 'contract.user.name')) }} </b>
                     @if(!empty(data_get($request, 'contract.team.name')))
-                        (from {{ data_get($request, 'contract.team.name') }})
+                        ({{ data_get($request, 'contract.team.name') }})
                     @endif
                     <span>
                         request {{ \Carbon\Carbon::parse(data_get($request, 'requestable.end'))->diffInDays(data_get($request, 'requestable.start'))+1 }} days
                     </span>
-                </span>
-                <span>{{ data_get($request, 'requestable.start')->format('d/m/Y') }} hasta {{ data_get($request, 'requestable.end')->format('d/m/Y') }}</span>
+                    <span class="font-semibold">{{ data_get($request, 'requestable.start')->format('d/m/Y') }}</span> to <span class="font-semibold">{{ data_get($request, 'requestable.end')->format('d/m/Y') }}</span></span>
             </div>
             @if(!empty(data_get($request, 'requestable.comments')))
             <div class="text-gray-700 text-sm flex flex-col mt-2">

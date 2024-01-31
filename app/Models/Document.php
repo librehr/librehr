@@ -59,6 +59,11 @@ class Document extends Model
         return $this->morphedByMany(User::class, 'documentable');
     }
 
+    public function tools()
+    {
+        return $this->morphedByMany(User::class, 'documentable');
+    }
+
     public function relatedType()
     {
         return $this->hasOne(Documentable::class);

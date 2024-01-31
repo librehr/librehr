@@ -67,17 +67,16 @@
     <div class="grid grid-cols-2 gap-8">
         <div class="flex flex-col gap-4">
 
-            <div class="bg-warning-200 rounded-lg p-2 py-5 px-2 mb-4 flex flex-col gap-1 items-center justify-center text-lg">
-                <span>
+            <div class="bg-warning-200 rounded-lg p-2 py-5 px-4 mb-4 text-lg">
+
                       In total you have generated <span class="font-semibold">{{ data_get($summary, 'total_days') }} days</span>
                     this year
-                </span>
-                <span>
+
                     scheduled
                     <span class="font-semibold">
                     {{ data_get($summary, 'total_days_selected') }} days
-                </span>
-                </span>
+                    </span>
+
                 @if(data_get($summary, 'total_days_pending') > 0)
                     <span>
                         and still have <span class="font-semibold">{{ data_get($summary, 'total_days_pending') }} days</span> available.

@@ -1,6 +1,6 @@
 <x-filament-panels::page>
     <div class="flex flex-row gap-4">
-        <x-filament::input.wrapper>
+        <x-filament::input.wrapper class="w-full">
             <label for="place" class="mx-2 text-xs text-gray-500">Place</label>
             <x-filament::input.select wire:model="places">
 
@@ -8,7 +8,7 @@
 
             </x-filament::input.select>
         </x-filament::input.wrapper>
-        <x-filament::input.wrapper>
+        <x-filament::input.wrapper class="w-full">
             <label for="place" class="mx-2 text-xs text-gray-500">Floor</label>
             <x-filament::input.select wire:model.change="floor">
                 <option></option>
@@ -18,7 +18,7 @@
             </x-filament::input.select>
         </x-filament::input.wrapper>
 
-        <x-filament::input.wrapper>
+        <x-filament::input.wrapper class="w-full">
             <label for="place" class="mx-2 text-xs text-gray-500">Room</label>
             <x-filament::input.select wire:model.change="room">
                 <option></option>
@@ -31,7 +31,9 @@
     </div>
     @if($record)
         <x-filament::section>
-            <x-room-map-component :record="$record" :bookings="true" />
+            <div class="flex items-center justify-center" style=" background-image: url('{{ asset('images/grid.webp') }}');">
+                <x-room-map-component :record="$record" :bookings="true" :selected="$selected ?? now()" />
+            </div>
         </x-filament::section>
     @endif
 </x-filament-panels::page>

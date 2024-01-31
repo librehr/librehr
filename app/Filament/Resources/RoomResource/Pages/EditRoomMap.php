@@ -18,7 +18,6 @@ class EditRoomMap extends Page
     public function mount(int | string $record): void
     {
         $this->record = $this->resolveRecord($record);
-        $this->dispatch('refreshMap');
     }
 
     protected static string $resource = RoomResource::class;
@@ -34,14 +33,14 @@ class EditRoomMap extends Page
                 'attributes->latlng' => data_get($circle, 'latlng')
             ]);
         }
-        //$this->dispatch('refreshMap');
+
+        $this->record = $this->record->refresh()->load('desks');
+        $this->dispatch('render-map');
     }
 
     #[On('delete-circle')]
     public function deleteCircle()
     {
         \Log::error('ee');
-        $this->dispatch('refreshMap');
-
     }
 }

@@ -21,6 +21,11 @@ class Floor extends Model
         return $this->belongsTo(Place::class);
     }
 
+    public function rooms()
+    {
+        return $this->hasMany(Room::class);
+    }
+
     /**
      * The "booted" method of the model.
      */

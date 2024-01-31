@@ -41,4 +41,9 @@ class Desk extends Model
     {
         return $this->belongsTo(Business::class);
     }
+
+    public function bookings()
+    {
+        return $this->hasMany(DeskBooking::class);
+    }
 }

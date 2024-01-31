@@ -33,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
             [
                 \App\Filament\Pages\MyProfile\Profile::class,
                 \App\Filament\Pages\MyProfile\ProfileContracts::class,
+                \App\Filament\Pages\MyProfile\ProfileTools::class,
                 \App\Filament\Pages\MyProfile\Documents::class,
             ],
             view: 'filament.pages.header.my-profile-navigation',
@@ -51,10 +52,10 @@ class AppServiceProvider extends ServiceProvider
             hookName: 'panels::page.start'
         );
 
-        /**
+
         $this->registerCalendar(
-            \App\Filament\Pages\Attendances::class,
-        );**/
+            \App\Filament\Pages\DeskBookings::class,
+        );
 
         FilamentAsset::register([
             Js::make('alpinejs-tooltip', __DIR__ . '/../../resources/js/alpinejs-tooltip.js'),
@@ -88,32 +89,37 @@ class AppServiceProvider extends ServiceProvider
     {
         $selectedMonth = request('m');
         $selectedYear = request('y');
+        $selectedDay = request('d');
 
         $selected = Carbon::today();
         $next = null;
-        if ($selectedYear !== null && $selectedMonth !== null) {
+        if ($selectedYear !== null && $selectedMonth !== null && $selectedDay) {
             $selected = Carbon::create(
                 $selectedYear,
-                $selectedMonth
+                $selectedMonth,
+                $selectedDay
             );
-            $previous = Carbon::parse($selected)->subMonth();
-            $next = Carbon::parse($selected)->addMonth();
+            $previous = Carbon::parse($selected)->subDay();
+            $next = Carbon::parse($selected)->addDay();
         } else {
-            $previous = Carbon::today()->subMonth();
+            $previous = Carbon::today()->subDay();
+            $next = Carbon::parse($selected)->addDay();
         }
 
         $route = $myProfileNavigationClass::getRouteName('app');
         FilamentView::registerRenderHook(
             'panels::page.start',
             fn (): View => view('filament.pages.header.calendar', [
-                'selected' => $selected->format('F, Y'),
-                'previous' => [
+                'selected' => $selected->format('D d, F, Y'),
+                'previous' =>  ($previous !== null && $previous < now()->startOfDay()  ? [
                     'y' => $previous->format('Y'),
                     'm' => $previous->format('m'),
-                ],
-                'next' => ($next !== null && $next < now()  ? [
+                    'd' => $previous->format('d'),
+                ] : null),
+                'next' => ($next !== null && $next < now()->addDays(30)  ? [
                     'y' => $next->format('Y'),
                     'm' => $next->format('m'),
+                    'd' => $next->format('d'),
                 ] : null),
                 'route' => $route
             ]),

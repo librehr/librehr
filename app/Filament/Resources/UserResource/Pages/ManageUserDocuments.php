@@ -6,6 +6,9 @@ use App\Filament\Resources\ContractResource;
 use App\Filament\Resources\UserResource;
 use App\Models\Document;
 use App\Models\User;
+use App\Services\Documents;
+use Filament\Actions\Action;
+use Filament\Forms\Components\TextInput;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
@@ -28,6 +31,16 @@ class ManageUserDocuments extends Page
         return 'Documents';
     }
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('upload')
+            ->form([
+
+            ])
+        ];
+    }
+
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
 
@@ -37,24 +50,11 @@ class ManageUserDocuments extends Page
 
         static::authorizeResourceAccess();
 
-        $this->documents = Document::query()
-            ->where('user_id', $this->record->id)
-            ->with([
-                'relatedType',
-            ])
-            ->get()
-            ->mapToGroups(function ($record) {
-                $modelName = $record->relatedType->documentable_type;
-                $modelName = class_basename($modelName);
-                $modelName = app('App\Filament\Resources\\'.$modelName . 'Resource')->getNavigationLabel();
-                return [$modelName => $record];
-            });
+        $this->documents = app(Documents::class)->getDocuments($this->record->id);
     }
 
     public function showDocument($id)
     {
         $this->dispatch('open-modal', id: $id);
-
-
     }
 }

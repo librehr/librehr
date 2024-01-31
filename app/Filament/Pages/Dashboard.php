@@ -2,7 +2,10 @@
 
 namespace App\Filament\Pages;
 
+use App\Models\DeskBooking;
 use App\Models\Post;
+use App\Models\Requestable;
+use App\Models\Room;
 use Filament\Facades\Filament;
 use Filament\Pages\Page;
 use Filament\Panel;
@@ -10,6 +13,7 @@ use Filament\Support\Facades\FilamentIcon;
 use Filament\Widgets\Widget;
 use Filament\Widgets\WidgetConfiguration;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 class Dashboard extends Page
@@ -25,9 +29,16 @@ class Dashboard extends Page
 
     public $contractId;
     public $businessId;
+    public $todayBooked = false;
 
     public $currentAttendance;
     public $posts = [];
+
+    public $notifications;
+    public $requests;
+    public $notificationsCount = 0;
+    public $requestsCount = 0;
+
 
     public function mount()
     {
@@ -42,6 +53,10 @@ class Dashboard extends Page
 
         $this->currentAttendance = app(\App\Services\Attendances::class)
             ->getCurrentAttendance($this->contractId);
+
+        $this->getDeskBookings();
+        $this->getNotifications();
+        $this->getRequests();
     }
 
     public static function getNavigationLabel(): string
@@ -104,5 +119,33 @@ class Dashboard extends Page
     {
         $this->currentAttendance = app(\App\Services\Attendances::class)
             ->startResumeAttendanceNow($this->contractId);
+    }
+
+    public function goToDeskBookings($room = null)
+    {
+        $this->redirectRoute('filament.app.pages.desk-bookings', $room !== null ? ['room' => $room] : null);
+    }
+
+    public function getDeskBookings()
+    {
+        $this->todayBooked = DeskBooking::query()
+            ->where('contract_id', $this->contractId)
+            ->with(['desk', 'desk.room', 'desk.room.floor', 'desk.room.floor.place'])
+            ->first();
+    }
+
+    public function getNotifications()
+    {
+        $this->notificationsCount = Auth::user()->notifications->whereNull('read_at')->count();
+    }
+
+    public function getRequests()
+    {
+        $this->requestsCount = Requestable::query()->where('user_id', data_get(Auth::user(), 'id'))->count();
+    }
+
+    public function goToRequests()
+    {
+        $this->redirectRoute('filament.app.pages.requests');
     }
 }
