@@ -13,6 +13,10 @@
                 @if (data_get($request, 'request.name') == 'absences')
                     <x-request-absences :request="$request"/>
                 @endif
+
+                @if (data_get($request, 'request.name') == 'attendance-validations')
+                        <x-request-attendance-validations :request="$request"/>
+                    @endif
             @endforeach
         </div>
     @endempty

@@ -52,11 +52,12 @@ class AppServiceProvider extends ServiceProvider
             hookName: 'panels::page.start'
         );
 
-
+/*
         $this->registerCalendar(
             \App\Filament\Pages\AttendancesControl::class,
             true
         );
+*/
 
 
         FilamentAsset::register([

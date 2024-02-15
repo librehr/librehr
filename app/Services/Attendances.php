@@ -169,34 +169,13 @@ class Attendances extends BaseService
                 ];
 
                 $attendances = data_get($contract, 'attendances');
-                $periods = data_get($contract, 'planning.attributes.periods');
 
-                $planningWorkDays = [];
-                foreach ($periods as $period) {
-                    [$periodDateFrom, $periodDateUntil] = str(data_get($period, 'date'))->explode(' - ');
-                    [$periodDateFromDay, $periodDateFromMonth] = str($periodDateFrom)->explode('-');
-                    [$periodDateUntilDay, $periodDateUntilMonth] = str($periodDateUntil)->explode('-');
+                $planningWorkDays = $this->getPeriods(
+                    data_get($contract, 'planning.attributes.periods'),
+                    $currentDate
+                );
 
-                    $periodDateStart = Carbon::create($currentDate->format('Y'), $periodDateFromMonth, $periodDateFromDay);
-                    $periodDateEnd = Carbon::create($currentDate->format('Y'), $periodDateUntilMonth, $periodDateUntilDay);
-
-                    if ($currentDate->between($periodDateStart, $periodDateEnd)) {
-                        $planningWorkDays = data_get($period, 'work_days');
-                    }
-                }
-
-                $estimatedWorkTime = collect($planningWorkDays)->map(function ($day) {
-                    $times = collect(data_get($day, 'times'))->map(function ($time) {
-                        $time['seconds'] = $this->calculateTiming(data_get($time, 'from'), data_get($time, 'to'));
-                        return $time;
-                    });
-
-                    $day['times'] = $times->toArray();
-                    $day['seconds'] = $times->sum('seconds');
-                    return $day;
-                })->mapWithKeys(function ($day) {;
-                    return [data_get($day, 'day') => $day];
-                });
+                $estimatedWorkTime = $this->getEstimatedWorkTime($planningWorkDays);
 
                 foreach ($days as $day) {
                     $dateAttendance = Carbon::createFromDate($currentDate->format('Y-m-') . $day);
@@ -345,5 +324,40 @@ class Attendances extends BaseService
         }
 
         return $status;
+    }
+
+    public function getPeriods($periods, $currentDate) {
+        $planningWorkDays = [];
+
+        foreach ($periods as $period) {
+            [$periodDateFrom, $periodDateUntil] = str(data_get($period, 'date'))->explode(' - ');
+            [$periodDateFromDay, $periodDateFromMonth] = str($periodDateFrom)->explode('-');
+            [$periodDateUntilDay, $periodDateUntilMonth] = str($periodDateUntil)->explode('-');
+
+            $periodDateStart = Carbon::create($currentDate->format('Y'), $periodDateFromMonth, $periodDateFromDay);
+            $periodDateEnd = Carbon::create($currentDate->format('Y'), $periodDateUntilMonth, $periodDateUntilDay);
+
+            if ($currentDate->between($periodDateStart, $periodDateEnd)) {
+                $planningWorkDays = data_get($period, 'work_days');
+            }
+        }
+
+        return $planningWorkDays;
+    }
+
+    public function getEstimatedWorkTime($planningWorkDays)
+    {
+        return collect($planningWorkDays)->map(function ($day) {
+            $times = collect(data_get($day, 'times'))->map(function ($time) {
+                $time['seconds'] = $this->calculateTiming(data_get($time, 'from'), data_get($time, 'to'));
+                return $time;
+            });
+
+            $day['times'] = $times->toArray();
+            $day['seconds'] = $times->sum('seconds');
+            return $day;
+        })->mapWithKeys(function ($day) {;
+            return [data_get($day, 'day') => $day];
+        });
     }
 }

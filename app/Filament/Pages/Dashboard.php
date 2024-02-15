@@ -130,6 +130,7 @@ class Dashboard extends Page
     {
         $this->todayBooked = DeskBooking::query()
             ->where('contract_id', $this->contractId)
+            ->whereDay('start', now())
             ->with(['desk', 'desk.room', 'desk.room.floor', 'desk.room.floor.place'])
             ->first();
     }

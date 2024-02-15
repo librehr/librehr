@@ -15,4 +15,9 @@ class Request extends Model
     {
         return $this->morphedByMany(Absence::class, 'requestable');
     }
+
+    public function attendancesValidations()
+    {
+        return $this->morphedByMany(AttendanceValidation::class, 'requestable');
+    }
 }

@@ -31,7 +31,6 @@ class AttendanceControl extends Model
     {
         self::$date = $date;
         self::$businessId = $business;
-        self::$test = 123;
         return self::query();
     }
 

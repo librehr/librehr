@@ -12,9 +12,20 @@ class AttendanceValidation extends Model
 
     protected $casts = [
         'date' => 'date',
-        'attributes' => 'array'
+        'attributes' => 'array',
+        'validated' => 'boolean'
     ];
+
     protected $guarded = [];
+
+    protected $appends = [
+        'YearMonth'
+    ];
+
+    protected function getYearMonthAttribute()
+    {
+        return data_get($this, 'date')?->format('Y-m');
+    }
 
     /**
      * The "booted" method of the model.
@@ -32,5 +43,10 @@ class AttendanceValidation extends Model
     public function contract()
     {
         return $this->belongsTo(Contract::class);
+    }
+
+    public function requests()
+    {
+        return $this->morphToMany(Request::class, 'requestable');
     }
 }
