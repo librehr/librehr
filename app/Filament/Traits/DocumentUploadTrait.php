@@ -3,8 +3,10 @@
 namespace App\Filament\Traits;
 
 use App\Models\Document;
+use App\Models\DocumentsType;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +19,10 @@ trait DocumentUploadTrait
     {
         return Action::make('Attach Documents')
             ->form([
+                Select::make('type')
+                    ->required()
+                    ->options(DocumentsType::query()
+                        ->pluck('name', 'id')),
                 FileUpload::make('file')
                     ->disk('local')
                     ->multiple()
@@ -39,7 +45,10 @@ trait DocumentUploadTrait
                 }
 
                 if (!empty($documents)) {
-                    $record->documents()->attach($documents);
+                    $record->documents()->attach($documents,
+                    [
+                        'documents_type_id' => data_get($data, 'type')
+                    ]);
 
                     Notification::make()
                         ->title('Upload successfully')

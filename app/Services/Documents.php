@@ -14,13 +14,11 @@ class Documents extends BaseService
         return Document::query()
             ->where('user_id', $userId)
             ->with([
-                'relatedType',
+                'relatedType.type',
             ])
             ->get()
             ->mapToGroups(function ($record) {
-                $modelName = $record->relatedType->documentable_type;
-                $modelName = class_basename($modelName);
-                $modelName = app('App\Filament\Resources\\'.$modelName . 'Resource')->getNavigationLabel() ?? $modelName;
+                $modelName = data_get($record, 'relatedType.type.name', 'No classificated');
                 return [$modelName => $record];
             });
     }

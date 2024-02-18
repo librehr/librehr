@@ -6,6 +6,7 @@ use App\Models\DeskBooking;
 use App\Models\Post;
 use App\Models\Requestable;
 use App\Models\Room;
+use Carbon\Carbon;
 use Filament\Facades\Filament;
 use Filament\Pages\Page;
 use Filament\Panel;
@@ -121,9 +122,18 @@ class Dashboard extends Page
             ->startResumeAttendanceNow($this->contractId);
     }
 
-    public function goToDeskBookings($room = null)
+    public function goToDeskBookings($room = null, $date = null)
     {
-        $this->redirectRoute('filament.app.pages.desk-bookings', $room !== null ? ['room' => $room] : null);
+        $args = [];
+        if ($date){
+            $args['date'] = Carbon::parse($date)->format('Y-m-d');
+        }
+
+        if ($room) {
+            $args['room'] = $room;
+        }
+
+        $this->redirectRoute('filament.app.pages.desk-bookings', $args);
     }
 
     public function getDeskBookings()

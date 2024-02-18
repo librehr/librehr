@@ -115,6 +115,12 @@ class DeskBookings extends Page
     }
     public function updatedRoom($value = null)
     {
+        $args = [];
+        if ($this->date){
+            $args['date'] = $this->date;
+        }
+        $args['room'] = $value;
+        $this->redirectRoute('filament.app.pages.desk-bookings', $args, false, false);
         $this->getSelectedDate();
         if ($value === null) {
             $value = data_get($this->record, 'id');
@@ -213,8 +219,17 @@ class DeskBookings extends Page
             ->where('contract_id', Auth::user()->getActiveContractId());
     }
 
-    public function goToDeskBookings($room = null)
+    public function goToDeskBookings($room = null, $date = null)
     {
-        $this->redirectRoute('filament.app.pages.desk-bookings', $room !== null ? ['room' => $room] : null);
+        $args = [];
+        if ($date){
+            $args['date'] = Carbon::parse($date)->format('Y-m-d');
+        }
+
+        if ($room) {
+            $args['room'] = $room;
+        }
+
+        $this->redirectRoute('filament.app.pages.desk-bookings', $args);
     }
 }

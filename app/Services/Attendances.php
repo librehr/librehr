@@ -102,6 +102,7 @@ class Attendances extends BaseService
         $singleContract = is_string($contractIds);
         $currentDate = Carbon::parse($day);
         $contractFilterIds = $singleContract ? [$contractIds] : $contractIds;
+
         return User::query()
             ->where('id', Auth::user()->id)
             ->with(
@@ -176,64 +177,72 @@ class Attendances extends BaseService
                 );
 
                 $estimatedWorkTime = $this->getEstimatedWorkTime($planningWorkDays);
+                try {
+                    foreach ($days as $day) {
+                        $dateAttendance = Carbon::createFromDate($currentDate->format('Y-m-') . $day);
+                        $dayData = $attendances->where('date', $dateAttendance);
+                        $estimated = data_get($estimatedWorkTime, $dateAttendance->format('N'));
+                        $differenceSeconds = data_get($estimated, 'seconds')-$dayData->sum('seconds');
+                        $extraSeconds = data_get($estimated, 'seconds')-$dayData->sum('seconds');
 
-                foreach ($days as $day) {
-                    $dateAttendance = Carbon::createFromDate($currentDate->format('Y-m-') . $day);
-                    $dayData = $attendances->where('date', $dateAttendance);
-                    $estimated = data_get($estimatedWorkTime, $dateAttendance->format('N'));
-                    $differenceSeconds = data_get($estimated, 'seconds')-$dayData->sum('seconds');
-                    $extraSeconds = data_get($estimated, 'seconds')-$dayData->sum('seconds');
+                        $estimatedTimes = data_get($estimated, 'times');
 
-                    $estimatedTimes = data_get($estimated, 'times');
-
-                    $totalTimes = is_array($estimatedTimes) ? count($estimatedTimes) : 0;
-                    $timesValids = 0;
-                    foreach ($dayData as $row) {
-                        $start = Carbon::parse(data_get($row, 'start'))->format('H:i:s');
-                        $end = Carbon::parse(data_get($row, 'end'))->format('H:i:s');
-                        foreach ($estimatedTimes as $time) {
-                            if (in_array($start, [
-                                data_get($time, 'from'),
-                                data_get($time, 'to'),
-                                ]) || in_array($end, [
-                                    data_get($time, 'from'),
-                                    data_get($time, 'to'),
-                                ])) {
-                                $timesValids++;
+                        $totalTimes = is_array($estimatedTimes) ? count($estimatedTimes) : 0;
+                        $timesValids = 0;
+                        if (is_iterable($dayData)) {
+                            foreach ($dayData as $row) {
+                                $start = Carbon::parse(data_get($row, 'start'))->format('H:i:s');
+                                $end = Carbon::parse(data_get($row, 'end'))->format('H:i:s');
+                                if (is_iterable($estimatedTimes)) {
+                                    foreach ($estimatedTimes as $time) {
+                                        if (in_array($start, [
+                                                data_get($time, 'from'),
+                                                data_get($time, 'to'),
+                                            ]) || in_array($end, [
+                                                data_get($time, 'from'),
+                                                data_get($time, 'to'),
+                                            ])) {
+                                            $timesValids++;
+                                        }
+                                    }
+                                }
                             }
                         }
+
+
+                        $timesValidated = $totalTimes === $timesValids;
+                        $errors = data_get($estimated, 'seconds') > $dayData->sum('seconds') || $timesValidated === false;
+                        $calendarDay = $calendar->where('date', $dateAttendance);
+
+                        $workable = true;
+                        if ($calendarDay->where('workable', false)->count() > 0) {
+                            $workable = false;
+                        }
+
+                        $buildedAttendances[data_get($contract, 'id')][$day] = [
+                            'number' => $day,
+                            'calendar' => $calendarDay,
+                            'date' => $dateAttendance,
+                            'day_name' => str(\Carbon\Carbon::create($dateAttendance->format('Y'), $dateAttendance->format('m'), $day)->format('l'))->lower(),
+                            'month_name' => str($dateAttendance->format('M'))->lower() . '.',
+                            'attendances' => $dayData,
+                            'total_seconds' => $dayData->sum('seconds'),
+                            'total_time' => $this->secondsToHm(
+                                $dayData->sum('seconds')
+                            ),
+                            'total_seconds_estimated' => $workable ? data_get($estimated, 'seconds') : 0,
+                            'total_time_estimated' => $workable ? $this->secondsToHm(
+                                data_get($estimated, 'seconds')
+                            ) : $this->secondsToHm(),
+                            'total_seconds_extra' => ($extraSeconds < 0 &&  data_get($estimated, 'seconds') > 0 ? -$extraSeconds : 0),
+                            'total_time_extra' => ((($extraSeconds < 0 && data_get($estimated, 'seconds') > 0) || $workable == false) ? $this->secondsToHm(
+                                $workable === false ? $dayData->sum('seconds') : -$extraSeconds
+                            ) : null),
+                            'errors' => $workable ? $errors : null,
+                        ];
                     }
-
-                    $timesValidated = $totalTimes === $timesValids;
-                    $errors = data_get($estimated, 'seconds') > $dayData->sum('seconds') || $timesValidated === false;
-                    $calendarDay = $calendar->where('date', $dateAttendance);
-
-                    $workable = true;
-                    if ($calendarDay->where('workable', false)->count() > 0) {
-                        $workable = false;
-                    }
-
-                    $buildedAttendances[data_get($contract, 'id')][$day] = [
-                        'number' => $day,
-                        'calendar' => $calendarDay,
-                        'date' => $dateAttendance,
-                        'day_name' => str(\Carbon\Carbon::create($dateAttendance->format('Y'), $dateAttendance->format('m'), $day)->format('l'))->lower(),
-                        'month_name' => str($dateAttendance->format('M'))->lower() . '.',
-                        'attendances' => $dayData,
-                        'total_seconds' => $dayData->sum('seconds'),
-                        'total_time' => $this->secondsToHm(
-                            $dayData->sum('seconds')
-                        ),
-                        'total_seconds_estimated' => $workable ? data_get($estimated, 'seconds') : 0,
-                        'total_time_estimated' => $workable ? $this->secondsToHm(
-                            data_get($estimated, 'seconds')
-                        ) : $this->secondsToHm(),
-                        'total_seconds_extra' => ($extraSeconds < 0 &&  data_get($estimated, 'seconds') > 0 ? -$extraSeconds : 0),
-                        'total_time_extra' => ((($extraSeconds < 0 && data_get($estimated, 'seconds') > 0) || $workable == false) ? $this->secondsToHm(
-                            $workable === false ? $dayData->sum('seconds') : -$extraSeconds
-                        ) : null),
-                        'errors' => $workable ? $errors : null,
-                    ];
+                } catch (\Exception $exception) {
+                    \Log::error($exception->getMessage());
                 }
             }
 

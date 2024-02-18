@@ -36,6 +36,10 @@ class DocumentsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('type'),
                 Tables\Columns\TextColumn::make('size')
                 ->formatStateUsing(fn ($state) => Number::fileSize($state)),
+                Tables\Columns\TextColumn::make('relatedType.type.name'),
+                Tables\Columns\IconColumn::make('relatedType.type.attributes.request_signature')
+                    ->label('Sign needed?')
+                    ->boolean()
             ])
             ->filters([
                 //
@@ -49,6 +53,9 @@ class DocumentsRelationManager extends RelationManager
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->modifyQueryUsing(function ($query) {
+                $query->with(['relatedType.type']);
+            });
     }
 }

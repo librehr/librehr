@@ -7,6 +7,8 @@
             <div class="flex flex-col gap-1">
                 <div class="text-xs mb-2"><span class="font-semibold text-gray-700">Attendance Validation Request</span> on  {{ data_get($request, 'requestable.created_at')->format('d/m/Y H:i') }}</div>
                 <span>Please, make a revision to the attendance. {{ data_get($request, 'requestable.date')->format('Y-m') }}</span>
+
+                <a class="text-primary-600" href="{{ route('filament.app.pages.attendances', ['date' => data_get($request, 'requestable.date')]) }}">Go to Attendances</a>
              </div>
             @if(!empty(data_get($request, 'requestable.comments')))
                 <div class="text-gray-700 text-sm flex flex-col mt-2">
@@ -19,7 +21,7 @@
         </div>
     </div>
     <div class="flex flex-row gap-2">
-        {{  $this->getAction('time-off-action')
+        {{  $this->getAction('validate-attendances')
                      ->arguments(
                          [$request]
                      )

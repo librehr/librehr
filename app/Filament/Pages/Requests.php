@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\Absence;
+use App\Models\AttendanceValidation;
 use App\Models\Request;
 use App\Models\Requestable;
 use App\Services\Calendar;
@@ -62,7 +63,7 @@ class Requests extends Page
                         ->boolean()
                 ])
                 ->action(function (array $arguments, $data) {
-                    $record = Absence::query()->find(data_get($arguments, '0.id'));
+                    $record = Absence::query()->find(data_get($arguments, '0.requestable_id'));
                     $record->status_by = data_get($data, 'user');
                     $record->status_at = now();
 
@@ -80,6 +81,35 @@ class Requests extends Page
                         ->title($message . ' successfully.')
                         ->success()
                         ->send();
+                })->after(function () {
+                    $this->reloadRequests();
+                }),
+            Action::make('validate-attendances')
+                ->icon('heroicon-m-arrow-right')
+                ->iconPosition(IconPosition::After)
+                ->iconButton()
+                ->label('Got to Attendances')
+                ->color('primary')
+                ->slideOver()
+                ->requiresConfirmation()
+                ->form([
+                    Hidden::make('user')->default(data_get( $this->user, 'id')),
+                    ToggleButtons::make('validated')
+                        ->label('Do you want to approve the validation requested?')
+                        ->inline()
+                        ->required()
+                        ->boolean()
+                ])
+                ->action(function (array $arguments, $data) {
+                    $record = AttendanceValidation::query()->find(data_get($arguments, '0.requestable_id'));
+                    if (data_get($data, 'validated', 0) == 1) {
+                        $record->requests()->detach();
+
+                        Notification::make('ok')
+                            ->title( 'Approved successfully.')
+                            ->success()
+                            ->send();
+                    }
                 })->after(function () {
                     $this->reloadRequests();
                 }),

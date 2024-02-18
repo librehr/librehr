@@ -31,4 +31,9 @@ class Documentable extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function type()
+    {
+        return $this->belongsTo(DocumentsType::class, 'documents_type_id', 'id');
+    }
 }

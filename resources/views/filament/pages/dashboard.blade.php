@@ -96,7 +96,7 @@
                     <span>You have booked seat <span class="text-green-700 font-black">{{ data_get($todayBooked, 'desk.name') }}</span> for today in <b>{{ data_get($todayBooked, 'desk.room.floor.place.name') }}</b>, room <b>{{ data_get($todayBooked, 'desk.room.name') }}</b> @ the <b>{{ data_get($todayBooked, 'desk.room.floor.name') }}</b></span>
 
                     <span>
-                    <x-filament::button color="gray" wire:click="goToDeskBookings( {{ data_get($todayBooked, 'desk.room.id') }})">
+                    <x-filament::button color="gray" wire:click="goToDeskBookings( {{ data_get($todayBooked, 'desk.room.id') }}, '{{ data_get($todayBooked, 'start') }}')">
                         View in map
                     </x-filament::button>
                     </span>
