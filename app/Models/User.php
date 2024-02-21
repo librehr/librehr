@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -127,9 +128,11 @@ class User extends Authenticatable implements FilamentUser
         if ($uuid === null) {
             $uuid = data_get($this, 'attributes.default_business');
         }
-        return Business::query()
-            ->where('active', true)
-            ->where('uuid', $uuid)->first();
+        return \Cache::remember('business_' . $uuid, 3600, function () use ($uuid) {
+            return Business::query()
+                ->where('active', true)
+                ->where('uuid', $uuid)->first();
+        });
     }
 
     public function getActiveContractId()
@@ -140,7 +143,9 @@ class User extends Authenticatable implements FilamentUser
     // todo: need cache
     public function getActiveContract()
     {
-        return $this->contracts()->ActiveContracts()->first();
+        return Cache::remember('active_contract' . $this->id, 3600, function () {
+            return $this->contracts()->ActiveContracts()->first();
+        });
     }
 
     public function canAccessPanel(Panel $panel): bool

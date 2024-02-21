@@ -2,11 +2,14 @@
 
 namespace App\Filament\Resources;
 
+use App\Models\DocumentsType;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Number;
 
 class DocumentsRelationManager extends RelationManager
@@ -26,6 +29,8 @@ class DocumentsRelationManager extends RelationManager
                 ->columnSpanFull()
             ]);
     }
+
+
 
     public function table(Table $table): Table
     {

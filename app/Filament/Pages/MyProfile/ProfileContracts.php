@@ -39,14 +39,7 @@ class ProfileContracts extends Page  implements HasForms, HasTable
                 ->where('user_id', \Auth::id()))
             ->columns([
                 // TODO: change storage url
-                TextColumn::make('contractType.name')
-                    ->description(function ($record) {
-                        $documents = $record->documents->map(function ($document) {
-                            return '<a href="'.Storage::url($document->path).'">'.$document->name.'</a>';
-                        })->toArray();
-
-                        return new HtmlString(implode('', $documents));
-                    }),
+                TextColumn::make('contractType.name'),
                 TextColumn::make('business.name'),
                 TextColumn::make('team.name'),
                 TextColumn::make('planning.name'),

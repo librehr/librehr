@@ -122,7 +122,10 @@
                     {{ data_get($post, 'created_at')->format('M N, Y') }}
                 </x-slot>
 
-                {!! data_get($post, 'body') !!}
+                <div class="blog">
+                    {!! data_get($post, 'body') !!}
+                </div>
+
             </x-filament::section>
         @endforeach
     </div>

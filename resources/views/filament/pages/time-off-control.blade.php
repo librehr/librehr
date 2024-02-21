@@ -20,7 +20,6 @@
                 <span class="w-6 h-6"></span>
             @endif
         </ul>
-
-        {{ $this->table }}
+        {{ $this->getTable() }}
     </div>
 </x-filament-panels::page>
