@@ -79,7 +79,6 @@ class TimeOffControl extends Page  implements HasForms, HasTable
         $days = [];
         foreach ($this->daysInMonth as $day) {
             $days[] = TextColumn::make('' . $day)
-                ->badge()
                 ->default(function ($record) use ($day) {
                     $type = null;
                     $absences = data_get($record, 'absences');
@@ -102,7 +101,7 @@ class TimeOffControl extends Page  implements HasForms, HasTable
                     return null;
                 })
                 ->formatStateUsing(function ($state) {
-                   return str(data_get($state, 'name'))->split(1)->first();
+                   return new HtmlString('<div class="rounded py-1 px-2 text-xs" style="color: '.data_get($state, 'attributes.color.text').'; background-color: '.data_get($state, 'attributes.color.background').'">'.str(data_get($state, 'name'))->split(1)->first().'</div>');
                 })
                 ->color(function () {
                     return Color::Blue;
@@ -122,7 +121,8 @@ class TimeOffControl extends Page  implements HasForms, HasTable
                     ->where('business_id', \Auth::user()->getActiveBusinessId())
             )
             ->columns([
-                TextColumn::make('user.name')->searchable()
+                TextColumn::make('user.name')
+                    ->searchable()
                 ->url(fn ($record) => route(UserResource::getRouteBaseName('app') . '.absences', $record->id)),
                 ...$days,
             ])
