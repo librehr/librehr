@@ -28,6 +28,7 @@ class AbsenceTypeResource extends Resource
                 Forms\Components\TextInput::make('name'),
                 Forms\Components\ColorPicker::make('attributes.color.background')->label('Background Color'),
                 Forms\Components\ColorPicker::make('attributes.color.text')->label('Text Color'),
+                Forms\Components\Toggle::make('attributes.attachments')->inline(false)->label('Attachments Allowed?')
             ]);
     }
 
@@ -37,7 +38,8 @@ class AbsenceTypeResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\ColorColumn::make('attributes.color.background')->label('Background Color'),
-                Tables\Columns\ColorColumn::make('attributes.color.text')->label('Text Color')
+                Tables\Columns\ColorColumn::make('attributes.color.text')->label('Text Color'),
+                Tables\Columns\IconColumn::make('attributes.attachments')->label('Attachments Allowed?')->boolean()
             ])
             ->filters([
                 //

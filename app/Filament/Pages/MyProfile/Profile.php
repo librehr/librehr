@@ -52,9 +52,14 @@ class Profile extends Page implements HasForms
                     ->schema([
                         TextInput::make('name')
                             ->required(),
+                        TextInput::make('attributes.firstName')
+                            ->required(),
+                        TextInput::make('attributes.secondName'),
                         TextInput::make('email')
                             ->email()
-                            ->required()->unique(),
+                            ->columnSpanFull()
+                            ->required()
+                            ->unique(),
                         Placeholder::make('Change your Password')->content('For security reasons, to change your password
                              you must request the a password reset.')->columnSpanFull(),
                         Actions::make([
