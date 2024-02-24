@@ -238,7 +238,7 @@ class Attendances extends BaseService
                             'total_time_extra' => ((($extraSeconds < 0 && data_get($estimated, 'seconds') > 0) || $workable == false) ? $this->secondsToHm(
                                 $workable === false ? $dayData->sum('seconds') : -$extraSeconds
                             ) : null),
-                            'errors' => $workable ? $errors : null,
+                            'errors' => $workable && now() > $dateAttendance ? $errors : null,
                         ];
                     }
                 } catch (\Exception $exception) {
