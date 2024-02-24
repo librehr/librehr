@@ -7,7 +7,7 @@
             <div class="flex flex-col gap-1">
                 <div class="text-xs mb-2"><span class="font-semibold text-gray-700">Absence Request</span> on  {{ data_get($request, 'requestable.created_at')->format('d/m/Y H:i') }}</div>
                 <span>
-                    New vacation request from <b>{{ ucwords(data_get($request, 'contract.user.name')) }} </b>
+                    New  "<span class="font-semibold underline">{{ data_get($request, 'requestable.absenceType.name') }}</span>"  requested from <b>{{ ucwords(data_get($request, 'contract.user.name')) }} </b>
                     @if(!empty(data_get($request, 'contract.team.name')))
                         ({{ data_get($request, 'contract.team.name') }})
                     @endif

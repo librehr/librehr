@@ -46,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
                 \App\Filament\Pages\Dashboard::class,
                 \App\Filament\Pages\Requests::class,
                 \App\Filament\Pages\TimeOff::class,
+                \App\Filament\Pages\DeskBookings::class,
                 \App\Filament\Pages\Attendances::class,
             ],
             view: 'filament.pages.header.user',

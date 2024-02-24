@@ -1,4 +1,4 @@
-<ul class="p-6 border-b border-t flex flex-row justify-center items-center gap-8">
+<ul class="p-6 border-b flex flex-row justify-center items-center gap-8">
 
     <a href="{{ route($route,$previous) }}">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">

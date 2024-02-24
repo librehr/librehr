@@ -100,8 +100,7 @@ class Calendar extends BaseService
             ->groupBy('contract.user.name')->toArray();
 
         $myTeam = collect(data_get($absences, data_get($contract, 'team_id'), []))
-            ->groupBy('contract.user.name')
-            ->toArray();
+            ->groupBy('contract.user.name')->toArray();
 
         return [
             'business' => $business,

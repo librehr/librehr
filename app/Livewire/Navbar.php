@@ -48,7 +48,7 @@ class Navbar extends Component
                 <x-slot name="trigger">
                     <x-filament::button color="gray">
                         <div class="flex flex-row gap-2 items-center min-w-[150px]">
-                            @if(Auth::user()->getActiveContract())
+                             @if(Auth::user()->getActiveContract())
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                                   <path stroke-linecap="round" stroke-linejoin="round" d="M10.125 2.25h-4.5c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125v-9M10.125 2.25h.375a9 9 0 0 1 9 9v.375M10.125 2.25A3.375 3.375 0 0 1 13.5 5.625v1.5c0 .621.504 1.125 1.125 1.125h1.5a3.375 3.375 0 0 1 3.375 3.375M9 15l2.25 2.25L15 12" />
                                 </svg>
@@ -58,7 +58,7 @@ class Navbar extends Component
                                 </svg>
                             @endif
                             <span>
-                                {!! $activeBusiness ? $activeBusiness->name : 'Business' !!}
+                                {!! $activeBusiness ? (data_get($activeBusiness, 'attributes.logo', null) !== null ? '<img class="w-full h-8" src="' . Storage::disk('public')->url(data_get($activeBusiness, 'attributes.logo')) .  '">' : data_get($activeBusiness, 'name')) : 'Business' !!}
                             </span>
                         </div>
                     </x-filament::button>

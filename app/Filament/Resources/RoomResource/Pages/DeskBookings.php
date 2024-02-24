@@ -7,6 +7,7 @@ use Filament\Actions;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Pages\ManageRelatedRecords;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -40,7 +41,13 @@ class DeskBookings extends ManageRelatedRecords
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('contract.user.name'),
+                Tables\Columns\TextColumn::make('desk.name')->badge()->color(Color::Blue),
+                Tables\Columns\TextColumn::make('start')->date('d/m/Y H:i:s'),
+                Tables\Columns\TextColumn::make('end')->date('d/m/Y H:i:s'),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Reserved at')
+                    ->date('d/m/Y H:i:s'),
             ])
             ->filters([
                 //
@@ -56,6 +63,9 @@ class DeskBookings extends ManageRelatedRecords
                     Tables\Actions\DissociateBulkAction::make(),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->modifyQueryUsing(function ($query) {
+                return $query->with('contract.user');
+            });
     }
 }

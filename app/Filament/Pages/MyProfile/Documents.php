@@ -15,6 +15,7 @@ class Documents extends Page
     public $documents;
     public function mount()
     {
-        $this->documents = app(\App\Services\Documents::class)->getDocuments(\Auth::id());
+        $this->documents = app(\App\Services\Documents::class)
+            ->getDocuments(\Auth::id());
     }
 }

@@ -37,12 +37,12 @@ class AppPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         FilamentView::registerRenderHook(
-            'panels::user-menu.before',
+            'panels::user-menu.after',
             fn (): string => Blade::render('@livewire(\'navbar\')'),
         );
 
         FilamentView::registerRenderHook(
-            'panels::body.start',
+            'panels::user-menu.before',
             fn (): string => Blade::render('@livewire(\'header-notifications\')'),
         );
 

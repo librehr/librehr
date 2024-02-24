@@ -23,9 +23,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class RoomResource extends Resource
 {
     protected static ?string $model = Room::class;
-
+    protected static ?int $navigationSort = 5;
     protected static ?string $navigationIcon = null;
-
     protected static ?string $navigationGroup = 'Business Configuration';
 
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
@@ -64,9 +63,8 @@ class RoomResource extends Resource
                             ->required()
                             ->maxLength(255),
                         Forms\Components\Textarea::make('attributes.description')
-                            ->label('Intern description'),
-                        Checkbox::make('active')
-                        ->label('Bookable?')
+                            ->label('Intern description')
+                            ->helperText('monitors, mouse..'),
                     ])->grid(4)
             ])
             ->columns(0);

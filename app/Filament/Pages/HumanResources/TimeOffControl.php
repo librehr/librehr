@@ -1,27 +1,19 @@
 <?php
 
-namespace App\Filament\Pages;
+namespace App\Filament\Pages\HumanResources;
 
 use App\Filament\Resources\UserResource;
 use App\Models\AbsenceType;
-use App\Models\AttendanceValidation;
 use App\Models\Contract;
-use App\Models\ContractTool;
-use App\Models\Request;
-use App\Models\Sushi\AttendanceControl;
-use App\Models\User;
 use Carbon\Carbon;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Tables\Actions\Action;
+use Filament\Support\Colors\Color;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
-use Filament\Support\Colors\Color;
 use Illuminate\Support\HtmlString;
 
 
@@ -58,7 +50,7 @@ class TimeOffControl extends Page  implements HasForms, HasTable
 
     public function change($position)
     {
-        if ($position == 'next' && now()->subMonth() > $this->date) {
+        if ($position == 'next') {
             $this->date = Carbon::parse($this->date)->addMonth();
          } else {
             $this->date = Carbon::parse($this->date)->subMonth();
@@ -84,7 +76,7 @@ class TimeOffControl extends Page  implements HasForms, HasTable
                     $absences = data_get($record, 'absences');
                     foreach ($absences as $absence) {
                         $start = Carbon::parse(data_get($absence, 'start'));
-                        $end = Carbon::parse(data_get($absence, 'end'));
+                        $end = Carbon::parse(data_get($absence, 'end'))->addDay();
                         if (Carbon::createFromDate(
                             $this->date->format('Y'),
                             $this->date->format('m'),
@@ -134,8 +126,12 @@ class TimeOffControl extends Page  implements HasForms, HasTable
                     'user:name,id',
                     'team:name,id',
                     'absences' => function ($query) {
-                        $query->whereYear('start', $this->date)
-                            ->orWhereYear('end', $this->date);
+                        $query->where('status', 'allowed')
+                            ->where(function ($query) {
+                            $query->whereYear('start', $this->date)
+                                ->orWhereYear('end', $this->date);
+                        });
+
                     },
                 ]))
             ->bulkActions([

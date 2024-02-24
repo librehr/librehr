@@ -27,6 +27,9 @@ class Requests extends Page
 
     protected static string $view = 'filament.pages.requests';
 
+    protected static ?int $navigationSort = 0;
+    protected static ?string $navigationLabel = 'Inbox';
+
     public $requests = [];
 
     public $user;
@@ -57,7 +60,7 @@ class Requests extends Page
                     Hidden::make('user')->default(data_get( $this->user, 'id')),
                     ToggleButtons::make('validated')
                         ->helperText('Once you have approved the request, you will not be able to change it again.')
-                        ->label('Do you want to approve the vacation requested by the employee?')
+                        ->label('Do you want to approve the absence requested by the employee?')
                         ->inline()
                         ->required()
                         ->boolean()
@@ -119,7 +122,7 @@ class Requests extends Page
     public static function getNavigationBadge(): ?string
     {
         $count = Requestable::query()->where('user_id', Auth::id())->count();
-        return $count > 0 ? $count : null;
+        return ($count > 0 ? $count : null);
     }
 
 

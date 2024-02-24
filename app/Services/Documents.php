@@ -15,6 +15,7 @@ class Documents extends BaseService
             ->where('user_id', $userId)
             ->with([
                 'relatedType.type',
+                'user:id,name'
             ])
             ->get()
             ->mapToGroups(function ($record) {

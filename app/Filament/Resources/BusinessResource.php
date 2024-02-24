@@ -25,7 +25,13 @@ class BusinessResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\Section::make()->schema([
+                    Forms\Components\TextInput::make('name'),
+                    Forms\Components\FileUpload::make('attributes.logo')
+                        ->image()
+                        ->disk('public')
+                        ->imageEditor()
+                ])
             ]);
     }
 
@@ -33,7 +39,9 @@ class BusinessResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\ImageColumn::make('attributes.logo')
+                    ->label('Logo'),
             ])
             ->filters([
                 //

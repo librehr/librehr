@@ -21,8 +21,7 @@ use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 class PlanningResource extends Resource
 {
     protected static ?string $model = Planning::class;
-
-
+    protected static ?int $navigationSort = 1;
     protected static ?string $navigationIcon = null;
 
     protected static ?string $navigationGroup = 'Business Configuration';

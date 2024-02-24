@@ -21,7 +21,7 @@ class ContractObserver
      */
     public function updated(Contract $contract): void
     {
-        //
+        \Cache::forget('active_contract' . $contract->user_id);
     }
 
     /**

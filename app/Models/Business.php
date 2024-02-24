@@ -29,6 +29,10 @@ class Business extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'attributes' => 'array'
+    ];
+
     protected $guarded = [];
 
     public function places()

@@ -13,11 +13,14 @@
 
             <span class="font-bold text-2xl">{{ $category }}</span>
             @foreach($documents as $document)
-                <div class="flex flex-row justify-between items-start hover:bg-gray-100 p-2 cursor-pointer">
-                    <span href="#" class="text-primary-600">{{ $document->name }}</span>
-                    <span> {{ \Illuminate\Support\Number::fileSize($document->size) }}</span>
-                    <span> {{ $document->created_at->format('d/m/Y H:i') }}</span>
+                <div class="flex flex-col  hover:bg-gray-100 p-2 cursor-pointer border  ">
+                    <div class="flex flex-row justify-between items-start">
+                        <span href="#" class="text-primary-600">{{ $document->name }}</span>
+                        <span> {{ \Illuminate\Support\Number::fileSize($document->size) }}</span>
+                    </div>
+                    <span class="text-sm">Uploaded by <span class="font-semibold">{{ data_get($document, 'user.name')  }}</span> {{ $document->created_at->format('d/m/Y H:i') }}</span>
                 </div>
+
             @endforeach
         </x-filament::modal>
     @endforeach

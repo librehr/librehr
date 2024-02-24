@@ -43,19 +43,19 @@
                         @php($toolTip = implode(', ', data_get($weekDay, 'events.tooltip', [])))
                         <div style="@if(!empty(data_get($weekDay, 'events.absences', [])))
                                         background-color:{{ head($backgroundColor) }}; color: {{ head($textColor) }}
-                                    @endif" class="flex flex-row items-center p-1.5 justify-items-center text-xs
+                                    @endif" class="flex flex-row items-center justify-items-center text-xs
 
 
                                     @if(data_get($weekDay, 'date') == now()->format('Y-m-d'))
-                                        shadow-inner shadow-black
+                                        border-b-2 p-0 border-primary-800 rounded-lg text-center shadow shadow-2xl bg-primary-600/10
                                     @endif
                                     "
 
                         >
                             @if (!empty($weekDay))
-                                <div class="text-center w-full
+                                <div class="text-center  w-full
                                              @if(!empty(data_get($weekDay, 'events.holiday', [])))
-                                                   ring-2 ring-primary-600
+                                                   ring-2 ring-primary-600 rounded-full
                                              @endif
                                             "
                                      @if(!empty($toolTip))

@@ -18,7 +18,7 @@ class TeamResource extends Resource
 {
     protected static ?string $model = Team::class;
 
-
+    protected static ?int $navigationSort = 0;
     protected static ?string $navigationIcon = null;
 
     protected static ?string $navigationGroup = 'Business Configuration';

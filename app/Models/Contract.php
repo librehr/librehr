@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Filament\Pages\AttendancesControl;
 use App\Models\Scopes\BusinessScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

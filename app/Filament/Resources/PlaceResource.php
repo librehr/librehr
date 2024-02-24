@@ -14,10 +14,10 @@ use Filament\Tables\Table;
 class PlaceResource extends Resource
 {
     protected static ?string $model = Place::class;
-
-
+    protected static ?int $navigationSort = 4;
     protected static ?string $navigationIcon = null;
-
+    protected static ?string $navigationLabel = "Office Locations";
+    protected static ?string $modelLabel = 'Offices';
     protected static ?string $navigationGroup = 'Business Configuration';
     public static function form(Form $form): Form
     {

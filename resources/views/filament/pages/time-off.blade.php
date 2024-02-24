@@ -1,86 +1,9 @@
 <x-filament-panels::page>
-    <div class="flex justify-end">
-        <x-filament::button wire:click="dispatch('open-modal', { id: 'request-absence' })" icon="heroicon-m-plus">
-            Request absence
-        </x-filament::button>
-
-        <x-filament::modal id="request-absence" slide-over>
-            <form enctype="multipart/form-data" wire:submit.prevent="submitRequestTimeOff">
-
-            <div class="flex flex-col gap-2">
-                <label for="type" class="font-semibold">Type</label>
-                <select wire:model="absenceTypeId" wire:change="absenceType" id="type" class="border border-gray-300 rounded-lg">
-                    <option selected></option>
-                    @foreach ($type as $id => $typed)
-                        <option value="{{ $id }}">
-                            {{ $typed }}
-                        </option>
-                    @endforeach
-                </select>
-
-                <x-date-picker :startDate="$startDate"/>
-
-                @error('files.*') <span>{{ $message }}</span> @enderror
-
-            @if (data_get($absenceType, 'attributes.attachments', false))
-                    Attach files
-                    <input type="file" wire:model="files" class="border border-gray-300 rounded-lg" multiple>
-
-                @endif
-
-
-                <label for="comments" class="font-semibold">Comments</label>
-                <textarea wire:model="comments" id="comments" class="border border-gray-300 rounded-lg"></textarea>
-
-                @if (session()->has('days'))
-                    <div class="font-semibold">
-                        {{ session('days') }}
-                    </div>
-                @endif
-
-                @if (session()->has('overlap_team'))
-                    <div>
-                        Overlaps with your team mates: {{ session('overlap_team') }}
-                    </div>
-                @endif
-
-                @if (session()->has('overlap_business'))
-                    <div>
-                        Overlaps with your team mates: {{ session('overlap_team') }}
-                    </div>
-                @endif
-
-                @if (session()->has('error'))
-                    <div class="text-danger-600">
-                        {{ session('error') }}
-                    </div>
-                @endif
-
-
-                <x-filament::button type="submit" :disabled="empty($startDate) || empty($endDate) || $errors->any() ||  session()->has('error') ? 'disabled' : false">
-                    Submit Request
-                </x-filament::button>
-            </div>
-            </form>
-        </x-filament::modal>
-
-
-        <x-filament::modal id="view-absence" slide-over>
-            <div class="flex flex-col gap-2">
-
-                <x-filament::button :disabled="empty($startDate) || empty($endDate) || $errors->any() ? 'disabled' : false" wire:click="submitRequestTimeOff">
-                    Submit Request
-                </x-filament::button>
-            </div>
-        </x-filament::modal>
-    </div>
-
     <div class="grid grid-cols-2 gap-8">
         <div class="flex flex-col gap-4">
 
             <div class="bg-warning-200 rounded-lg p-2 py-5 px-4 mb-4 text-lg">
-
-                      In total you have generated <span class="font-semibold">{{ data_get($summary, 'total_days') }} days</span>
+                    In total you have generated <span class="font-semibold">{{ data_get($summary, 'total_days') }} days</span>
                     this year
 
                     scheduled

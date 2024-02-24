@@ -1,25 +1,21 @@
 <?php
 
-namespace App\Filament\Pages;
+namespace App\Filament\Pages\HumanResources;
 
 use App\Models\AttendanceValidation;
 use App\Models\Contract;
-use App\Models\ContractTool;
 use App\Models\Request;
-use App\Models\Sushi\AttendanceControl;
-use App\Models\User;
 use Carbon\Carbon;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Support\Colors\Color;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
-use Filament\Support\Colors\Color;
 
 
 class AttendancesControl extends Page  implements HasForms, HasTable

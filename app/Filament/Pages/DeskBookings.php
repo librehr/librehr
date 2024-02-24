@@ -32,7 +32,7 @@ class DeskBookings extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
     protected $listeners = ['floorsUpdated' => 'floorsUpdated'];
-
+    protected static ?int $navigationSort = 3;
     protected static string $view = 'filament.pages.desk-bookings';
 
     public $date;
@@ -54,6 +54,13 @@ class DeskBookings extends Page
     public function getHeader(): ?\Illuminate\Contracts\View\View
     {
         return view('filament.pages.header.desk-bookings');
+    }
+
+    public function updatedPlace($value = null)
+    {
+        $this->floors = Floor::query()->where('place_id' , $value)->get();
+        $this->rooms = [];
+        $this->floor = null;
     }
 
     public function updatedFloor($value)
@@ -141,9 +148,9 @@ class DeskBookings extends Page
     {
         $contract = Auth::user()->getActiveContract();
         $this->todayBooked = app(self::class)->getBookedToday()->first();
-        $this->places = $contract->place;
-        $this->floors = $this->places->floors;
-
+        $this->places = Place::query()->with('floors')->get();
+        $this->place = data_get($contract, 'place.id');
+        $this->updatedPlace($this->place);
         if (request()->get('date')) {
             $this->date = Carbon::parse(\request()->get('date'))->format('Y-m-d');
         } else {
@@ -175,18 +182,18 @@ class DeskBookings extends Page
     {
         $roomId = \request()->get('room');
 
-        $room = Room::query()->with(['floor:id,place_id'])->find($roomId);
+        $room = Room::query()->with(['floor.place.floors'])->find($roomId);
 
         if (!$room) {
             return;
         }
 
-        $placeId = data_get($room, 'floor.place_id');
+        $placeId = data_get($room, 'floor.place.id');
         $floorId = data_get($room, 'floor.id');
-        $place = Place::query()->with(['floors', 'floors.rooms'])->find($placeId);
+        $floors = data_get($room, 'floor.place.floors');
 
-        $this->place = $place;
-        $this->floors = data_get($place, 'floors');
+        $this->place = $placeId;
+        $this->floors = $floors;
         $floor = collect($this->floors)->where('id', $floorId)->first();
         $this->floor = data_get($floor, 'id');
 

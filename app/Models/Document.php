@@ -68,4 +68,9 @@ class Document extends Model
     {
         return $this->hasOne(Documentable::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
