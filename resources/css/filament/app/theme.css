@@ -1,3 +1,11 @@
 @import '/vendor/filament/filament/resources/css/theme.css';
 
 @config 'tailwind.config.js';
+
+.blog-format p {
+    @apply py-2;
+}
+
+.blog-format b {
+    @apply font-semibold;
+}

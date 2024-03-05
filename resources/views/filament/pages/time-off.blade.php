@@ -2,7 +2,7 @@
     <div class="grid grid-cols-2 gap-8">
         <div class="flex flex-col gap-4">
 
-            <div class="bg-warning-200 rounded-lg p-2 py-5 px-4 mb-4 text-lg">
+            <div class="bg-gray-200 rounded-lg p-2 py-5 px-4 mb-4 text-lg">
                     In total you have generated <span class="font-semibold">{{ data_get($summary, 'total_days') }} days</span>
                     this year
 

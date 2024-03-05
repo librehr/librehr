@@ -53,11 +53,8 @@ class AbsenceResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('absenceType.name')
-                ->label('Type')
-                    ->badge()
-                    ->color('success')
                 ->searchable(),
-                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('status')->badge(),
                 Tables\Columns\TextColumn::make('contract.user.name'),
                 Tables\Columns\TextColumn::make('start')
                     ->formatStateUsing(fn ($state) => $state->format('d/m/Y')),
@@ -68,7 +65,6 @@ class AbsenceResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -97,7 +93,6 @@ class AbsenceResource extends Resource
             'index' => Pages\ListAbsences::route('/'),
             'create' => Pages\CreateAbsence::route('/create'),
             'edit' => Pages\EditAbsence::route('/{record}/edit'),
-            'view' => Pages\ViewAbsence::route('/{record}/view'),
         ];
     }
 }

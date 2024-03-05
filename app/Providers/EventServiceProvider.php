@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Models\Contract;
+use App\Models\Post;
 use App\Models\Team;
 use App\Observers\ContractObserver;
+use App\Observers\PostObserver;
 use App\Observers\TeamObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -31,6 +33,7 @@ class EventServiceProvider extends ServiceProvider
     {
         Contract::observe(ContractObserver::class);
         Team::observe(TeamObserver::class);
+        Post::observe(PostObserver::class);
     }
 
     /**

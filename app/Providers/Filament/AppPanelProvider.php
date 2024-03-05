@@ -41,11 +41,6 @@ class AppPanelProvider extends PanelProvider
             fn (): string => Blade::render('@livewire(\'navbar\')'),
         );
 
-        FilamentView::registerRenderHook(
-            'panels::user-menu.before',
-            fn (): string => Blade::render('@livewire(\'header-notifications\')'),
-        );
-
         $panel
             ->sidebarCollapsibleOnDesktop()
             ->viteTheme('resources/css/filament/app/theme.css')
@@ -96,6 +91,8 @@ class AppPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->spa()
+            ->passwordReset()
             ->default();
 
 

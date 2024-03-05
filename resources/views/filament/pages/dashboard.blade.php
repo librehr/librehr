@@ -122,7 +122,7 @@
                     {{ data_get($post, 'created_at')->format('M N, Y') }}
                 </x-slot>
 
-                <div class="blog">
+                <div class="blog-format">
                     {!! data_get($post, 'body') !!}
                 </div>
 

@@ -33,6 +33,7 @@ class UserResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')->columnSpanFull(),
                 Forms\Components\TextInput::make('email'),
+                Forms\Components\TextInput::make('password'),
                 Forms\Components\Select::make('role_id')
                     ->relationship('role', 'name'),
             ])

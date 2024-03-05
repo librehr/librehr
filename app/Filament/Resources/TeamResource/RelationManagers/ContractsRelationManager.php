@@ -16,6 +16,7 @@ class ContractsRelationManager extends RelationManager
 {
     protected static string $relationship = 'contracts';
     protected static ?string $label = 'Employees';
+    protected static ?string $title = 'Employees';
 
     protected function canCreate(): bool
     {
@@ -56,6 +57,6 @@ class ContractsRelationManager extends RelationManager
             ])
             ->bulkActions([
 
-            ]);
+            ])->selectable(false);
     }
 }

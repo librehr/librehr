@@ -20,6 +20,7 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Password;
 use Livewire\Component;
 use Filament\Forms\Components\Actions\Action;
 
@@ -68,10 +69,28 @@ class Profile extends Page implements HasForms
                                 ->icon('heroicon-m-lock-closed')
                                 ->requiresConfirmation()
                                 ->action(function () {
+                                    $user = \Auth::user();
+                                    $token = app('auth.password.broker')->createToken($user);
+                                    $notification = new \Filament\Notifications\Auth\ResetPassword($token);
+                                    $notification->url = \Filament\Facades\Filament::getResetPasswordUrl($token, $user);
+                                    $user->notify($notification);
+
                                     Notification::make()
                                         ->title('Password requested successfully')
                                         ->success()
-                                        ->send();
+                                        ->send()
+                                        ->getDatabaseMessage();
+
+                                    \Auth::logout();
+                                    $this->redirect($notification->url);
+
+                                    $recipient = auth()->user();
+
+                                    $recipient->notify(
+                                        Notification::make()
+                                            ->title('Saved successfully')
+                                            ->toDatabase(),
+                                    );
                                 }),
                         ])->columnSpanFull(),
                 ])->columns(3),
@@ -105,7 +124,7 @@ class Profile extends Page implements HasForms
                         Checkbox::make('attributes.notifications.desk_bookings'),
                         Checkbox::make('attributes.notifications.documents'),
                         Checkbox::make('attributes.notifications.birthdays'),
-                        Checkbox::make('attributes.notifications.community'),
+                        Checkbox::make('attributes.notifications.posts')->label('Community posts'),
                         Checkbox::make('attributes.notifications.business_anniversaries'),
                     ])->columns(1),
             ])

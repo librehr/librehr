@@ -41,7 +41,7 @@ class TeamResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\TextColumn::make('contracts_count')
-                    ->label('Active Contracts')
+                    ->label('Employeers')
                 ->counts('contracts'),
                 Tables\Columns\TextColumn::make('supervisors.name')
                 ->badge()
@@ -54,7 +54,8 @@ class TeamResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->authorize('can view', Team::class),
                 ]),
             ]);
     }

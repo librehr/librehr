@@ -11,5 +11,6 @@ export default {
         './resources/views/components/**/*.blade.php',
         './vendor/filament/**/*.blade.php',
         './vendor/filament/pages/**/*.blade.php',
+        './vendor/filament/pages/**/*.blade.php',
     ],
 }

@@ -15,6 +15,3 @@
     @apply bg-red-600 text-white rounded;
 }
 
-.blog p{
-    @apply my-10;
-}
