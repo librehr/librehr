@@ -13,6 +13,7 @@ class ContractPolicy
      */
     public function viewAny(User $user): bool
     {
+        return true;
         return in_array($user->role->name, ['admin', 'manager']);
     }
 

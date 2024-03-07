@@ -72,7 +72,7 @@ class ManageUserTools extends ManageRelatedRecords
                                 ->label('Tool')
                             ->options(function () {
                                 return Tool::query()->pluck('name', 'id');
-                            }),
+                            })->required(),
                             Forms\Components\Select::make('contract_id')
                                 ->label('Contract')
                                 ->options(function () use($record) {
@@ -82,9 +82,9 @@ class ManageUserTools extends ManageRelatedRecords
                                         ->get()
                                         ->pluck('business.name', 'id')
                                         ->unique();
-                                }),
-                            Forms\Components\TextInput::make('name'),
-                            Forms\Components\DatePicker::make('delivered_at'),
+                                })->required(),
+                            Forms\Components\TextInput::make('name')->required(),
+                            Forms\Components\DatePicker::make('delivered_at')->required(),
                             Forms\Components\Hidden::make('delivered_by')
                             ->default(\Auth::id()),
                             Forms\Components\Textarea::make('description')

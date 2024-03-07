@@ -24,7 +24,7 @@ class PlanningResource extends Resource
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationIcon = null;
 
-    protected static ?string $navigationGroup = 'Business Configuration';
+    protected static ?string $navigationGroup = 'Administration';
 
     public static function form(Form $form): Form
     {

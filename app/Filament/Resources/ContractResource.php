@@ -15,6 +15,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Number;
 
@@ -30,9 +31,9 @@ class ContractResource extends Resource
         return Contract::query()->activeContracts()->count();
     }
 
-    public function viewAny()
+    public static function canViewAny(): bool
     {
-        return false;
+        return in_array(Auth::user()->role->name, ['admin', 'manager']);
     }
 
     public static function form(Form $form): Form
@@ -85,11 +86,15 @@ class ContractResource extends Resource
                     Tables\Columns\TextColumn::make('user.name')
                         ->searchable(),
                     Tables\Columns\TextColumn::make('contractType.name'),
-                    Tables\Columns\TextColumn::make('team.name')->badge(),
+                    Tables\Columns\TextColumn::make('team.name')
+                        ->hidden(in_array($table->getQueryStringIdentifier(),  ['contractsRelationManager']))
+                        ->badge(),
                     Tables\Columns\TextColumn::make('place.name'),
-                    Tables\Columns\TextColumn::make('planning.name'),
-                    Tables\Columns\TextColumn::make('start')->dateTime(),
-                    Tables\Columns\TextColumn::make('end')->dateTime()
+                    Tables\Columns\TextColumn::make('planning.name')
+                        ->hidden(in_array($table->getQueryStringIdentifier(),  ['contractsRelationManager'])),
+                    Tables\Columns\TextColumn::make('start')->date(),
+                    Tables\Columns\TextColumn::make('end')->date()
+                        ->hidden(in_array($table->getQueryStringIdentifier(),  ['contractsRelationManager']))
                 ]
             )
             ->filters([

@@ -45,6 +45,10 @@ class TeamPolicy
      */
     public function delete(User $user, Team $team): bool
     {
+        if ($team->contracts->count() > 0) {
+            return false;
+        }
+
         return $user->role->name === 'admin';
     }
 
@@ -61,6 +65,6 @@ class TeamPolicy
      */
     public function forceDelete(User $user, Team $team): bool
     {
-        return $user->role->name === 'admin';
+        return false;
     }
 }

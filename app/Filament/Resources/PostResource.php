@@ -19,7 +19,7 @@ class PostResource extends Resource
     protected static ?int $navigationSort = 3;
     protected static ?string $navigationIcon = null;
 
-    protected static ?string $navigationGroup = 'Business Configuration';
+    protected static ?string $navigationGroup = 'Business';
 
     protected static ?string $navigationLabel = 'Community Posts / News';
     protected static ?string $label = 'Business News';

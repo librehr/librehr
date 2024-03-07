@@ -18,7 +18,7 @@ class PlaceResource extends Resource
     protected static ?string $navigationIcon = null;
     protected static ?string $navigationLabel = "Office Locations";
     protected static ?string $modelLabel = 'Offices';
-    protected static ?string $navigationGroup = 'Business Configuration';
+    protected static ?string $navigationGroup = 'Business';
     public static function form(Form $form): Form
     {
         return $form

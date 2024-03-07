@@ -45,6 +45,11 @@ class AttendanceValidation extends Model
         return $this->belongsTo(Contract::class);
     }
 
+    public function validatedBy()
+    {
+        return $this->belongsTo(User::class, 'validated_by', 'id');
+    }
+
     public function requests()
     {
         return $this->morphToMany(Request::class, 'requestable');

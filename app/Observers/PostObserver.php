@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Jobs\NotifyUsers;
 use App\Models\Post;
 use App\Notifications\Posts;
+use App\Services\Notifications;
 
 class PostObserver
 {
@@ -13,7 +14,10 @@ class PostObserver
      */
     public function created(Post $post): void
     {
-        NotifyUsers::dispatch(new Posts($post));
+        Notifications::notify(
+            Notifications\Resources\Post::class,
+            $post
+        );
     }
 
     /**

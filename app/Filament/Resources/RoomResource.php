@@ -25,7 +25,7 @@ class RoomResource extends Resource
     protected static ?string $model = Room::class;
     protected static ?int $navigationSort = 5;
     protected static ?string $navigationIcon = null;
-    protected static ?string $navigationGroup = 'Business Configuration';
+    protected static ?string $navigationGroup = 'Business';
 
     protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 

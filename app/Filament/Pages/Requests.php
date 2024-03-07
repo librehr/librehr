@@ -4,9 +4,11 @@ namespace App\Filament\Pages;
 
 use App\Models\Absence;
 use App\Models\AttendanceValidation;
+use App\Models\Document;
 use App\Models\Request;
 use App\Models\Requestable;
 use App\Services\Calendar;
+use App\Services\Notifications;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
@@ -67,6 +69,7 @@ class Requests extends Page
                 ])
                 ->action(function (array $arguments, $data) {
                     $record = Absence::query()->find(data_get($arguments, '0.requestable_id'));
+                    $record->load(['contract']);
                     $record->status_by = data_get($data, 'user');
                     $record->status_at = now();
 
@@ -79,6 +82,19 @@ class Requests extends Page
                     $record->save();
 
                     $record->requests()->detach();
+
+                    if (data_get($data, 'validated', 0) == 1) {
+                        Notifications::notify(
+                            Notifications\Resources\TimeOffValidated::class,
+                            $record,
+                            data_get($record, 'contract.user_id')
+                        );
+                    } else {
+                        Notifications::notify(
+                            Notifications\Resources\TimeOffDenied::class,
+                            $record,
+                            data_get($record, 'contract.user_id')                        );
+                    }
 
                     Notification::make('ok')
                         ->title($message . ' successfully.')
@@ -113,6 +129,28 @@ class Requests extends Page
                             ->success()
                             ->send();
                     }
+                })->after(function () {
+                    $this->reloadRequests();
+                }),
+            Action::make('signs')
+                ->icon('heroicon-m-arrow-right')
+                ->iconPosition(IconPosition::After)
+                ->iconButton()
+                ->label('Sign files')
+                ->color('primary')
+                ->slideOver()
+                ->requiresConfirmation()
+                ->form([
+                    Hidden::make('user')->default(data_get( $this->user, 'id')),
+                ])
+                ->action(function (array $arguments, $data) {
+                    $record = Document::query()->find(data_get($arguments, '0.requestable_id'));
+                    $record->requests()->detach();
+
+                    Notification::make('ok')
+                        ->title( 'Signed successfully.')
+                        ->success()
+                        ->send();
                 })->after(function () {
                     $this->reloadRequests();
                 }),

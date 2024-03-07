@@ -27,7 +27,7 @@ class ListAbsences extends ListRecords
             'allowed' => Tab::make('Allowed')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'allowed')),
             'denied' => Tab::make('Denied')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'pending')),
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'denied')),
         ];
     }
 }

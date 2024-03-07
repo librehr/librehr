@@ -5,6 +5,8 @@ namespace App\Filament\Pages\HumanResources;
 use App\Models\AttendanceValidation;
 use App\Models\Contract;
 use App\Models\Request;
+use App\Models\Team;
+use App\Services\Notifications;
 use Carbon\Carbon;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
@@ -35,6 +37,20 @@ class AttendancesControl extends Page  implements HasForms, HasTable
 
     public static function canAccess(): bool
     {
+        $myId = \Auth::id();
+        $teamsId = Team::query()
+            ->with([
+                'supervisors'
+            ])
+            ->whereRelation('supervisors', 'user_id', $myId)
+            ->get()
+            ->pluck('id');
+
+        if ($teamsId->count() > 0) {
+            return true;
+        }
+
+
         return in_array(\Auth::user()->role->name, ['admin', 'manager']);
     }
 
@@ -67,6 +83,16 @@ class AttendancesControl extends Page  implements HasForms, HasTable
 
     public function table(Table $table): Table
     {
+        $myId = \Auth::id();
+        $teamsId = Team::query()
+            ->with([
+                'supervisors'
+            ])
+            ->whereRelation('supervisors', 'user_id', $myId)
+            ->get()
+            ->pluck('id')
+            ->toArray();
+
         return $table
             ->query(
                 Contract::query()
@@ -137,6 +163,12 @@ class AttendancesControl extends Page  implements HasForms, HasTable
                             'created_at' => now(),
                         ]);
 
+                        Notifications::notify(
+                            Notifications\Resources\AttendanceRevision::class,
+                            $validation,
+                            data_get($record, 'user_id')
+                        );
+
                         Notification::make()
                             ->title('Request sended successfully.')
                             ->success()
@@ -188,7 +220,7 @@ class AttendancesControl extends Page  implements HasForms, HasTable
                             ->first();
 
                         if (!$validations) {
-                            AttendanceValidation::query()->create([
+                            $attendance = AttendanceValidation::query()->create([
                                 'business_id' => data_get($record, 'business_id'),
                                 'contract_id' =>  data_get($record, 'id'),
                                 'date' => $this->date,
@@ -196,6 +228,14 @@ class AttendancesControl extends Page  implements HasForms, HasTable
                                 'validated_at' => now(),
                                 'validated' => true,
                             ]);
+
+                            $attendance->load(['validatedBy', 'contract']);
+
+                            Notifications::notify(
+                                Notifications\Resources\AttendanceValidation::class,
+                                $attendance,
+                                data_get($attendance, 'contract.user_id')
+                            );
 
                             Notification::make()
                                 ->title('Validated successfully.')
@@ -257,7 +297,10 @@ class AttendancesControl extends Page  implements HasForms, HasTable
                                 'end'
                             ]);
                     }
-                ]))
+                ])
+                ->whereRelation('team', 'id', $teamsId)
+            )
+            ->emptyStateHeading('You don\'t have any team assigned.')
             ->bulkActions([
                 // ...
             ]);

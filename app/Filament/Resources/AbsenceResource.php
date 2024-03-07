@@ -2,17 +2,14 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\AbsenceStatusEnum;
 use App\Filament\Resources\AbsenceResource\Pages;
-use App\Filament\Resources\AbsenceResource\RelationManagers;
-use App\Filament\Resources\CalendarWidgetResource\Widgets\CalendarWidget;
 use App\Models\Absence;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Auth;
 use Malzariey\FilamentDaterangepickerFilter\Fields\DateRangePicker;
 
 class AbsenceResource extends Resource
@@ -32,6 +29,10 @@ class AbsenceResource extends Resource
                         ->relationship('absenceType', 'name')
                         ->required()
                         ->columnSpan(3),
+                    Forms\Components\Select::make('status')
+                        ->required()
+                        ->options(fn () => collect(AbsenceStatusEnum::cases())->pluck('name', 'value'))
+                        ->columnSpan(3),
                     DateRangePicker::make('date')
                         ->formatStateUsing(function ($record) {
                             if ($record) {
@@ -43,7 +44,6 @@ class AbsenceResource extends Resource
                         ->columnSpan(3),
                     Forms\Components\Textarea::make('comments')->columnSpanFull()
                 ])->columns(6),
-
             ]);
     }
 
@@ -52,10 +52,11 @@ class AbsenceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('absenceType.name')
-                ->searchable(),
-                Tables\Columns\TextColumn::make('status')->badge(),
                 Tables\Columns\TextColumn::make('contract.user.name'),
+                Tables\Columns\TextColumn::make('absenceType.name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge(),
                 Tables\Columns\TextColumn::make('start')
                     ->formatStateUsing(fn ($state) => $state->format('d/m/Y')),
                 Tables\Columns\TextColumn::make('end')

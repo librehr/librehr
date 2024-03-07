@@ -4,6 +4,7 @@ namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\ContractResource;
 use App\Filament\Resources\UserResource;
+use App\Filament\Traits\DocumentUploadTrait;
 use App\Models\Document;
 use App\Models\User;
 use App\Services\Documents;
@@ -16,7 +17,7 @@ use function Symfony\Component\String\s;
 
 class ManageUserDocuments extends Page
 {
-    use InteractsWithRecord;
+    use InteractsWithRecord, DocumentUploadTrait;
 
     protected static string $resource = UserResource::class;
 
@@ -34,10 +35,9 @@ class ManageUserDocuments extends Page
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('upload')
-            ->form([
-
-            ])
+            $this->uploadDocumentAction(
+                data_get($this->getRecord(), 'id')
+            )
         ];
     }
 

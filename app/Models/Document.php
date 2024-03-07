@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property-read int|null $absences_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contract> $contracts
  * @property-read int|null $contracts_count
- * @property-read \App\Models\Documentable|null $relatedType
+ * @property-read \App\Models\Documentable|null $documentable
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
  * @property-read int|null $users_count
  * @method static \Illuminate\Database\Eloquent\Builder|Document newModelQuery()
@@ -41,6 +41,10 @@ use Illuminate\Database\Eloquent\Model;
 class Document extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        'attributes' => 'array'
+    ];
 
     protected $guarded = [];
 
@@ -64,7 +68,7 @@ class Document extends Model
         return $this->morphedByMany(User::class, 'documentable');
     }
 
-    public function relatedType()
+    public function documentable()
     {
         return $this->hasOne(Documentable::class);
     }
@@ -72,5 +76,15 @@ class Document extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function uploadedBy()
+    {
+        return $this->belongsTo(User::class, 'uploaded_by', 'id');
+    }
+
+    public function requests()
+    {
+        return $this->morphToMany(Request::class, 'requestable');
     }
 }

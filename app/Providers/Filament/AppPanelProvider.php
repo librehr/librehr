@@ -85,7 +85,7 @@ class AppPanelProvider extends PanelProvider
                 'Inbox',
                 'My Profile',
                 'Human Resources',
-                'Business Configuration',
+                'Business',
                 'Administration'
             ])
             ->authMiddleware([

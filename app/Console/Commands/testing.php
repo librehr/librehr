@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Document;
 use Illuminate\Console\Command;
 
 class testing extends Command
@@ -25,6 +26,9 @@ class testing extends Command
      */
     public function handle()
     {
+        $e = Document::query()->with('documentable')->find(15);
+        dd($e);
+        exit;
         $dayNames = [];
         $startOfWeek = now()->startOfWeek();
         for ($i = 0; $i < 7; $i++) {

@@ -18,7 +18,7 @@
                         <span href="#" class="text-primary-600">{{ $document->name }}</span>
                         <span> {{ \Illuminate\Support\Number::fileSize($document->size) }}</span>
                     </div>
-                    <span class="text-sm">Uploaded by <span class="font-semibold">{{ data_get($document, 'user.name')  }}</span> {{ $document->created_at->format('d/m/Y H:i') }}</span>
+                    <span class="text-sm">Uploaded by <span class="font-semibold">{{ data_get($document, 'uploadedBy.name')  }}</span> {{ $document->created_at->format('d/m/Y H:i') }}</span>
                 </div>
 
             @endforeach

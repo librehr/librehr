@@ -15,7 +15,11 @@
                 @endif
 
                 @if (data_get($request, 'request.name') == 'attendance-validations')
-                        <x-request-attendance-validations :request="$request"/>
+                    <x-request-attendance-validations :request="$request"/>
+                @endif
+
+                    @if (data_get($request, 'request.name') == 'signs')
+                        <x-request-signs :request="$request"/>
                     @endif
             @endforeach
         </div>

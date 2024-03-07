@@ -30,8 +30,6 @@ class DocumentsRelationManager extends RelationManager
             ]);
     }
 
-
-
     public function table(Table $table): Table
     {
         return $table
@@ -41,8 +39,8 @@ class DocumentsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('type'),
                 Tables\Columns\TextColumn::make('size')
                 ->formatStateUsing(fn ($state) => Number::fileSize($state)),
-                Tables\Columns\TextColumn::make('relatedType.type.name'),
-                Tables\Columns\IconColumn::make('relatedType.type.attributes.request_signature')
+                Tables\Columns\TextColumn::make('documentable.type.name'),
+                Tables\Columns\IconColumn::make('documentable.type.attributes.request_signature')
                     ->label('Sign needed?')
                     ->boolean()
             ])
@@ -60,7 +58,7 @@ class DocumentsRelationManager extends RelationManager
                 ]),
             ])
             ->modifyQueryUsing(function ($query) {
-                $query->with(['relatedType.type']);
+                $query->with(['documentable.type']);
             });
     }
 }

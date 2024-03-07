@@ -35,7 +35,10 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('email'),
                 Forms\Components\TextInput::make('password'),
                 Forms\Components\Select::make('role_id')
-                    ->relationship('role', 'name'),
+                    ->relationship('role', 'name')
+                    ->default(3),
+                Forms\Components\Toggle::make('active')
+                    ->default(true),
             ])
             ]);
     }
@@ -50,7 +53,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('contracts_count')
                     ->label('Contracts')
                     ->counts('contracts'),
-                Tables\Columns\TextColumn::make('active'),
+                Tables\Columns\IconColumn::make('active')->boolean(),
             ])
             ->filters([
                 //

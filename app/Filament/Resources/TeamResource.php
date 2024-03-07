@@ -6,6 +6,7 @@ use App\Filament\Resources\TeamResource\Pages;
 use App\Filament\Resources\TeamResource\RelationManagers;
 use App\Filament\Resources\UserResource\RelationManagers\ContractsRelationManager;
 use App\Models\Team;
+use App\Policies\TeamPolicy;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -21,7 +22,7 @@ class TeamResource extends Resource
     protected static ?int $navigationSort = 0;
     protected static ?string $navigationIcon = null;
 
-    protected static ?string $navigationGroup = 'Business Configuration';
+    protected static ?string $navigationGroup = 'Business';
 
     public static function form(Form $form): Form
     {
@@ -51,19 +52,19 @@ class TeamResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
-                        ->authorize('can view', Team::class),
-                ]),
+                ])->authorize('update', new Team()),
             ]);
     }
 
     public static function getRelations(): array
     {
         return [
-            RelationManagers\ContractsRelationManager::class];
+            RelationManagers\ContractsRelationManager::class
+        ];
     }
 
     public static function getPages(): array
@@ -72,6 +73,7 @@ class TeamResource extends Resource
             'index' => Pages\ListTeams::route('/'),
             'create' => Pages\CreateTeam::route('/create'),
             'edit' => Pages\EditTeam::route('/{record}/edit'),
+            'view' => Pages\ViewTeam::route('/{record}'),
         ];
     }
 }

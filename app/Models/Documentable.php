@@ -36,4 +36,9 @@ class Documentable extends Model
     {
         return $this->belongsTo(DocumentsType::class, 'documents_type_id', 'id');
     }
+
+    public function document()
+    {
+        return $this->belongsTo(Document::class);
+    }
 }

@@ -3,9 +3,14 @@
 namespace App\Providers;
 
 use App\Models\Contract;
+use App\Models\ContractTool;
+use App\Models\Document;
+use App\Models\Documentable;
 use App\Models\Post;
 use App\Models\Team;
 use App\Observers\ContractObserver;
+use App\Observers\ContractToolObserver;
+use App\Observers\DocumentObserver;
 use App\Observers\PostObserver;
 use App\Observers\TeamObserver;
 use Illuminate\Auth\Events\Registered;
@@ -34,6 +39,8 @@ class EventServiceProvider extends ServiceProvider
         Contract::observe(ContractObserver::class);
         Team::observe(TeamObserver::class);
         Post::observe(PostObserver::class);
+        Document::observe(DocumentObserver::class);
+        ContractTool::observe(ContractToolObserver::class);
     }
 
     /**
