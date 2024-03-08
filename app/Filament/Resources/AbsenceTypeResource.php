@@ -28,7 +28,8 @@ class AbsenceTypeResource extends Resource
                 Forms\Components\TextInput::make('name'),
                 Forms\Components\ColorPicker::make('attributes.color.background')->label('Background Color'),
                 Forms\Components\ColorPicker::make('attributes.color.text')->label('Text Color'),
-                Forms\Components\Toggle::make('attributes.attachments')->inline(false)->label('Attachments Allowed?')
+                Forms\Components\Toggle::make('attributes.attachments')->inline(false)->label('Attachments Allowed?'),
+                Forms\Components\Toggle::make('attributes.is_holidays')->inline(false)->label('Should discount vacation days?')
             ]);
     }
 
@@ -39,7 +40,8 @@ class AbsenceTypeResource extends Resource
                 Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\ColorColumn::make('attributes.color.background')->label('Background Color'),
                 Tables\Columns\ColorColumn::make('attributes.color.text')->label('Text Color'),
-                Tables\Columns\IconColumn::make('attributes.attachments')->label('Attachments Allowed?')->boolean()
+                Tables\Columns\IconColumn::make('attributes.attachments')->label('Attachments Allowed?')->boolean(),
+                Tables\Columns\IconColumn::make('attributes.is_holidays')->label('Discount days?')->boolean()
             ])
             ->filters([
                 //

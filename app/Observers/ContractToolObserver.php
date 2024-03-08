@@ -12,9 +12,11 @@ class ContractToolObserver
      */
     public function created(ContractTool $contractTool): void
     {
+        $contractTool = $contractTool->load(['contract', 'tool', 'deliveredBy']);
         Notifications::notify(
             Notifications\Resources\ContractToolDelivered::class,
-            $contractTool->load(['contract', 'tool', 'deliveredBy'])
+            $contractTool,
+            data_get($contractTool, 'contract.user_id')
         );
     }
 

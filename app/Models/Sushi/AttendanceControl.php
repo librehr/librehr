@@ -42,7 +42,11 @@ class AttendanceControl extends Model
             ->with(['team', 'attendancesValidations' => function ($query) {
                     $query->whereYear('date', Carbon::parse(self::$date));
                     $query->whereMonth('date', Carbon::parse(self::$date));
-            }]);
+            },
+                'absences' => function ($q) {
+                    $q->where('status', 'allowed')
+                    ->whereYear('start', Carbon::parse(self::$date)->format('Y'));
+                }]);
         }])->get();
 
         [$attendances, $summary] = app(Attendances::class)->buildSingleContractAttendances(

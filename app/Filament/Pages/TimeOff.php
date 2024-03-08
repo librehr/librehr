@@ -8,6 +8,7 @@ use App\Models\Document;
 use App\Models\DocumentsType;
 use App\Models\Request;
 use App\Services\Calendar;
+use App\Services\Notifications;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
@@ -37,7 +38,7 @@ class TimeOff extends Page
     public $year = null;
     public $calendar = [];
     public $summary = [];
-    public $from = 'ysyyas';
+    public $from;
     public $type;
     public $files  = [];
 
@@ -84,7 +85,9 @@ class TimeOff extends Page
                                 $days = $from->diffInDays($to) + 1;
                                 $daysAvailable = data_get($this->summary, 'total_days_pending');
 
-                                if ($days > $daysAvailable) {
+                                $absenceType = AbsenceType::query()->find($get('absenceType'));
+
+                                if ($days > $daysAvailable && data_get($absenceType, 'attributes.is_holidays', false) === true) {
                                     $this->allowToRequest = false;
                                     $message = "<div class='font-semibold text-red-600'>Not enought days available.</div>";
                                 } else {
@@ -98,11 +101,11 @@ class TimeOff extends Page
                                 $business = array_keys(data_get($overlaps, 'business', []));
 
                                 if (count($team) > 0) {
-                                    $message .= "<div> team overlaps: ". implode(',', $team) . "</div>";
+                                    $message .= "<div>Team overlaps: ". implode(',', $team) . "</div>";
                                 }
 
                                 if (count($business) > 0) {
-                                    $message .= "<div> business overlaps: ". implode(',', $business) . "</div>";
+                                    $message .= "<div>Business overlaps: ". implode(',', $business) . "</div>";
                                 }
 
                                 return new HtmlString($message);
@@ -192,6 +195,12 @@ class TimeOff extends Page
                             'contract_id' => $user->getActiveContractId(),
                             'created_at' => now(),
                         ]);
+
+                        Notifications::notify(
+                            Notifications\Resources\TimeOffRequest::class,
+                            $absence->load('contract.user'),
+                            data_get($supervisor, 'id')
+                        );
                     }
 
                     Notification::make()

@@ -118,7 +118,11 @@ class Attendances extends BaseService
                         $q->whereMonth('date', $currentDate->format('m'))
                             ->whereYear('date', $currentDate->format('Y'));
                     },
-                    'contracts.planning'
+                    'contracts.planning',
+                    'contracts.absences' => function ($q) use ($currentDate) {
+                        $q->where('status', 'allowed')
+                            ->whereYear('start',  $currentDate->format('Y'));;
+                    }
                 ])
             ->get();
     }
@@ -164,6 +168,7 @@ class Attendances extends BaseService
                     'user_id' => data_get($user, 'id'),
                     'name' => data_get($user, 'name'),
                     'team' => data_get($contract, 'team.name'),
+                    'absences' => data_get($contract, 'absences'),
                     'contract_id' => data_get($contract, 'id'),
                     'business_id' => data_get($contract, 'business_id'),
                     'validations' => (!empty($validations) ? $validations->toArray() : null),
@@ -180,13 +185,17 @@ class Attendances extends BaseService
                 try {
                     foreach ($days as $day) {
                         $dateAttendance = Carbon::createFromDate($currentDate->format('Y-m-') . $day);
+
+                        $absences = collect(data_get($contract, 'absences'))
+                            ->where('start', '<=', $dateAttendance)
+                            ->where('end', '>=', $dateAttendance)
+                            ->toArray();
+
                         $dayData = $attendances->where('date', $dateAttendance);
                         $estimated = data_get($estimatedWorkTime, $dateAttendance->format('N'));
                         $differenceSeconds = data_get($estimated, 'seconds')-$dayData->sum('seconds');
                         $extraSeconds = data_get($estimated, 'seconds')-$dayData->sum('seconds');
-
                         $estimatedTimes = data_get($estimated, 'times');
-
                         $totalTimes = is_array($estimatedTimes) ? count($estimatedTimes) : 0;
                         $timesValids = 0;
                         if (is_iterable($dayData)) {
@@ -219,10 +228,15 @@ class Attendances extends BaseService
                             $workable = false;
                         }
 
+                        if (!empty($absences)) {
+                            $workable = false;
+                        }
+
                         $buildedAttendances[data_get($contract, 'id')][$day] = [
                             'number' => $day,
                             'calendar' => $calendarDay,
                             'date' => $dateAttendance,
+                            'absences' => $absences,
                             'day_name' => str(\Carbon\Carbon::create($dateAttendance->format('Y'), $dateAttendance->format('m'), $day)->format('l'))->lower(),
                             'month_name' => str($dateAttendance->format('M'))->lower() . '.',
                             'attendances' => $dayData,
@@ -235,7 +249,7 @@ class Attendances extends BaseService
                                 data_get($estimated, 'seconds')
                             ) : $this->secondsToHm(),
                             'total_seconds_extra' => ($extraSeconds < 0 &&  data_get($estimated, 'seconds') > 0 ? -$extraSeconds : 0),
-                            'total_time_extra' => ((($extraSeconds < 0 && data_get($estimated, 'seconds') > 0) || $workable == false) ? $this->secondsToHm(
+                            'total_time_extra' => ((($extraSeconds < 0 && data_get($estimated, 'seconds') > 0) && $workable == false) ? $this->secondsToHm(
                                 $workable === false ? $dayData->sum('seconds') : -$extraSeconds
                             ) : null),
                             'errors' => $workable && now() > $dateAttendance ? $errors : null,

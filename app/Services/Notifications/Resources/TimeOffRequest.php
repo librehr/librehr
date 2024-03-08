@@ -6,23 +6,25 @@ use App\Filament\Pages\Attendances;
 use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\MyProfile\Documents;
 use App\Filament\Pages\MyProfile\ProfileTools;
+use App\Filament\Pages\Requests;
+use App\Filament\Pages\TimeOff;
 use App\Services\Notifications\NotificationsResources;
 
-class AttendanceValidation extends NotificationsResources
+class TimeOffRequest extends NotificationsResources
 {
-    //TODO: fix date to show only month, fix link to go the selected month / year
     public function getTitle(): string
     {
-        return 'The attendances from '. data_get($this->data, 'date')?->format('F, Y') . ' has been validated.';
+        return 'A new time-off request is pending your validation';
     }
 
     public function getDescription(): string
     {
-        return 'Check out the details on your personal attendances.';
+        return 'Please go to your inbox to validate/deny the request by ' .
+            data_get($this->data, 'contract.user.name');
     }
 
     public function getUrl(): string
     {
-        return Attendances::getNavigationUrl();
+        return Requests::getNavigationUrl();
     }
 }

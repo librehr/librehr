@@ -8,11 +8,13 @@ use App\Models\Document;
 use App\Models\Documentable;
 use App\Models\Post;
 use App\Models\Team;
+use App\Models\Userable;
 use App\Observers\ContractObserver;
 use App\Observers\ContractToolObserver;
 use App\Observers\DocumentObserver;
 use App\Observers\PostObserver;
 use App\Observers\TeamObserver;
+use App\Observers\UserableObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -41,6 +43,7 @@ class EventServiceProvider extends ServiceProvider
         Post::observe(PostObserver::class);
         Document::observe(DocumentObserver::class);
         ContractTool::observe(ContractToolObserver::class);
+        Userable::observe(UserableObserver::class);
     }
 
     /**

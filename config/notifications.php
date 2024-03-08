@@ -9,5 +9,6 @@ return [
         \App\Services\Notifications\Resources\AttendanceRevision::class   => ['mail', 'web'],
         \App\Services\Notifications\Resources\TimeOffDenied::class   => ['mail', 'web'],
         \App\Services\Notifications\Resources\TimeOffValidated::class   => ['mail', 'web'],
+        \App\Services\Notifications\Resources\TimeOffRequest::class   => ['mail', 'web'],
     ]
 ];

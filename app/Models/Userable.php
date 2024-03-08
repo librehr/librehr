@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\BusinessScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -32,8 +33,21 @@ class Userable extends Model
 {
     use HasFactory;
 
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new BusinessScope());
+    }
+
     public function supervisors(): MorphToMany
     {
         return $this->morphedByMany(Contract::class, 'userable');
+    }
+
+    public function taskUsers(): MorphToMany
+    {
+        return $this->morphedByMany(Task::class, 'userable');
     }
 }

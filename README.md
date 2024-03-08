@@ -1,1 +1,1 @@
--- la baja no debe SUMAR vacaciones.
+-- las absences aprobadas, no deben saltar en attendances

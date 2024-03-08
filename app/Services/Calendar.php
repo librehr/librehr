@@ -25,13 +25,19 @@ class Calendar extends BaseService
 
         $date = [];
         $totalAbsences = [];
+        $totalNotHolidays = [];
         while($startOfCalendar <= $endOfCalendar) {
             $holidays = data_get($calendar, $startOfCalendar->format('Y-m-d'), []);
             $absenceses = [];
             foreach ($absences as $absence) {
+                $isHolidays = data_get($absence, 'absenceType.attributes.is_holidays', false);
                 if ($startOfCalendar->between(Carbon::parse($absence->start), Carbon::parse($absence->end))) {
                     $absenceses[] = $absence;
                     $totalAbsences[] = $absence;
+
+                    if ($isHolidays === false) {
+                        $totalNotHolidays[] = $absence;
+                    }
                 }
             }
 
@@ -63,12 +69,12 @@ class Calendar extends BaseService
         }
 
         $date = $this->fillEmptyDaysInWeeks($date);
-        $summary = $this->getSummaryByContract($contractId, $totalAbsences);
+        $summary = $this->getSummaryByContract($contractId, $totalAbsences, $totalNotHolidays);
 
         return [$date, $summary];
     }
 
-    protected function getSummaryByContract($contractId, $totalAbsences)
+    protected function getSummaryByContract($contractId, $totalAbsences, $totalNotHolidays)
     {
         $contract = Contract::query()->with('contractType')->find($contractId);
         $totalDays = data_get(
@@ -78,10 +84,12 @@ class Calendar extends BaseService
         );
 
         $allowedAbsences = count(data_get($totalAbsences, '*.allowed', []));
+        $totalNotHolidays = count(data_get($totalNotHolidays, '*.allowed', []));
+
         return [
             'total_days' => $totalDays,
-            'total_days_selected' => $allowedAbsences,
-            'total_days_pending' => ($totalDays-$allowedAbsences)
+            'total_days_selected' => $allowedAbsences - $totalNotHolidays,
+            'total_days_pending' => ($totalDays - $allowedAbsences + $totalNotHolidays)
         ];
     }
 
