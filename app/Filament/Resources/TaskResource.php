@@ -9,6 +9,8 @@ use App\Filament\Resources\TaskResource\RelationManagers;
 use App\Models\Task;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Pages\Page;
+use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Enums\FiltersLayout;
@@ -99,8 +101,8 @@ class TaskResource extends Resource
                     ->query(fn (Builder $query): Builder => $query->whereRelation('users', 'users.id', \Auth::id()))
             ], layout: FiltersLayout::AboveContent)
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
+                Tables\Actions\Action::make('goto')->url(fn ($record) => 'tasks/' . $record->id),
+                Tables\Actions\EditAction::make()
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -126,7 +128,7 @@ class TaskResource extends Resource
             'index' => Pages\ListTasks::route('/'),
             'create' => Pages\CreateTask::route('/create'),
             'edit' => Pages\EditTask::route('/{record}/edit'),
-            'view' => Pages\ViewTask::route('/{record}'),
+            'view' => Pages\TaskActivity::route('/{record}'),
         ];
     }
 }
