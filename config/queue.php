@@ -85,8 +85,10 @@ return [
     */
 
     'batching' => [
-        'database' => env('DB_CONNECTION', 'mysql'),
-        'table' => 'job_batches',
+        'database'          => 'redis', // Change this from 'mysql' to 'redis'
+        'redis_connection'  => 'default', // here you can define what redis connection to store batch related data in. Defaults to 'default' if not set.
+        'table'             => 'job_batches',
+        'debug'             => false,
     ],
 
     /*

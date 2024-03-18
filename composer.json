@@ -10,9 +10,13 @@
     "require": {
         "php": "^8.1",
         "calebporzio/sushi": "^2.4",
+        "cyppe/laravel-batch-jobs-redis-driver": "^1.0",
+        "denniseilander/pulse-log-files": "^0.1.0",
         "filament/filament": "^3.0-stable",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
+        "laravel/horizon": "^5.23",
+        "laravel/pulse": "^1.0@beta",
         "laravel/sanctum": "^3.3",
         "laravel/telescope": "^4.17",
         "laravel/tinker": "^2.8",
@@ -71,6 +75,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "beta",
     "prefer-stable": true
 }

@@ -22,16 +22,14 @@ class Task extends Model
 
     protected $casts = [
         'attributes' => 'array',
+        'start' => 'date',
         'status' => TaskStatusEnum::class,
         'priority' => TaskPriorityEnum::class,
     ];
 
     protected $guarded = [];
 
-    public function users()
-    {
-        return $this->morphToMany(User::class, 'userable');
-    }
+
 
     public function observers()
     {
@@ -43,8 +41,18 @@ class Task extends Model
         return $this->morphToMany(Request::class, 'requestable');
     }
 
+    public function contracts()
+    {
+        return $this->morphToMany(Contract::class, 'contratable');
+    }
+
     public function tasksCategory()
     {
         return $this->belongsTo(TasksCategory::class);
+    }
+
+    public function activities()
+    {
+        return $this->hasMany(TaskActivity::class);
     }
 }

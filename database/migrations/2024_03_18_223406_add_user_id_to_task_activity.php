@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('userables', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->integer('user_id');
-            $table->foreignId('userable_id');
-            $table->string('userable_type');
-            $table->timestampsTz();
+        Schema::table('task_activities', function (Blueprint $table) {
+            $table->foreignId('user_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
     }
 
@@ -25,6 +24,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('userables');
+        Schema::table('task_activity', function (Blueprint $table) {
+            $table->dropColumn('user_id');
+        });
     }
 };

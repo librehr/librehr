@@ -14,6 +14,7 @@ use App\Models\Planning;
 use App\Models\Post;
 use App\Models\Role;
 use App\Models\Room;
+use App\Models\Task;
 use App\Models\Team;
 use App\Models\Tool;
 use App\Models\User;
@@ -28,6 +29,7 @@ use App\Policies\PlanningPolicy;
 use App\Policies\PostPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\RoomPolicy;
+use App\Policies\TaskPolicy;
 use App\Policies\TeamPolicy;
 use App\Policies\ToolPolicy;
 use App\Policies\UserPolicy;
@@ -55,6 +57,7 @@ class AuthServiceProvider extends ServiceProvider
         Calendar::class => CalendarPolicy::class,
         Tool::class => ToolPolicy::class,
         Room::class => RoomPolicy::class,
+        Task::class => TaskPolicy::class,
     ];
 
     /**

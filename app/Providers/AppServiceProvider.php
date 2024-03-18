@@ -60,11 +60,12 @@ class AppServiceProvider extends ServiceProvider
         );
 */
 
-
         FilamentAsset::register([
             Js::make('alpinejs-tooltip', __DIR__ . '/../../resources/js/alpinejs-tooltip.js'),
             Css::make('leaflet-stylesheet', resource_path('css/leaflet.css')),
             Js::make('leaflet-script', resource_path('js/leaflet.js')),
+            Css::make('tribute-css', 'https://unpkg.com/tributejs@5.1.3/dist/tribute.css'),
+            Js::make('tribute-js', 'https://unpkg.com/tributejs@5.1.3/dist/tribute.min.js')
         ]);
     }
 

@@ -11,11 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('userables', function (Blueprint $table) {
+        Schema::create('contratables', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('user_id');
-            $table->foreignId('userable_id');
-            $table->string('userable_type');
+            $table->foreignId('contract_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            $table->bigInteger('contratable_id');
+            $table->string('contratable_type');
             $table->timestampsTz();
         });
     }
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('userables');
+        Schema::dropIfExists('contratables');
     }
 };
