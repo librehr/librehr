@@ -25,7 +25,7 @@ enum TaskStatusEnum: string implements HasLabel, HasColor
             self::InReview => 'In Review',
             self::InProgress => 'In Progress',
             self::Blocked => 'Blocked',
-            self::BlockedInternal => 'BlockedInternal',
+            self::BlockedInternal => 'Blocked Internal',
             self::Completed => 'Completed',
             self::Closed => 'Closed',
         };

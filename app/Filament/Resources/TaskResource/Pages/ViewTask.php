@@ -24,6 +24,14 @@ class ViewTask extends ViewRecord
     {
         return $infolist
             ->schema([
+                    TextEntry::make('tasksCategory.name')
+                        ->label('')
+                        ->prefixAction(\Filament\Infolists\Components\Actions\Action::make('Go')
+                            ->icon('heroicon-m-arrow-left')
+                            ->url(fn () => TaskResource::getNavigationUrl())
+                        ->color(Color::Gray))
+                        ->extraAttributes(['class' => ''])
+                        ->inlineLabel(),
                 Section::make([
                     Split::make([
                         IconEntry::make('priority')
@@ -35,6 +43,7 @@ class ViewTask extends ViewRecord
                             ->action(
                                 \Filament\Infolists\Components\Actions\Action::make('change')
                                     ->iconButton()
+                                    ->button()
                                     ->color(Color::Gray)
                                     ->icon('heroicon-m-chevron-up-down')
                                     ->form([
@@ -60,6 +69,7 @@ class ViewTask extends ViewRecord
                     Section::make([
                         TextEntry::make('description')
                             ->label('Description')
+                            ->html()
                             ->placeholder('No description.')
                     ])
                 ])

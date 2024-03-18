@@ -78,9 +78,8 @@ class TaskResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->columnSpanFull(),
-                        Forms\Components\Textarea::make('description')
+                        Forms\Components\RichEditor::make('description')
                             ->columnSpanFull()
-                            ->autosize(),
                     ])->columns(3),
             ]);
     }
