@@ -57,9 +57,12 @@ class ActivitiesRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make()->authorize(true),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ViewAction::make()->authorize(true),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make()->authorize(fn ($record) => $record->user_id === \Auth::id()),
+                    Tables\Actions\DeleteAction::make()->authorize(fn ($record) => $record->user_id === \Auth::id()),
+                    Tables\Actions\ViewAction::make()->authorize(true),
+                ]),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

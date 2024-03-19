@@ -22,6 +22,14 @@ class ViewTask extends ViewRecord
 
     public function infolist(Infolist $infolist): Infolist
     {
+        $options = collect(\App\Enums\TaskStatusEnum::cases())
+            ->pluck('name','value');
+
+        // TODO: revisa esto, closed no debe aparecer siempre, solo jefes, managers y admins
+        if (data_get($this->getRecord(), 'status') !== 'completed') {
+            $options = $options->except(['closed']);
+        }
+
         return $infolist
             ->schema([
                     TextEntry::make('tasksCategory.name')
@@ -30,7 +38,6 @@ class ViewTask extends ViewRecord
                             ->icon('heroicon-m-arrow-left')
                             ->url(fn () => TaskResource::getNavigationUrl())
                         ->color(Color::Gray))
-                        ->extraAttributes(['class' => ''])
                         ->inlineLabel(),
                 Section::make([
                     Split::make([
@@ -48,8 +55,7 @@ class ViewTask extends ViewRecord
                                     ->icon('heroicon-m-chevron-up-down')
                                     ->form([
                                         Radio::make('status')
-                                            ->options(collect(\App\Enums\TaskStatusEnum::cases())
-                                                ->pluck('name','value'))
+                                            ->options($options)
                                             ->default(fn ($record) => data_get($record, 'status'))
                                     ])->action(function ($record, $data) {
                                         $record->status = data_get($data, 'status');
@@ -78,7 +84,7 @@ class ViewTask extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+
         ];
     }
 }
