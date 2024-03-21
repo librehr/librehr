@@ -14,13 +14,14 @@ class Reactions extends BaseService
 {
     public function addReaction($attributes, $userId, $type)
     {
+        $user = User::query()->find($userId)->first();
         $added = true;
         $myReaction = $attributes['reactions'][$type][$userId] ?? null;
         if (!empty($myReaction)) {
             $added = false;
             unset($attributes['reactions'][$type][$userId]);
         } else {
-            $attributes['reactions'][$type][$userId] = now();
+            $attributes['reactions'][$type][$userId] = data_get($user, 'name');
         }
 
         return [$attributes, $added];

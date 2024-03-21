@@ -131,7 +131,7 @@ class TaskResource extends Resource
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\ViewAction::make(),
-                ])
+                ])->color(Color::Gray)
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

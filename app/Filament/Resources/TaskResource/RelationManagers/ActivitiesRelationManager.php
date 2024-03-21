@@ -14,6 +14,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Alignment;
 use Filament\Tables;
 use Filament\Tables\Columns\Layout\Panel;
 use Filament\Tables\Columns\Layout\Stack;
@@ -101,7 +102,7 @@ class ActivitiesRelationManager extends RelationManager
                     Tables\Actions\EditAction::make()->authorize(fn ($record) => $record->user_id === \Auth::id()),
                     Tables\Actions\DeleteAction::make()->authorize(fn ($record) => $record->user_id === \Auth::id()),
                     Tables\Actions\ViewAction::make()->authorize(true),
-                ])->color(Color::Blue),
+                ])->color(Color::Gray),
             ], position: Tables\Enums\ActionsPosition::AfterColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -120,6 +121,7 @@ class ActivitiesRelationManager extends RelationManager
         return Tables\Actions\Action::make($type)
             ->size('xs')
             ->iconButton()
+            ->tooltip(fn ($record) => implode(', ', data_get($record, 'attributes.reactions.' . $type, [])))
             ->iconSize('lg')
             ->badgeColor(Color::Green)
             ->label('')
