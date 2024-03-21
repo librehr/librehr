@@ -93,7 +93,8 @@ class Requests extends Page
                         Notifications::notify(
                             Notifications\Resources\TimeOffDenied::class,
                             $record,
-                            data_get($record, 'contract.user_id')                        );
+                            data_get($record, 'contract.user_id')
+                        );
                     }
 
                     Notification::make('ok')

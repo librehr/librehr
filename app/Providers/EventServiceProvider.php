@@ -7,12 +7,14 @@ use App\Models\ContractTool;
 use App\Models\Document;
 use App\Models\Documentable;
 use App\Models\Post;
+use App\Models\Task;
 use App\Models\Team;
 use App\Models\Userable;
 use App\Observers\ContractObserver;
 use App\Observers\ContractToolObserver;
 use App\Observers\DocumentObserver;
 use App\Observers\PostObserver;
+use App\Observers\TaskObserver;
 use App\Observers\TeamObserver;
 use App\Observers\UserableObserver;
 use Illuminate\Auth\Events\Registered;
@@ -44,6 +46,7 @@ class EventServiceProvider extends ServiceProvider
         Document::observe(DocumentObserver::class);
         ContractTool::observe(ContractToolObserver::class);
         Userable::observe(UserableObserver::class);
+        Task::observe(TaskObserver::class);
     }
 
     /**

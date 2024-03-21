@@ -16,7 +16,7 @@ class EditContract extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
-            $this->uploadDocumentAction()
+            $this->uploadDocumentAction(data_get($this->getRecord(), 'user_id'))
         ];
     }
 }

@@ -2,10 +2,22 @@
 
 namespace App\Filament\Resources\TaskResource\RelationManagers;
 
+use App\Services\Notifications;
+use App\Services\Reactions;
+use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Infolist;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
+use Filament\Tables\Columns\Layout\Panel;
+use Filament\Tables\Columns\Layout\Stack;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -13,6 +25,29 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class ActivitiesRelationManager extends RelationManager
 {
     protected static string $relationship = 'activities';
+
+    protected static ?string $label = 'Attachments';
+
+    public function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                RepeatableEntry::make('attributes.files')
+                    ->label('Files')
+                    ->schema([
+                        TextEntry::make('')
+                            ->icon('heroicon-m-arrow-down-tray')
+                            ->formatStateUsing(fn ($record, $state) => data_get($record, 'attributes.fileNames')[$state] ?? null)
+                            ->url(
+                            fn ($state) =>
+                            \Storage::url($state),
+                            true
+                        )->extraAttributes([
+                            'target' => '_blank'
+                        ])->columnSpanFull(1)
+                ])->hidden(fn ($record) => empty(data_get($record, 'attributes.files', []) ))
+            ]);
+    }
 
     public function form(Form $form): Form
     {
@@ -25,49 +60,95 @@ class ActivitiesRelationManager extends RelationManager
                     ->columnSpanFull(),
                 Forms\Components\FileUpload::make('attributes.files')
                     ->multiple()
+                    ->previewable(false)
+                    ->storeFileNamesIn('attributes.fileNames')
                     ->columnSpanFull()
             ]);
     }
 
     public function table(Table $table): Table
     {
+        $userId = \Auth::id();
+
         return $table
-            ->recordTitleAttribute('id')
+            ->recordTitleAttribute(' ')
             ->columns([
-                Tables\Columns\TextColumn::make('attributes.body')
-                    ->label('Message')
-                    ->html()
-                    ->columnSpanFull()
-                    ->description(fn ($record) => data_get($record, 'created_at')->format('F Y, H:s'))
-                    ->label('Message'),
-                Tables\Columns\ImageColumn::make('attributes.files')
-                    ->label('Attachments')
-                    ->stacked()
-                    ->circular()
-                    ->ring(5)
-                    ->overlap(2)
-                    ->wrap()
-                    ->limit(3)
-                    ->checkFileExistence(false)
-                    ->extraImgAttributes(['loading' => 'lazy'])
-                    ->limitedRemainingText(size: 'lg')
+                Tables\Columns\IconColumn::make('attributes.files.0')
+                    ->label('Has Files?')
+                    ->boolean(),
+                    Tables\Columns\TextColumn::make('attributes.body')
+                        ->label('Message')
+                        ->html()
+                        ->columnSpanFull()
+                        ->description(fn ($record) => data_get($record, 'user.name') . ' - ' . data_get($record, 'created_at')->format('F Y, H:s'))
+                        ->label('Message')
+                        ->grow(),
+
+
+
             ])
             ->filters([])
             ->headerActions([
                 Tables\Actions\CreateAction::make()->authorize(true),
             ])
             ->actions([
+                $this->getReactionAction($userId, 'check'),
+                $this->getReactionAction($userId, 'face-smile'),
+                $this->getReactionAction($userId, 'face-frown'),
+                $this->getReactionAction($userId, 'rocket-launch'),
+
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\EditAction::make()->authorize(fn ($record) => $record->user_id === \Auth::id()),
                     Tables\Actions\DeleteAction::make()->authorize(fn ($record) => $record->user_id === \Auth::id()),
                     Tables\Actions\ViewAction::make()->authorize(true),
-                ]),
-
-            ])
+                ])->color(Color::Blue),
+            ], position: Tables\Enums\ActionsPosition::AfterColumns)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /**
+     * @param $userId
+     * @param $type
+     * @return Tables\Actions\Action
+     */
+    protected function getReactionAction($userId, $type): Tables\Actions\Action
+    {
+        return Tables\Actions\Action::make($type)
+            ->size('xs')
+            ->iconButton()
+            ->iconSize('lg')
+            ->badgeColor(Color::Green)
+            ->label('')
+            ->icon('heroicon-m-' . $type)
+            ->color(Color::Gray)
+            ->badge(fn ($record) => count(data_get($record, 'attributes.reactions.' . $type, [])) ?: null)
+            ->action(function ($record) use ($userId, $type) {
+                [$attributes, $added] = app(Reactions::class)->addReaction(
+                    data_get($record, 'attributes'),
+                    $userId,
+                    $type
+                );
+
+                $record->attributes = $attributes;
+                $record->save();
+
+                if ($added) {
+                    $record->load('task');
+                    $record->reaction = $type;
+                    $record->reaction_user = \Auth::user();
+                    $record->reaction_type = app(Reactions::class)->parseReactionNames($type);
+
+                    Notifications::notify(
+                        Notifications\Resources\ReactionAdded::class,
+                        $record,
+                        data_get($record, 'user_id')
+                    );
+                }
+
+            });
     }
 }

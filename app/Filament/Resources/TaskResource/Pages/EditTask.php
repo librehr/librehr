@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TaskResource\Pages;
 
+use App\Enums\TaskStatusEnum;
 use App\Filament\Resources\TaskResource;
 use App\Models\Task;
 use Filament\Actions;
@@ -17,18 +18,7 @@ class EditTask extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
-            Action::make('Change Status')
-                ->color(Color::Gray)
-                ->form([
-                    Radio::make('status')
-                        ->options(collect(\App\Enums\TaskStatusEnum::cases())
-                            ->pluck('name','value'))
-                        ->default(fn ($record) => data_get($record, 'status'))
-                ])->action(function ($record, $data) {
-                    $record->status = data_get($data, 'status');
-                    $record->save();
-                })
+            Actions\DeleteAction::make()
         ];
     }
 }
