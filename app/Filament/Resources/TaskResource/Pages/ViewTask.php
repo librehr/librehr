@@ -15,6 +15,7 @@ use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\Split;
+use Filament\Infolists\Components\Tabs;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
@@ -54,14 +55,17 @@ class ViewTask extends ViewRecord
                     ->date()
                     ->label('')
                     ->extraAttributes([
-                        'class' => 'rounded-lg p-1 px-8 shadow bg-gray-100'
+                        'class' => 'rounded-lg p-1 px-6 border border-gray-200 bg-red-50'
                     ])
+
                     ->color(Color::Gray)
                     ->size('sm')
+                    ->iconColor(Color::Red)
+                    ->icon('heroicon-o-exclamation-triangle')
                     ->columnSpanFull()
                     ->tooltip(fn ($state) => $state > now() ? 'Out dated' : null )
                     ->hidden(fn ($state) => $state < now() )
-                    ->formatStateUsing(fn ($state) => new HtmlString('This task is outdated: <span class="text-primary-600">' . Carbon::parse($state)->format('d F, Y') . '</span>'))
+                    ->formatStateUsing(fn ($state) => new HtmlString('This task is outdated: <span class="text-primary-600">' . Carbon::parse($state)->format('F d, Y') . '</span>'))
                     ->columns(1),
                 Section::make([
                     Split::make([

@@ -95,7 +95,7 @@ class TaskResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->recordClasses(fn ($record) => data_get($record, 'end') > now() ? 'bg-yellow-50' : '')
+            ->recordClasses(fn ($record) => data_get($record, 'end') > now() ? 'bg-red-50' : '')
             ->columns([
                 Tables\Columns\IconColumn::make('priority')
                     ->sortable()
