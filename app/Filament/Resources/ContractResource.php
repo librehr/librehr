@@ -83,6 +83,9 @@ class ContractResource extends Resource
         return $table
             ->columns(
                 [
+                    Tables\Columns\ImageColumn::make('user.attributes.avatar')
+                        ->label('Avatar')
+                        ->circular()    ,
                     Tables\Columns\TextColumn::make('user.name')
                         ->searchable(),
                     Tables\Columns\TextColumn::make('contractType.name'),

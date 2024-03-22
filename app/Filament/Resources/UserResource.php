@@ -47,6 +47,9 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\ImageColumn::make('attributes.avatar')
+                    ->label('Avatar')
+                    ->circular(),
                 Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\TextColumn::make('role.name'),
                 Tables\Columns\TextColumn::make('email'),

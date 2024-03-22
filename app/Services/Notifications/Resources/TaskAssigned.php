@@ -9,20 +9,20 @@ use App\Filament\Pages\MyProfile\ProfileTools;
 use App\Filament\Resources\TaskResource\Pages\ViewTask;
 use App\Services\Notifications\NotificationsResources;
 
-class TaskAdded extends NotificationsResources
+class TaskAssigned extends NotificationsResources
 {
     public function getTitle(): string
     {
-        return 'New task added by '. data_get($this->data, 'user.name') . ': ' . data_get($this->data, 'task.name') . '.';
+        return 'You have been assigned to new task by '. data_get($this->data, 'user.name') . ': ' . data_get($this->data, 'contratable.name') . '.';
     }
 
     public function getDescription(): string
     {
-        return  data_get($this->data, 'user.name') . ' assigned to your a new task';
+        return  data_get($this->data, 'user.name') . ' has assigned this task to you.';
     }
 
     public function getUrl(): string
     {
-        return ViewTask::getNavigationUrl([data_get($this->data, 'id')]);
+        return ViewTask::getNavigationUrl([data_get($this->data, 'contratable.id')]);
     }
 }

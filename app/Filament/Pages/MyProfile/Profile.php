@@ -6,6 +6,7 @@ use App\Models\User;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
@@ -97,6 +98,11 @@ class Profile extends Page implements HasForms
 
                 Section::make('Personal')
                     ->schema([
+                        FileUpload::make('attributes.avatar')
+                            ->label('Photo')
+                            ->image()
+                            ->imageEditor()
+                            ->imageEditorMode(2),
                         DatePicker::make('birthday')->required(),
                         TextInput::make('attributes.phone1')->required(),
                         TextInput::make('attributes.phone2'),

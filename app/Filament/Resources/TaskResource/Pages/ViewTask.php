@@ -47,6 +47,35 @@ class ViewTask extends ViewRecord
         return data_get($this->record, 'name');
     }
 
+    public function getHeaderActions(): array
+    {
+        return [
+            Action::make('Assign Users')
+                ->icon('heroicon-m-users')
+                ->color(Color::Gray)
+                ->form([
+                    Select::make('contracts')
+                        ->label('Users')
+                        ->relationship('contracts', 'id',
+                            modifyQueryUsing: fn (Builder $query) => $query->with('user')->where('business_id', \Auth::user()->getActiveBusinessId()),
+                        )
+                        ->multiple()
+                        ->preload()
+                        ->default(fn ($record) => data_get($record, 'contracts')?->pluck('id')->toArray())
+                        ->getOptionLabelFromRecordUsing(fn (Model $record) => data_get($record, 'user.name'))
+                        ->mutateDehydratedStateUsing(fn () => dd('hola'))
+                    ,
+                ])->action(function ($record) {
+                    $task = $record->load('contracts');
+
+                    Notification::make()
+                        ->title('Users assigned saved sucessfully.')
+                        ->success()
+                        ->send();
+                })
+        ];
+    }
+
     public function infolist(Infolist $infolist): Infolist
     {
         return $infolist

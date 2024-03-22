@@ -45,7 +45,7 @@ class AppPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->viteTheme('resources/css/filament/app/theme.css')
             ->id('app')
-            ->path('app')
+            ->path('/')
             ->databaseNotifications()
             ->databaseNotificationsPolling('60s')
             ->login()
@@ -93,6 +93,7 @@ class AppPanelProvider extends PanelProvider
             ])
             ->spa()
             ->passwordReset()
+            ->favicon(asset('images/logo.png'))
             ->default();
 
 

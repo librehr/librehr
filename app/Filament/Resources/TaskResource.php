@@ -16,6 +16,7 @@ use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -144,10 +145,21 @@ class TaskResource extends Resource
                     ->toggle()
                     ->default()
             ])
-            ->groups(['start'])
-            ->modifyQueryUsing(fn ($query) => $query->with('tasksCategory', 'contracts', 'contracts.user')
-                ->whereRelation('contracts', 'contracts.id', \Auth::user()->getActiveContractId())
-                ->orderBy('priority'));
+            ->groups(['priority',
+                Group::make('start')->getTitleFromRecordUsing(fn ($record): string => $record->start->format('F d,Y')),
+                Group::make('id')->label('Category')->getTitleFromRecordUsing(fn ($record): string => $record->tasksCategory->name),
+
+            ])
+            ->modifyQueryUsing(callback: function ($query) {
+                $user = \Auth::user();
+                $query->with('tasksCategory', 'contracts', 'contracts.user');
+
+                if (!in_array($user->role->name, ['admin', 'manager'])) {
+                    $query->whereRelation('contracts', 'contracts.id', \Auth::user()->getActiveContractId());
+                }
+
+                return $query->orderBy('priority');
+            });
     }
 
     public static function getRelations(): array

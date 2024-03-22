@@ -4,30 +4,22 @@ namespace App\Filament\Resources\TaskResource\RelationManagers;
 
 use App\Services\Notifications;
 use App\Services\Reactions;
-use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Colors\Color;
-use Filament\Support\Enums\Alignment;
 use Filament\Tables;
-use Filament\Tables\Columns\Layout\Panel;
-use Filament\Tables\Columns\Layout\Stack;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+
 
 class ActivitiesRelationManager extends RelationManager
 {
     protected static string $relationship = 'activities';
 
-    protected static ?string $label = 'Attachments';
+    protected static ?string $label = 'Message';
 
     public function infolist(Infolist $infolist): Infolist
     {

@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Notifications\DatabaseNotification;
 use Filament\Panel;
@@ -58,7 +59,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class User extends Authenticatable implements FilamentUser
+class User extends Authenticatable implements FilamentUser, HasAvatar
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes, Notifiable;
 
@@ -178,5 +179,16 @@ class User extends Authenticatable implements FilamentUser
     public function plannings()
     {
         return $this->hasManyThrough(Planning::class, Contract::class);
+    }
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        $avatar = data_get($this, 'attributes.avatar');
+
+        if ($avatar !== null) {
+            $avatar = \Storage::url($avatar);
+        }
+
+        return $avatar;
     }
 }

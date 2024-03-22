@@ -1,3 +1,5 @@
+
+
 <?php
 
 use Laravel\Pulse\Http\Middleware\Authorize;

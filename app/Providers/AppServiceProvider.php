@@ -8,6 +8,8 @@ use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Facades\FilamentView;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Filament\Notifications\Notification;
 use Illuminate\View\View;
@@ -28,6 +30,19 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (config('app.debug')) {
+            DB::listen(function($query) {
+                Log::info(
+                    $query->sql,
+                    [
+                        'bindings' => $query->bindings,
+                        'time' => $query->time
+                    ]
+                );
+            });
+        }
+
+
 
         $this->attachViewToFilamentClasses(
             [

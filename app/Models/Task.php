@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Enums\TaskPriorityEnum;
 use App\Enums\TaskStatusEnum;
+use App\Models\Pivots\ContratablePivot;
 use App\Models\Scopes\BusinessScope;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,7 +31,14 @@ class Task extends Model
 
     protected $guarded = [];
 
+    protected $appends = [
+        'StartFormatted'
+    ];
 
+    public function getStartFormattedAttribute()
+    {
+        return $this->start->format('F d, Y');
+    }
 
     public function observers()
     {
@@ -43,7 +52,7 @@ class Task extends Model
 
     public function contracts()
     {
-        return $this->morphToMany(Contract::class, 'contratable');
+        return $this->morphToMany(Contract::class, 'contratable')->using(ContratablePivot::class);;
     }
 
     public function tasksCategory()
