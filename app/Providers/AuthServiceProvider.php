@@ -9,6 +9,7 @@ use App\Models\Business;
 use App\Models\Calendar;
 use App\Models\Contract;
 use App\Models\ContractType;
+use App\Models\Expense;
 use App\Models\Place;
 use App\Models\Planning;
 use App\Models\Post;
@@ -24,6 +25,7 @@ use App\Policies\BusinessPolicy;
 use App\Policies\CalendarPolicy;
 use App\Policies\ContractPolicy;
 use App\Policies\ContractTypePolicy;
+use App\Policies\ExpensePolicy;
 use App\Policies\PlacePolicy;
 use App\Policies\PlanningPolicy;
 use App\Policies\PostPolicy;
@@ -58,6 +60,7 @@ class AuthServiceProvider extends ServiceProvider
         Tool::class => ToolPolicy::class,
         Room::class => RoomPolicy::class,
         Task::class => TaskPolicy::class,
+        Expense::class => ExpensePolicy::class,
     ];
 
     /**

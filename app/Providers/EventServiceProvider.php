@@ -6,6 +6,7 @@ use App\Models\Contract;
 use App\Models\ContractTool;
 use App\Models\Document;
 use App\Models\Documentable;
+use App\Models\Expense;
 use App\Models\Pivots\ContratablePivot;
 use App\Models\Post;
 use App\Models\Task;
@@ -16,6 +17,7 @@ use App\Observers\ContractToolObserver;
 use App\Observers\Contratable;
 use App\Observers\ContratablePivotObserver;
 use App\Observers\DocumentObserver;
+use App\Observers\ExpenseObserver;
 use App\Observers\PostObserver;
 use App\Observers\TaskObserver;
 use App\Observers\TeamObserver;
@@ -51,6 +53,7 @@ class EventServiceProvider extends ServiceProvider
         Userable::observe(UserableObserver::class);
         Task::observe(TaskObserver::class);
         ContratablePivot::observe(ContratablePivotObserver::class);
+        Expense::observe(ExpenseObserver::class);
     }
 
     /**
