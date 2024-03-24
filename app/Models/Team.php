@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Pivots\ContratablePivot;
 use App\Models\Scopes\BusinessScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -51,6 +52,6 @@ class Team extends Model
 
     public function supervisors()
     {
-        return$this->morphToMany(User::class, 'userable');
+        return$this->morphToMany(Contract::class, 'contratable')->using(ContratablePivot::class);;
     }
 }

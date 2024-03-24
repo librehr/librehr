@@ -138,6 +138,11 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         });
     }
 
+    public function getActiveContractTeamSupervisors() {
+        $contract = $this->getActiveContract()->load('team.supervisors');
+        return data_get($contract, 'team.supervisors');
+    }
+
     public function getActiveContractId()
     {
         return data_get($this->getActiveContract(), 'id');

@@ -28,6 +28,7 @@ class TaskResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?int $navigationSort = 3;
     public static function getNavigationBadge(): ?string
     {
         $taskCount = Task::query()->with('tasksCategory', 'contracts')
@@ -107,6 +108,9 @@ class TaskResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('contracts.user.name')
+                    ->label('Assigned to')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('tasksCategory.name')
                     ->label('Category'),
                 Tables\Columns\TextColumn::make('start')
@@ -150,9 +154,12 @@ class TaskResource extends Resource
                 Group::make('id')->label('Category')->getTitleFromRecordUsing(fn ($record): string => $record->tasksCategory->name),
 
             ])
+            ->paginated([
+                50
+            ])
             ->modifyQueryUsing(callback: function ($query) {
                 $user = \Auth::user();
-                $query->with('tasksCategory', 'contracts', 'contracts.user');
+                $query->with('tasksCategory', 'contracts', 'contracts.user:id,name,attributes');
 
                 if (!in_array($user->role->name, ['admin', 'manager'])) {
                     $query->whereRelation('contracts', 'contracts.id', \Auth::user()->getActiveContractId());

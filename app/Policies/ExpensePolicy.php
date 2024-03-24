@@ -13,7 +13,7 @@ class ExpensePolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->getActiveContractId() !== null && data_get($user->getActiveBusiness(), 'attributes.modules.expenses');
     }
 
     /**
@@ -37,7 +37,7 @@ class ExpensePolicy
      */
     public function update(User $user, Expense $expense): bool
     {
-        return true;
+        return in_array($user->role->name, ['admin', 'manager']);
     }
 
     /**
@@ -45,7 +45,7 @@ class ExpensePolicy
      */
     public function delete(User $user, Expense $expense): bool
     {
-        return true;
+        return in_array($user->role->name, ['admin', 'manager']);
     }
 
     /**
@@ -53,7 +53,7 @@ class ExpensePolicy
      */
     public function restore(User $user, Expense $expense): bool
     {
-        return true;
+        return in_array($user->role->name, ['admin', 'manager']);
     }
 
     /**
@@ -61,6 +61,6 @@ class ExpensePolicy
      */
     public function forceDelete(User $user, Expense $expense): bool
     {
-        return true;
+        return in_array($user->role->name, ['admin', 'manager']);
     }
 }

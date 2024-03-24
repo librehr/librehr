@@ -48,7 +48,7 @@ class DeskBookings extends Page
     public static function canAccess(): bool
     {
         $user = Auth::user();
-        return $user->getActiveBusinessId() && $user->getActiveContractId();
+        return $user->getActiveContractId() !== null && data_get($user->getActiveBusiness(), 'attributes.modules.desk_bookings');
     }
 
     public function getHeader(): ?\Illuminate\Contracts\View\View

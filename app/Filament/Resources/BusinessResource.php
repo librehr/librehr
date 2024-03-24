@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\HtmlString;
 
 class BusinessResource extends Resource
 {
@@ -30,8 +31,29 @@ class BusinessResource extends Resource
                     Forms\Components\FileUpload::make('attributes.logo')
                         ->image()
                         ->disk('public')
-                        ->imageEditor()
+                        ->imageEditor(),
+                ]),
+                Forms\Components\Section::make([
+                    Forms\Components\Toggle::make('attributes.modules.tasks')
+                        ->default(true),
+                    Forms\Components\Toggle::make('attributes.modules.expenses')
+                        ->default(true),
+                    Forms\Components\Toggle::make('attributes.modules.desk_bookings')
+                        ->default(true),
+                ])->heading('Allowed Modules'),
+                Forms\Components\Section::make()->schema([
+                    Forms\Components\TextInput::make('attributes.default_vacations')
+                        ->default(config('librehr.vacations'))
+                        ->numeric(),
+                    Forms\Components\TextInput::make('attributes.default_currency')
+                        ->default(config('librehr.currency'))
+                        ->helperText(new HtmlString('Must be a valid ISO currency <a target="_blank" class="font-bold text-primary-600" href="https://www.iban.com/currency-codes">View list</a>')),
+                    Forms\Components\TextInput::make('attributes.default_timezone')
+                        ->default(config('librehr.timezone'))
+                        ->helperText(new HtmlString('Must be a valid timezone <a target="_blank" class="font-bold text-primary-600" href="https://www.php.net/manual/en/timezones.php">View list</a>')),
                 ])
+                    ->heading('Business Configuration')
+                    ->columns(3)
             ]);
     }
 
@@ -42,6 +64,12 @@ class BusinessResource extends Resource
                 Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\ImageColumn::make('attributes.logo')
                     ->label('Logo'),
+                Tables\Columns\TextColumn::make('attributes.default_vacations')
+                    ->label('Default Vacations'),
+                Tables\Columns\TextColumn::make('attributes.default_currency')
+                    ->label('Default Currency'),
+                Tables\Columns\TextColumn::make('attributes.default_timezone')
+                    ->label('Default Timezone'),
             ])
             ->filters([
                 //

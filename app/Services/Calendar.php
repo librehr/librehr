@@ -76,11 +76,12 @@ class Calendar extends BaseService
 
     protected function getSummaryByContract($contractId, $totalAbsences, $totalNotHolidays)
     {
+        $business = \Auth::user()->getActiveBusiness();
         $contract = Contract::query()->with('contractType')->find($contractId);
         $totalDays = data_get(
             $contract,
             'contractType.attributes.vacations',
-            config('librehr.default_vacations')
+            data_get($business, 'attributes.default_vacations')
         );
 
         $allowedAbsences = count(data_get($totalAbsences, '*.allowed', []));

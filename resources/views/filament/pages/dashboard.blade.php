@@ -84,6 +84,7 @@
                 </div>
             </div>
         </x-filament::section>
+
         <x-filament::section>
             <x-slot name="heading">
                 Office Desk Booking
@@ -110,6 +111,7 @@
             </div>
         </x-filament::section>
     </div>
+
     @endif
     <div class="flex flex-col gap-4 mb-4">
         @foreach($posts as $post)

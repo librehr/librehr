@@ -1,6 +1,7 @@
 <?php
 
 return [
-    'default_vacations' => 30,
+    'vacations' => 30,
     'currency' => 'EUR',
+    'timezone' => 'Europe/Madrid',
 ];

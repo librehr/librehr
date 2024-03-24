@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Business;
 use App\Models\Contract;
 use App\Models\ContractTool;
 use App\Models\Document;
@@ -12,6 +13,7 @@ use App\Models\Post;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\Userable;
+use App\Observers\BusinessObserver;
 use App\Observers\ContractObserver;
 use App\Observers\ContractToolObserver;
 use App\Observers\Contratable;
@@ -54,6 +56,7 @@ class EventServiceProvider extends ServiceProvider
         Task::observe(TaskObserver::class);
         ContratablePivot::observe(ContratablePivotObserver::class);
         Expense::observe(ExpenseObserver::class);
+        Business::observe(BusinessObserver::class);
     }
 
     /**

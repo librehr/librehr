@@ -13,7 +13,7 @@ class TaskPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->getActiveContractId() !== null && data_get($user->getActiveBusiness(), 'attributes.modules.tasks');
     }
 
     /**

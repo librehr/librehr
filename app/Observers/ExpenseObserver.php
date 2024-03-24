@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Expense;
+use App\Services\Notifications;
 
 class ExpenseObserver
 {
@@ -19,7 +20,7 @@ class ExpenseObserver
      */
     public function updated(Expense $expense): void
     {
-        //
+        $this->notifyToEmployeeAction($expense);
     }
 
     /**
@@ -44,5 +45,16 @@ class ExpenseObserver
     public function forceDeleted(Expense $expense): void
     {
         //
+    }
+
+    public function notifyToEmployeeAction($expense)
+    {
+        $expense = $expense->load('contract.user:id,name');
+        $expense->user = \Auth::user();
+        Notifications::notify(
+            Notifications\Resources\ExpenseAction::class,
+            $expense,
+            data_get($expense, 'contract.user.id')
+        );
     }
 }

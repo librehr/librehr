@@ -15,5 +15,10 @@ return [
         \App\Services\Notifications\Resources\TaskUnassigned::class   => ['mail', 'web'],
         \App\Services\Notifications\Resources\TaskActivityAdded::class   => ['mail', 'web'],
         \App\Services\Notifications\Resources\TaskPriorityChanged::class   => ['mail', 'web'],
+        \App\Services\Notifications\Resources\TeamSupervisorAdded::class   => ['mail', 'web'],
+        \App\Services\Notifications\Resources\TeamSupervisorRemoved::class   => ['mail', 'web'],
+        \App\Services\Notifications\Resources\TeamSupervisorRemovedNotifySupervisor::class   => ['mail', 'web'],
+        \App\Services\Notifications\Resources\TeamSupervisorAddedNotifySupervisor::class   => ['mail', 'web'],
+        \App\Services\Notifications\Resources\ExpenseAction::class => ['mail', 'web'],
     ]
 ];

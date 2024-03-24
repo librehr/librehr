@@ -9,10 +9,13 @@ use App\Models\Team;
 use App\Policies\TeamPolicy;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TeamResource extends Resource
@@ -30,9 +33,14 @@ class TeamResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name'),
                 Forms\Components\Select::make('supervisors')
-                ->relationship('supervisors', 'name')
+                    ->label('Users')
+                    ->relationship('supervisors', 'id',
+                        modifyQueryUsing: fn (Builder $query) => $query->with('user')->where('business_id', \Auth::user()->getActiveBusinessId()),
+                    )
                     ->multiple()
-                    ->preload(),
+                    ->preload()
+                    ->getOptionLabelFromRecordUsing(fn (Model $record) => data_get($record, 'user.name'))
+                ,
             ]);
     }
 
@@ -44,8 +52,10 @@ class TeamResource extends Resource
                 Tables\Columns\TextColumn::make('contracts_count')
                     ->label('Employeers')
                 ->counts('contracts'),
-                Tables\Columns\TextColumn::make('supervisors.name')
-                ->badge()
+                Tables\Columns\TextColumn::make('supervisors.user.name')
+                    ->badge()
+                    ->label('Supervisors')
+
             ])
             ->filters([
                 //
@@ -57,7 +67,8 @@ class TeamResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                 ])->authorize('update', new Team()),
-            ]);
+            ])
+            ->modifyQueryUsing(fn ($query) => $query->with('supervisors.user:id,name'));
     }
 
     public static function getRelations(): array

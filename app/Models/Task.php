@@ -52,7 +52,7 @@ class Task extends Model
 
     public function contracts()
     {
-        return $this->morphToMany(Contract::class, 'contratable')->using(ContratablePivot::class);;
+        return $this->morphToMany(Contract::class, 'contratable')->using(ContratablePivot::class);
     }
 
     public function tasksCategory()

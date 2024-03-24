@@ -16,6 +16,7 @@ return new class extends Migration
                 'pending',
                 'accepted',
                 'denied',
+                'cancelled',
                 'paid'
             ])->index();
         });
