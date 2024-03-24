@@ -81,9 +81,7 @@ class ActivitiesRelationManager extends RelationManager
 
             ])
             ->filters([])
-            ->headerActions([
-                Tables\Actions\CreateAction::make()->authorize(true),
-            ])
+       
             ->actions([
                 $this->getReactionAction($userId, 'check'),
                 $this->getReactionAction($userId, 'face-smile'),
