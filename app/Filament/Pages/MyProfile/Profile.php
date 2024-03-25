@@ -96,43 +96,7 @@ class Profile extends Page implements HasForms
                         ])->columnSpanFull(),
                 ])->columns(3),
 
-                Section::make('Personal')
-                    ->schema([
-                        FileUpload::make('attributes.avatar')
-                            ->label('Photo')
-                            ->image()
-                            ->imageEditor()
-                            ->imageEditorMode(2),
-                        DatePicker::make('birthday')->required(),
-                        TextInput::make('attributes.phone1')->required(),
-                        TextInput::make('attributes.phone2'),
-                        TextInput::make('attributes.blood_type'),
-                        TextInput::make('attributes.email')
-                            ->email()
-                            ->label(
-                            'Personal Email'
-                        ),
-                        Textarea::make('attributes.address')->columnSpanFull(),
-
-                        Repeater::make('attributes.children')
-                            ->label('Children')
-                            ->schema([
-                                TextInput::make('name')->required(),
-                                DatePicker::make('birthday')->required(),
-                            ])
-                            ->columnSpanFull(2)
-                    ])->columns(3),
-
-                Section::make('Allowed Notifications')
-                   ->description('We will send you an email with all of these notifications.')
-                    ->schema([
-                        Checkbox::make('attributes.notifications.absences'),
-                        Checkbox::make('attributes.notifications.desk_bookings'),
-                        Checkbox::make('attributes.notifications.documents'),
-                        Checkbox::make('attributes.notifications.birthdays'),
-                        Checkbox::make('attributes.notifications.posts')->label('Community posts'),
-                        Checkbox::make('attributes.notifications.business_anniversaries'),
-                    ])->columns(1),
+                $this->personalForm()
             ])
             ->statePath('data');
     }
@@ -147,5 +111,39 @@ class Profile extends Page implements HasForms
             ->title('Saved successfully')
             ->success()
             ->send();
+    }
+
+    /**
+     * @return Section
+     * @throws \Exception
+     */
+    public static function personalForm(): Section
+    {
+        return Section::make('Personal')
+            ->schema([
+                FileUpload::make('attributes.avatar')
+                    ->label('Photo')
+                    ->image()
+                    ->imageEditor()
+                    ->imageEditorMode(2),
+                DatePicker::make('birthday')->required(),
+                TextInput::make('attributes.phone1')->required(),
+                TextInput::make('attributes.phone2'),
+                TextInput::make('attributes.blood_type'),
+                TextInput::make('attributes.email')
+                    ->email()
+                    ->label(
+                        'Personal Email'
+                    ),
+                Textarea::make('attributes.address')->columnSpanFull(),
+
+                Repeater::make('attributes.children')
+                    ->label('Children')
+                    ->schema([
+                        TextInput::make('name')->required(),
+                        DatePicker::make('birthday')->required(),
+                    ])
+                    ->columnSpanFull(2)
+            ])->columns(3);
     }
 }

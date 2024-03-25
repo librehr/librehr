@@ -12,7 +12,7 @@
                         ({{ data_get($request, 'contract.team.name') }})
                     @endif
                     <span>
-                        request {{ \Carbon\Carbon::parse(data_get($request, 'requestable.end'))->diffInDays(data_get($request, 'requestable.start'))+1 }} days
+                        request {{ \Carbon\Carbon::parse(data_get($request, 'requestable.start'))->diffInDays(data_get($request, 'requestable.end'))+1 }} days
                     </span>
                     <span class="font-semibold">{{ data_get($request, 'requestable.start')->format('d/m/Y') }}</span> to <span class="font-semibold">{{ data_get($request, 'requestable.end')->format('d/m/Y') }}</span></span>
             </div>

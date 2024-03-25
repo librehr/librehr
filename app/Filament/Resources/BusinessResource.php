@@ -38,8 +38,6 @@ class BusinessResource extends Resource
                         ->default(true),
                     Forms\Components\Toggle::make('attributes.modules.expenses')
                         ->default(true),
-                    Forms\Components\Toggle::make('attributes.modules.desk_bookings')
-                        ->default(true),
                 ])->heading('Allowed Modules'),
                 Forms\Components\Section::make()->schema([
                     Forms\Components\TextInput::make('attributes.default_vacations')

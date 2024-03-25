@@ -18,8 +18,8 @@
 @else
     <div class="mb-8 border rounded flex flex-col divide-gray-200 divide-y">
         @foreach ($absences as $absence)
-            @php($diffDays = \Carbon\Carbon::parse($absence['end'])->diffInDays(
-         \Carbon\Carbon::parse($absence['start'])
+            @php($diffDays = \Carbon\Carbon::parse($absence['start'])->diffInDays(
+         \Carbon\Carbon::parse($absence['end'])
     )+1)
             <div wire:click="openAbsence({{ data_get($absence, 'id') }})"  class="p-6 flex flex-row gap-4 cursor-pointer hover:bg-gray-100">
                 <div class="flex flex-row min-w-[70px] gap-2">
@@ -45,10 +45,10 @@
                 </div>
                 <div class="flex flex-col">
                     <span class="font-semibold">
-                        Vacaciones
+                        {{ data_get($absence, 'absence_type.name') }}
                     </span>
                     <span class="text-gray-600">
-                    {{ $diffDays }} dia{{ $diffDays > 1 ? 's' : '' }} ({{ \Carbon\Carbon::parse($absence['start'])->format('Y') }})
+                    {{ $diffDays }} day{{ $diffDays > 1 ? 's' : '' }} ({{ \Carbon\Carbon::parse($absence['start'])->format('Y') }})
                 </span>
                 </div>
             </div>

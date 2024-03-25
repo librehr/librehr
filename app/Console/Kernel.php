@@ -12,7 +12,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        if (config('librehr.demo_mode') && config('app.env') == 'development') {
+            $schedule->command('php artisan migrate:fresh')->daily();
+        }
     }
 
     /**

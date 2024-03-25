@@ -30,7 +30,8 @@ class DocumentsTypeResource extends Resource
                         ->maxLength(255)
                         ->columnSpanFull(),
                     Forms\Components\Checkbox::make('attributes.request_signature')
-                        ->helperText('If the document needs to be signed or not.')
+                        ->disabled()
+                        ->helperText('(currently disabled) If the document needs to be signed or not.')
                 ])
 
                 ]);

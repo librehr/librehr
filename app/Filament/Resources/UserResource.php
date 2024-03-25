@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Pages\MyProfile\Profile;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
@@ -33,13 +34,15 @@ class UserResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')->columnSpanFull(),
                 Forms\Components\TextInput::make('email'),
-                Forms\Components\TextInput::make('password'),
+                Forms\Components\TextInput::make('password')
+                ->password()
+                ->helperText('Leave empty if you don\'t want to change it.'),
                 Forms\Components\Select::make('role_id')
                     ->relationship('role', 'name')
                     ->default(3),
                 Forms\Components\Toggle::make('active')
                     ->default(true),
-            ])
+            ]), Profile::personalForm()
             ]);
     }
 

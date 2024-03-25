@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('calendars', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId('business_id')
+                ->constrained()
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->date('date');
             $table->string('name');
             $table->boolean('workable')->default(false);
