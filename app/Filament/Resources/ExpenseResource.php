@@ -90,7 +90,10 @@ class ExpenseResource extends Resource
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('amount')
-                    ->money(data_get($user->getActiveBusiness(), 'attributes.default_currency', 'USD'))
+                    ->money(data_get($user->getActiveBusiness(),
+                        'attributes.default_currency',
+                        config('librehr.currency'))
+                    )
                     ->sortable(),
                 Tables\Columns\IconColumn::make('paid')
                     ->boolean()

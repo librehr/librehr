@@ -2,6 +2,6 @@
 
 return [
     'vacations' => 30,
-    'currency' => 'EUR',
+    'currency' => 'USA',
     'timezone' => 'Europe/Madrid',
 ];
