@@ -81,19 +81,17 @@ class ViewTask extends ViewRecord
         return $infolist
             ->schema([
                 TextEntry::make('end')
-                    ->date()
                     ->label('')
                     ->extraAttributes([
                         'class' => 'rounded-lg p-1 px-6 border border-gray-200 bg-red-50'
                     ])
-
                     ->color(Color::Gray)
                     ->size('sm')
                     ->iconColor(Color::Red)
                     ->icon('heroicon-o-exclamation-triangle')
                     ->columnSpanFull()
-                    ->tooltip(fn ($state) => $state > now() ? 'Out dated' : null )
-                    ->hidden(fn ($state) => $state < now() )
+                    ->tooltip(fn ($state) => Carbon::parse($state)->toDate() < now()->toDate() ? 'Out dated' : null )
+                    ->visible(fn ($state) => Carbon::parse($state)->toDate() < now() )
                     ->formatStateUsing(fn ($state) => new HtmlString('This task is outdated: <span class="text-primary-600">' . Carbon::parse($state)->format('F d, Y') . '</span>'))
                     ->columns(1),
                 Section::make([
@@ -172,14 +170,16 @@ class ViewTask extends ViewRecord
                             ->label('Assigned to'),
                         TextEntry::make('tasksCategory.name')
                             ->label('Category')
+                            ->color(Color::Gray)
                             ->columns(1),
                         TextEntry::make('start')
                             ->date()
+                            ->color(Color::Gray)
                             ->columns(1),
                         TextEntry::make('end')
                             ->date()
-                            ->color(fn ($state) => $state > now() ? Color::Red : Color::Gray )
-                            ->tooltip(fn ($state) => $state > now() ? 'Outdated' : null )
+                            ->color(fn ($state) => Carbon::parse($state)->toDate() < now()->toDate() ? Color::Red : Color::Gray )
+                            ->tooltip(fn ($state) => Carbon::parse($state)->toDate() < now()->toDate() ? 'Outdated' : null )
                             ->columns(1),
                     ])->columns(5),
                     Section::make([

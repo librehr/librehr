@@ -51,6 +51,7 @@ class ExpenseResource extends Resource
                                 Forms\Components\DatePicker::make('date')
                                     ->required(),
                                 Forms\Components\TextInput::make('amount')
+                                    ->prefix(data_get($user->getActiveBusiness(), 'attributes.default_currency'))
                                     ->required()
                                     ->numeric()
                         ])
@@ -66,6 +67,7 @@ class ExpenseResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $user = \Auth::user();
         $control = str($table->getLivewire()->getName())->contains('expense-control');
 
         return $table
@@ -88,7 +90,7 @@ class ExpenseResource extends Resource
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('amount')
-                    ->numeric()
+                    ->money(data_get($user->getActiveBusiness(), 'attributes.default_currency', 'USD'))
                     ->sortable(),
                 Tables\Columns\IconColumn::make('paid')
                     ->boolean()

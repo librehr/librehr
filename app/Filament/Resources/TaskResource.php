@@ -7,6 +7,7 @@ use App\Enums\TaskStatusEnum;
 use App\Filament\Resources\TaskResource\Pages;
 use App\Filament\Resources\TaskResource\RelationManagers;
 use App\Models\Task;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Pages\Page;
@@ -97,7 +98,7 @@ class TaskResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->recordClasses(fn ($record) => data_get($record, 'end') > now() ? 'bg-red-50' : '')
+            ->recordClasses(fn ($record) => Carbon::parse(data_get($record, 'end'))->toDate() < now()->toDate() ? 'bg-red-50' : '')
             ->columns([
                 Tables\Columns\IconColumn::make('priority')
                     ->sortable()
@@ -118,8 +119,8 @@ class TaskResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('end')
                     ->date()
-                    ->color(fn ($state) => $state > now() ? Color::Red : Color::Gray )
-                    ->tooltip(fn ($state) => $state > now() ? 'Outdated' : null )
+                    ->color(fn ($state) => $state > now()->toDate() ? Color::Red : Color::Gray )
+                    ->tooltip(fn ($state) => $state > now()->toDate() ? 'Outdated' : null )
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')

@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\TaskResource\RelationManagers;
 
+use App\Models\TaskActivity;
 use App\Services\Notifications;
 use App\Services\Reactions;
+use Filament\Actions\CreateAction;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\RepeatableEntry;
@@ -13,6 +15,8 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Contracts\View\View;
 
 
 class ActivitiesRelationManager extends RelationManager
@@ -45,18 +49,7 @@ class ActivitiesRelationManager extends RelationManager
     public function form(Form $form): Form
     {
         return $form
-            ->schema([
-                Forms\Components\Hidden::make('user_id')->default(\Auth::id()),
-                Forms\Components\RichEditor::make('attributes.body')
-                    ->label('Message')
-                    ->required()
-                    ->columnSpanFull(),
-                Forms\Components\FileUpload::make('attributes.files')
-                    ->multiple()
-                    ->previewable(false)
-                    ->storeFileNamesIn('attributes.fileNames')
-                    ->columnSpanFull()
-            ]);
+            ->schema($this->createMessage());
     }
 
     public function table(Table $table): Table
@@ -80,8 +73,19 @@ class ActivitiesRelationManager extends RelationManager
 
 
             ])
+            ->headerActions([
+                Tables\Actions\Action::make('Create Message')
+                    ->form($this->createMessage())
+                    ->action(function ($data) use ($userId) {
+                    $record = $this->getOwnerRecord();
+                    TaskActivity::query()->create([
+                        'task_id' => data_get($record, 'id'),
+                        'user_id' => $userId,
+                        'attributes' => data_get($data, 'attributes')
+                    ]);
+                })
+            ])
             ->filters([])
-       
             ->actions([
                 $this->getReactionAction($userId, 'check'),
                 $this->getReactionAction($userId, 'face-smile'),
@@ -142,5 +146,29 @@ class ActivitiesRelationManager extends RelationManager
                 }
 
             });
+    }
+
+    /**
+     * @return array
+     */
+    protected function createMessage(): array
+    {
+        return [
+            Forms\Components\Hidden::make('user_id')->default(\Auth::id()),
+            Forms\Components\RichEditor::make('attributes.body')
+                ->label('Message')
+                ->required()
+                ->columnSpanFull(),
+            Forms\Components\FileUpload::make('attributes.files')
+                ->multiple()
+                ->previewable(false)
+                ->storeFileNamesIn('attributes.fileNames')
+                ->columnSpanFull()
+        ];
+    }
+
+    protected function canCreate(): bool
+    {
+        return true;
     }
 }
