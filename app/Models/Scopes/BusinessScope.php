@@ -15,6 +15,8 @@ class BusinessScope implements Scope
     public function apply(Builder $builder, Model $model): void
     {
         $tableName = $model->getTable(); // Obtener el nombre de la tabla del modelo
-        $builder->where("$tableName.business_id", Auth::user()->getActiveBusinessId());
+        if (auth()->check()) {
+            $builder->where("$tableName.business_id", Auth::user()->getActiveBusinessId());
+        }
     }
 }

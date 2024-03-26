@@ -11,7 +11,9 @@ class UserableObserver
      */
     public function creating(Userable $userable): void
     {
-        $userable->business_id = \Auth::user()->getActiveBusinessId();
+        if (auth()->check()) {
+            $userable->business_id = \Auth::user()->getActiveBusinessId();
+        }
     }
 
     /**
@@ -19,7 +21,9 @@ class UserableObserver
      */
     public function updating(Userable $userable): void
     {
-        $userable->business_id = \Auth::user()->getActiveBusinessId();
+        if (auth()->check()) {
+            $userable->business_id = \Auth::user()->getActiveBusinessId();
+        }
     }
 
     /**
