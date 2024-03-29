@@ -15,18 +15,18 @@ return [
     */
 
     'broadcasting' => [
-
-        // 'echo' => [
-        //     'broadcaster' => 'pusher',
-        //     'key' => env('VITE_PUSHER_APP_KEY'),
-        //     'cluster' => env('VITE_PUSHER_APP_CLUSTER'),
-        //     'wsHost' => env('VITE_PUSHER_HOST'),
-        //     'wsPort' => env('VITE_PUSHER_PORT'),
-        //     'wssPort' => env('VITE_PUSHER_PORT'),
-        //     'authEndpoint' => '/api/v1/broadcasting/auth',
-        //     'disableStats' => true,
-        //     'encrypted' => true,
-        // ],
+         'echo' => [
+             'broadcaster' => 'reverb',
+             'key' => env('REVERB_APP_KEY'),
+             'cluster' => env('REVERB_CLUSTER'),
+             'wsHost' => env('REVERB_HOST'),
+             'wsPort' => env('REVERB_PORT'),
+             'wssPort' => env('REVERB_PORT'),
+             'authEndpoint' => '/api/v1/broadcasting/auth',
+             'disableStats' => true,
+             'encrypted' => false,
+             'forceTLS' => false,
+        ],
 
     ],
 

@@ -15,9 +15,8 @@
                           <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                         </span>
                     @endif
-                    @persist('timer')
-                        @livewire('attendance-today-summary', ['currentAttendance' => $currentAttendance])
-                    @endpersist
+
+                    @livewire('attendance-today-summary', ['currentAttendance' => $currentAttendance])
                 </span>
                         <span class="text-sm text-gray-700 flex flex-row gap-1 items-center">
                      <span>
