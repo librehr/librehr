@@ -50,7 +50,7 @@ class AppPanelProvider extends PanelProvider
             ->id('app')
             ->path('/')
             ->databaseNotifications()
-            ->databaseNotificationsPolling('60s')
+            ->databaseNotificationsPolling('30s')
             ->login()
             ->darkMode(false)
             ->colors([

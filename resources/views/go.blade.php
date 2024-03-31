@@ -6,6 +6,8 @@
     <title>Seat Reservation</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
     <style>
         #map {
@@ -15,6 +17,8 @@
             background-repeat: repeat;
         }
     </style>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 </head>
 <body>
  <div x-data="app" x-init="initMap">
@@ -159,6 +163,13 @@
         }
     };
 </script>
-
+ <script>
+     window.onload = (event) => {
+         Echo.channel('channel-name')
+             .listen('SomeEvent', (event) => {
+                 console.log(event);
+                 // Handle event data here
+             });     };
+ </script>
 </body>
 </html>

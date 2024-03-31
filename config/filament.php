@@ -22,10 +22,11 @@ return [
              'wsHost' => env('REVERB_HOST'),
              'wsPort' => env('REVERB_PORT'),
              'wssPort' => env('REVERB_PORT'),
-             'authEndpoint' => '/api/v1/broadcasting/auth',
+             'authEndpoint' => 'broadcasting/auth',
              'disableStats' => true,
              'encrypted' => false,
              'forceTLS' => false,
+             'enabledTransports' => ['ws']
         ],
 
     ],

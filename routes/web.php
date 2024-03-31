@@ -15,7 +15,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/test', function () {
-    \Filament\Notifications\Notification::make('hika')
-        ->title('Hola')
-        ->toBroadcast();
+    return view('go');
 });
