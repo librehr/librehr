@@ -17,6 +17,7 @@ use App\Models\Post;
 use App\Models\Request;
 use App\Models\Role;
 use App\Models\Room;
+use App\Models\TasksCategory;
 use App\Models\Team;
 use App\Models\Tool;
 use Illuminate\Database\Seeder;
@@ -144,6 +145,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Contract::factory(20)->create();
+
+        TasksCategory::query()->create([
+            'name' => 'Test project'
+        ]);
 
         \App\Models\User::query()->where('id',1)->update([
             'name' => 'demo',
