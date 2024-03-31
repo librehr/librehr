@@ -30,14 +30,10 @@ class UserExpenseMonth extends BaseWidget
 
         $pendingColor = $pending > 0 ? 'red' : null;
 
-        try {
-            return [
-                Stat::make('Paid this month', Number::currency($paid, data_get($business, 'attributes.default_currency', 0)))
-                    ->icon('heroicon-m-check-circle'),
-                Stat::make('Total Pending', Number::currency($pending, data_get($business, 'attributes.default_currency', 0)))
-            ];
-        } catch (\Exception $exception) {
-            return [];
-        }
+        return [
+            Stat::make('Paid this month', Number::currency($paid, data_get($business, 'attributes.default_currency', 0) ?? 0))
+            ->icon('heroicon-m-check-circle'),
+            Stat::make('Total Pending', Number::currency($pending, data_get($business, 'attributes.default_currency', 0) ?? 0))
+        ];
     }
 }
