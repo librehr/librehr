@@ -21,6 +21,6 @@ Route::get('/test', function () {
     if (file_exists($logFilePath)) {
         dd(file_get_contents($logFilePath));
     } else {
-        print 'not exist';
+        return 'not exist';
     }
 });
