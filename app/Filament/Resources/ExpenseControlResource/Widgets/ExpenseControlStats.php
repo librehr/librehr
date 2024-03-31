@@ -28,7 +28,7 @@ class ExpenseControlStats extends BaseWidget
         return [
             Stat::make('Total Pending', $pending)
                 ->color(Color::Orange),
-            Stat::make('Paid this month', Number::currency($paid, data_get($business, 'attributes.default_currency')))
+            Stat::make('Paid this month', Number::currency($paid, data_get($business, 'attributes.default_currency', 0)))
             ->icon('heroicon-m-check-circle')
         ];
     }
