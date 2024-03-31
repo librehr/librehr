@@ -13,5 +13,6 @@
     "file": "assets/app-665ee979.js",
     "isEntry": true,
     "src": "resources/js/app.js"
-  }
+  },
+    "test": "ok"
 }
