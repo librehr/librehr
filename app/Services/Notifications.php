@@ -48,7 +48,7 @@ class Notifications extends BaseService
                                     Action::make('open')
                                     ->url(data_get($result, 'url'))
                                 ])
-                                ->toBroadcast(),
+                                ->toDatabase(),
                         );
                     }
                 }
