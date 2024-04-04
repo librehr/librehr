@@ -50,7 +50,7 @@ class AppPanelProvider extends PanelProvider
             ->id('app')
             ->path('/')
             ->databaseNotifications()
-            ->databaseNotificationsPolling('60s')
+            ->databaseNotificationsPolling('30s')
             ->login()
             ->darkMode(false)
             ->colors([
@@ -61,13 +61,6 @@ class AppPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
             ])
-            ->plugin(
-                FilamentFullCalendarPlugin::make()
-                    ->selectable()
-                    ->editable()
-                    ->timezone('Europe/Madrid')
-                    ->locale(app()->getLocale())
-            )
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
@@ -96,7 +89,6 @@ class AppPanelProvider extends PanelProvider
             ])
             ->spa()
             ->passwordReset()
-
             ->favicon(asset('images/logo.png'))
             ->default();
 

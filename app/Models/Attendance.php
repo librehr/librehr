@@ -86,10 +86,10 @@ class Attendance extends Model
                 return null;
             }
 
-            return Carbon::create(now())->diffInSeconds(Carbon::create($this->start));
+            return Carbon::create(Carbon::create($this->start))->diffInSeconds(now());
         }
 
-        return Carbon::create($this->end)->diffInSeconds(Carbon::create($this->start));
+        return Carbon::create(Carbon::create($this->start))->diffInSeconds($this->end);
     }
 
     public function getSecondsFormatAttribute()

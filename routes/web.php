@@ -14,3 +14,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/test', function () {
+    $logFilePath = storage_path('logs/laravel.log');
+
+// Check if the log file exists
+    if (file_exists($logFilePath)) {
+        dd(file_get_contents($logFilePath));
+    } else {
+        return 'not exist';
+    }
+});

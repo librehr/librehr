@@ -23,4 +23,14 @@ class TasksCategory extends Model
     ];
 
     protected $guarded = [];
+
+    public function parent()
+    {
+        return $this->belongsTo(TasksCategory::class, 'parent_id', 'id');
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }

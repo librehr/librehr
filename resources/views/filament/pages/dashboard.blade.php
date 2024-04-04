@@ -1,6 +1,6 @@
 <div class="pt-10">
     @if($contractId && $businessId)
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4 text-sm">
         <x-filament::section class="p-0">
             <x-slot name="heading">
                 Attendance
@@ -15,9 +15,8 @@
                           <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                         </span>
                     @endif
-                    @persist('timer')
-                        @livewire('attendance-today-summary', ['currentAttendance' => $currentAttendance])
-                    @endpersist
+
+                    @livewire('attendance-today-summary', ['currentAttendance' => $currentAttendance])
                 </span>
                         <span class="text-sm text-gray-700 flex flex-row gap-1 items-center">
                      <span>
@@ -31,7 +30,8 @@
                 </div>
             </div>
         </x-filament::section>
-        <x-filament::section>
+
+        <x-filament::section class="col-span-2">
             <x-slot name="heading">
                 Notifications / Requests
             </x-slot>
@@ -108,6 +108,29 @@
                         Book now!
                     </x-filament::button>
                 @endif
+            </div>
+        </x-filament::section>
+
+        <x-filament::section class="p-0 col-span-2">
+            <x-slot name="heading">
+                {{ data_get($user->getActiveBusiness(), 'name') }} Calendar
+            </x-slot>
+            <div class="flex flex-col divide-y">
+                @forelse($calendar as $day)
+                    <div class="py-2 flex justify-between">
+                        {{ data_get($day, 'date')->format('F, d') }}
+                        @if(data_get($day, 'workable', false) === false)
+                            <span class="text-xs rounded-lg text-primary-600 bg-primary-100 px-2">
+                                Festive
+                            </span>
+                        @endif
+                        <span class="px-2">
+                            {{ data_get($day, 'name') }}
+                        </span>
+                    </div>
+                @empty
+                    Nothing registered.
+                @endforelse
             </div>
         </x-filament::section>
     </div>

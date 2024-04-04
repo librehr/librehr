@@ -2,10 +2,13 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Resources\TaskResource;
+use App\Models\Calendar;
 use App\Models\DeskBooking;
 use App\Models\Post;
 use App\Models\Requestable;
 use App\Models\Room;
+use App\Models\Task;
 use Carbon\Carbon;
 use Filament\Facades\Filament;
 use Filament\Pages\Page;
@@ -39,6 +42,9 @@ class Dashboard extends Page
     public $requests;
     public $notificationsCount = 0;
     public $requestsCount = 0;
+    public $user;
+    public $calendar;
+    public $tasks;
 
 
     public function mount()
@@ -58,6 +64,7 @@ class Dashboard extends Page
         $this->getDeskBookings();
         $this->getNotifications();
         $this->getRequests();
+        $this->getCalendar();
     }
 
     public static function getNavigationLabel(): string
@@ -158,5 +165,12 @@ class Dashboard extends Page
     public function goToRequests()
     {
         $this->redirectRoute('filament.app.pages.requests');
+    }
+
+    public function getCalendar()
+    {
+        $this->calendar = Calendar::query()
+            ->whereYear('date', now())
+            ->get();
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CalendarResource\Pages;
-use App\Filament\Resources\CalendarResource\RelationManagers;
 use App\Models\Calendar;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -19,19 +18,23 @@ class CalendarResource extends Resource
 
     protected static ?string $navigationIcon =  null;
 
-    protected static ?string $navigationGroup = 'Administration';
+    protected static ?string $navigationGroup = 'Business';
 
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\DatePicker::make('date')
-                    ->required(),
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Toggle::make('workable'),
+                Forms\Components\Section::make([
+                    Forms\Components\Hidden::make('business_id')
+                        ->default(\Auth::user()->getActiveBusinessId()),
+                    Forms\Components\DatePicker::make('date')
+                        ->required(),
+                    Forms\Components\TextInput::make('name')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\Toggle::make('workable'),
+                ])
             ]);
     }
 

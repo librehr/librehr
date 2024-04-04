@@ -303,10 +303,10 @@ class Attendances extends BaseService
             ->map(function ($attendance, $key) {
                 $attendance->startFormat = Carbon::create($attendance->start)->format('H:i');
                 $attendance->endFormat = null;
-                $attendance->seconds = Carbon::create(now())->diffInSeconds(Carbon::create($attendance->start));;
+                $attendance->seconds = Carbon::create(Carbon::create($attendance->start))->diffInSeconds(now());;
                 if ($attendance->end) {
                     $attendance->endFormat = Carbon::create($attendance->end)->format('H:i');
-                    $attendance->seconds = Carbon::create($attendance->end)->diffInSeconds(Carbon::create($attendance->start));
+                    $attendance->seconds = Carbon::create(Carbon::create($attendance->start))->diffInSeconds($attendance->end);
                 }
                 return $attendance;
             });
@@ -327,7 +327,7 @@ class Attendances extends BaseService
         $from = Carbon::createFromFormat('H:i:s', $from);
         $to = Carbon::createFromFormat('H:i:s', $to);
 
-        return $to->diffInSeconds($from);
+        return $from->diffInSeconds($to);
     }
 
     public function statusTime($record)

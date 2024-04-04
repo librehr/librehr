@@ -73,6 +73,10 @@ class ActivitiesRelationManager extends RelationManager
 
 
             ])
+            ->contentGrid([
+                'md' => 2,
+                'xl' => 3,
+            ])
             ->headerActions([
                 Tables\Actions\Action::make('Create Message')
                     ->form($this->createMessage())

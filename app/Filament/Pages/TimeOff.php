@@ -272,6 +272,7 @@ class TimeOff extends Page
         $this->contractAbsences = Absence::query()
             ->where('contract_id', $this->contractId)
             ->whereYear('start', $this->year)
+            ->with('absenceType')
             ->orderBy('start')
             ->get()
             ->groupBy('status')
