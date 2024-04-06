@@ -147,7 +147,8 @@ class DatabaseSeeder extends Seeder
         Contract::factory(20)->create();
 
         TasksCategory::query()->create([
-            'name' => 'Test project'
+            'name' => 'Test project',
+            'business_id' => 1,
         ]);
 
         \App\Models\User::query()->where('id',1)->update([
