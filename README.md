@@ -5,8 +5,8 @@
 ## Demo
 
 https://app.librehr.com/login
-**user**: demo@librehr.com
-**password**: 12345678
+- **user**: demo@librehr.com
+- **password**: 12345678
 
 ### Installation
 
