@@ -46,6 +46,12 @@ class DeskBookings extends Page
     public $room = null;
     public $todayBooked = 0;
 
+    public static function canAccess(): bool
+    {
+        $user = Auth::user();
+        return $user->getActiveBusinessId() && $user->getActiveContractId();
+    }
+
     public function getHeader(): ?\Illuminate\Contracts\View\View
     {
         return view('filament.pages.header.desk-bookings');

@@ -16,6 +16,7 @@ use App\Models\Post;
 use App\Models\Role;
 use App\Models\Room;
 use App\Models\Task;
+use App\Models\TasksCategory;
 use App\Models\Team;
 use App\Models\Tool;
 use App\Models\User;
@@ -31,6 +32,7 @@ use App\Policies\PlanningPolicy;
 use App\Policies\PostPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\RoomPolicy;
+use App\Policies\TaskCategoryPolicy;
 use App\Policies\TaskPolicy;
 use App\Policies\TeamPolicy;
 use App\Policies\ToolPolicy;
@@ -61,6 +63,7 @@ class AuthServiceProvider extends ServiceProvider
         Room::class => RoomPolicy::class,
         Task::class => TaskPolicy::class,
         Expense::class => ExpensePolicy::class,
+        TasksCategory::class => TaskCategoryPolicy::class,
     ];
 
     /**
