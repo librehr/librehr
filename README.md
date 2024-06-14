@@ -2,7 +2,11 @@
 
 "The open-source software for human resources management."
 
-Demo: www.librehr.com
+## Demo
+
+https://app.librehr.com/login
+**user**: demo@librehr.com
+**password**: 12345678
 
 ### Installation
 
