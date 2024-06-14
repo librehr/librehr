@@ -1,10 +1,10 @@
-# LibreHR
+## LibreHR
 
 "The open-source software for human resources management."
 
 Demo: www.librehr.com
 
-## Installation
+### Installation
 
 `git clone git@github.com:librehr/librehr.git`
 
