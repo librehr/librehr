@@ -24,7 +24,9 @@ class EditAbsence extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
-            $this->uploadDocumentAction()
+            $this->uploadDocumentAction(
+                Auth::id()
+            )
         ];
     }
 
