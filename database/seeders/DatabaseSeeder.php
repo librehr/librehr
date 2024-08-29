@@ -77,7 +77,7 @@ class DatabaseSeeder extends Seeder
             'place_id' => $place->id,
         ]);
 
-        file_put_contents(storage_path('app/public/demo-map.png'), file_get_contents(asset('images/map.png')));
+        //file_put_contents(storage_path('app/public/demo-map.png'), file_get_contents(asset('images/map.png')));
 
         $room = Room::query()->create([
             'name' => 'The great hall',
