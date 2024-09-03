@@ -15,7 +15,8 @@
         "laravel/reverb": "@beta",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.8",
-        "malzariey/filament-daterangepicker-filter": "dev-main"
+        "malzariey/filament-daterangepicker-filter": "dev-main",
+        "rdumpdev/laravel-rdump": "^1.0"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.0",

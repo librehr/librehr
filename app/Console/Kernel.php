@@ -12,7 +12,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('php artisan migrate:fresh')->everyThreeHours();
+        $schedule->command('app:refresh-database')->everyThreeHours();
     }
 
     /**

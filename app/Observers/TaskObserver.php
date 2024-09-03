@@ -12,7 +12,9 @@ class TaskObserver
      */
     public function created(task $task): void
     {
-        //
+        rdump('new_task', [
+            'created' => $task->toArray()
+        ]);
     }
 
     /**
