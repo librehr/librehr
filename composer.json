@@ -16,7 +16,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.8",
         "malzariey/filament-daterangepicker-filter": "dev-main",
-        "rdumpdev/laravel-rdump": "^1.0"
+        "rdumpdev/laravel-rdump": "^1.2"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.0",
