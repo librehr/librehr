@@ -53,7 +53,7 @@ class AppPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->login(
-                Login::class
+                \App\Filament\Pages\Login::class
             )
             ->darkMode(false)
             ->colors([
