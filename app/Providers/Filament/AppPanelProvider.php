@@ -11,6 +11,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
 use Filament\Pages\Auth\EditProfile;
+use Filament\Pages\Auth\Login;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Assets\Css;
@@ -51,7 +52,9 @@ class AppPanelProvider extends PanelProvider
             ->path('/')
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
-            ->login()
+            ->login(
+                Login::class
+            )
             ->darkMode(false)
             ->colors([
                 'primary' => Color::Red,
