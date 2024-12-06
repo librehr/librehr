@@ -39,4 +39,14 @@ class Business extends Model
     {
         return $this->hasMany(Place::class);
     }
+
+    public function absences()
+    {
+        return $this->hasMany(Absence::class);
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
 }

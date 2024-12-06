@@ -60,13 +60,6 @@ class PlaceResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            FloorsRelationManager::class
-        ];
-    }
-
     public static function getPages(): array
     {
         return [

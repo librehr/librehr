@@ -34,7 +34,6 @@ use Illuminate\Support\Str;
 dataset('user_contract_resources',
     [
         App\Filament\Pages\TimeOff::class,
-        App\Filament\Pages\DeskBookings::class,
         App\Filament\Pages\Attendances::class,
         App\Filament\Pages\Requests::class,
     ]
@@ -54,7 +53,7 @@ dataset('manager_resources',
     [
         App\Filament\Resources\AbsenceResource::class,
         App\Filament\Resources\ContractResource::class,
-        App\Filament\Resources\UserResource::class,
+        \App\Filament\Admin\Resources\UserResource::class,
         \App\Filament\Pages\HumanResources\AttendancesControl::class,
         \App\Filament\Pages\HumanResources\TimeOffControl::class,
     ]
@@ -64,21 +63,19 @@ dataset('business_resources',
     [
         \App\Filament\Resources\CalendarResource::class,
         App\Filament\Resources\PostResource::class,
-        \App\Filament\Resources\PlaceResource::class,
-        \App\Filament\Resources\RoomResource::class,
     ]
 );
 
 dataset('administration_resources',
     [
-        \App\Filament\Resources\AbsenceTypeResource::class,
-        App\Filament\Resources\BusinessResource::class,
-        \App\Filament\Resources\ContractTypeResource::class,
-        \App\Filament\Resources\DocumentsTypeResource::class,
-        \App\Filament\Resources\RoleResource::class,
-        \App\Filament\Resources\TasksCategoryResource::class,
-        \App\Filament\Resources\ToolResource::class,
-        \App\Filament\Resources\PlanningResource::class,
+        \App\Filament\Admin\Resources\AbsenceTypeResource::class,
+        \App\Filament\Admin\Resources\BusinessResource::class,
+        \App\Filament\Admin\Resources\ContractTypeResource::class,
+        \App\Filament\Admin\Resources\DocumentsTypeResource::class,
+        \App\Filament\Admin\Resources\RoleResource::class,
+        \App\Filament\Admin\Resources\TasksCategoryResource::class,
+        \App\Filament\Admin\Resources\ToolResource::class,
+        \App\Filament\Admin\Resources\PlanningResource::class,
     ]
 );
 

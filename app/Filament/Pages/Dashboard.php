@@ -61,7 +61,6 @@ class Dashboard extends Page
         $this->currentAttendance = app(\App\Services\Attendances::class)
             ->getCurrentAttendance($this->contractId);
 
-        $this->getDeskBookings();
         $this->getNotifications();
         $this->getRequests();
         $this->getCalendar();
@@ -127,29 +126,6 @@ class Dashboard extends Page
     {
         $this->currentAttendance = app(\App\Services\Attendances::class)
             ->startResumeAttendanceNow($this->contractId);
-    }
-
-    public function goToDeskBookings($room = null, $date = null)
-    {
-        $args = [];
-        if ($date){
-            $args['date'] = Carbon::parse($date)->format('Y-m-d');
-        }
-
-        if ($room) {
-            $args['room'] = $room;
-        }
-
-        $this->redirectRoute('filament.app.pages.desk-bookings', $args);
-    }
-
-    public function getDeskBookings()
-    {
-        $this->todayBooked = DeskBooking::query()
-            ->where('contract_id', $this->contractId)
-            ->whereDay('start', now())
-            ->with(['desk', 'desk.room', 'desk.room.floor', 'desk.room.floor.place'])
-            ->first();
     }
 
     public function getNotifications()

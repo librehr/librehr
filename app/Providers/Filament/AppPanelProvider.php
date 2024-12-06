@@ -5,6 +5,8 @@ namespace App\Providers\Filament;
 use App\Filament\Pages\Dashboard;
 use App\Filament\Pages\MyProfile\Profile;
 use App\Models\Business;
+use App\Models\Contract;
+use App\Models\Team;
 use Carbon\Carbon;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -40,16 +42,12 @@ class AppPanelProvider extends PanelProvider
     }
     public function panel(Panel $panel): Panel
     {
-        FilamentView::registerRenderHook(
-            'panels::user-menu.after',
-            fn (): string => Blade::render('@livewire(\'navbar\')'),
-        );
-
         $panel
             ->sidebarCollapsibleOnDesktop()
             ->viteTheme('resources/css/filament/app/theme.css')
             ->id('app')
-            ->path('/')
+            ->path('/app')
+            ->tenant(Business::class)
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->login(
@@ -94,7 +92,6 @@ class AppPanelProvider extends PanelProvider
             ->passwordReset()
             ->favicon(asset('images/logo.png'))
             ->default();
-
 
         return $panel;
     }

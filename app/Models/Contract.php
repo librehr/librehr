@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Scopes\BusinessScope;
+use App\Models\Trait\TeamScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -46,7 +47,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Contract extends Model
 {
-    use HasFactory;
+    use HasFactory, TeamScope;
+
     protected $casts = [
         'attributes' => 'array',
         'start' => 'datetime',
@@ -54,14 +56,6 @@ class Contract extends Model
     ];
 
     protected $guarded = [];
-
-    /**
-     * The "booted" method of the model.
-     */
-    protected static function booted(): void
-    {
-        static::addGlobalScope(new BusinessScope());
-    }
 
     public function user()
     {
@@ -103,14 +97,14 @@ class Contract extends Model
         return $this->hasMany(AttendanceValidation::class);
     }
 
-    public function place()
-    {
-        return $this->belongsTo(Place::class);
-    }
-
     public function planning()
     {
         return $this->belongsTo(Planning::class);
+    }
+
+    public function place()
+    {
+        return $this->belongsTo(Place::class);
     }
 
     public function tools()
@@ -121,10 +115,5 @@ class Contract extends Model
     public function absences()
     {
         return $this->hasMany(Absence::class);
-    }
-
-    public function business()
-    {
-        return $this->belongsTo(Business::class);
     }
 }

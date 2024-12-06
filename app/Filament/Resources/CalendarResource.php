@@ -15,10 +15,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CalendarResource extends Resource
 {
     protected static ?string $model = Calendar::class;
+    protected static bool $isScopedToTenant = false;
 
-    protected static ?string $navigationIcon =  null;
+    protected static ?string $navigationIcon = 'heroicon-o-calendar';
 
-    protected static ?string $navigationGroup = 'Business';
+    protected static ?string $navigationGroup = 'Human Resources';
 
 
     public static function form(Form $form): Form

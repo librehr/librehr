@@ -7,7 +7,7 @@
 </div>
 <ul class="p-4 border-b border-t flex flex-row justify-center items-center gap-8">
     @foreach ($links as $name=>$routeName)
-    <a href="{{ route($routeName) }}" wire:navigate.hover class="{{ Route::currentRouteName() === $routeName ? 'border-b-2 border-black py-2' : '' }}">
+    <a href="{{ route($routeName, ['tenant' => \Filament\Facades\Filament::getTenant()]) }}" wire:navigate.hover class="{{ Route::currentRouteName() === $routeName ? 'border-b-2 border-black py-2' : '' }}">
         {{ $name }}
     </a>
     @endforeach

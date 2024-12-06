@@ -4,28 +4,23 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TeamResource\Pages;
 use App\Filament\Resources\TeamResource\RelationManagers;
-use App\Filament\Resources\UserResource\RelationManagers\ContractsRelationManager;
 use App\Models\Team;
-use App\Policies\TeamPolicy;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
-use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TeamResource extends Resource
 {
     protected static ?string $model = Team::class;
 
     protected static ?int $navigationSort = 0;
-    protected static ?string $navigationIcon = null;
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationGroup = 'Business';
+    protected static ?string $navigationGroup = 'Human Resources';
 
     public static function form(Form $form): Form
     {

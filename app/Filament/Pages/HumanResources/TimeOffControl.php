@@ -2,10 +2,11 @@
 
 namespace App\Filament\Pages\HumanResources;
 
-use App\Filament\Resources\UserResource;
+use App\Filament\Admin\Resources\UserResource;
 use App\Models\AbsenceType;
 use App\Models\Contract;
 use Carbon\Carbon;
+use Filament\Facades\Filament;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Pages\Page;
@@ -115,7 +116,7 @@ class TimeOffControl extends Page  implements HasForms, HasTable
             ->columns([
                 TextColumn::make('user.name')
                     ->searchable()
-                ->url(fn ($record) => route(UserResource::getRouteBaseName('app') . '.absences', $record->id)),
+                ->url(fn ($record) => route(UserResource::getRouteBaseName('app') . '.absences', ['tenant' => Filament::getTenant(),$record->id])),
                 ...$days,
             ])
             ->filters([

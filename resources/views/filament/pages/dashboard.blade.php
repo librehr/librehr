@@ -85,32 +85,6 @@
             </div>
         </x-filament::section>
 
-        <x-filament::section>
-            <x-slot name="heading">
-                Office Desk Booking
-            </x-slot>
-
-            <div class="mb-4 flex flex-col gap-4">
-                @if ($todayBooked)
-                    <span class="text-2xl text-green-600">Seat {{ data_get($todayBooked, 'desk.name') }}</span>
-                    <span class="-mt-4 text-xs text-gray-500">This is the seat your reserved for today!</span>
-                    <span>You have booked seat <span class="text-green-700 font-black">{{ data_get($todayBooked, 'desk.name') }}</span> for today in <b>{{ data_get($todayBooked, 'desk.room.floor.place.name') }}</b>, room <b>{{ data_get($todayBooked, 'desk.room.name') }}</b> @ the <b>{{ data_get($todayBooked, 'desk.room.floor.name') }}</b></span>
-
-                    <span>
-                    <x-filament::button color="gray" wire:click="goToDeskBookings( {{ data_get($todayBooked, 'desk.room.id') }}, '{{ data_get($todayBooked, 'start') }}')">
-                        View in map
-                    </x-filament::button>
-                    </span>
-                @else
-                    Do you want to come to the office today? Get excited and reserve your spot!
-
-                    <x-filament::button wire:click="goToDeskBookings">
-                        Book now!
-                    </x-filament::button>
-                @endif
-            </div>
-        </x-filament::section>
-
         <x-filament::section class="p-0 col-span-2">
             <x-slot name="heading">
                 {{ data_get($user->getActiveBusiness(), 'name') }} Calendar

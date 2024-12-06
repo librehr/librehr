@@ -71,34 +71,6 @@ class DatabaseSeeder extends Seeder
             'business_id' => 1,
         ]);
 
-        $floor = Floor::query()->create([
-            'name' => 'First Floor',
-            'business_id' => 1,
-            'place_id' => $place->id,
-        ]);
-
-        //file_put_contents(storage_path('app/public/demo-map.png'), file_get_contents(asset('images/map.png')));
-
-        $room = Room::query()->create([
-            'name' => 'The great hall',
-            'business_id' => 1,
-            'attributes' => [
-                'image' => 'demo-map.png',
-            ],
-            'floor_id' => $floor->id,
-        ]);
-
-        $desks = range(1, 30);
-        foreach ($desks as $desk) {
-            Desk::query()->create([
-                'room_id' => $room->id,
-                'business_id' => 1,
-                'name' => 'A' . $desk,
-                'attributes' => [],
-                'active' => true,
-            ]);
-        }
-
         Planning::query()->create([
             'name' => '8H Monday to Friday',
             'business_id' => 1,
@@ -162,6 +134,6 @@ class DatabaseSeeder extends Seeder
             'active' => true,
         ]);
 
-        \Artisan::call('optimize');
+        \Artisan::call('cache:clear');
     }
 }

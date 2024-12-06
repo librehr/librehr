@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Trait\TeamScope;
+use Filament\Facades\Filament;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasTenants;
@@ -13,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Laravel\Sanctum\HasApiTokens;
@@ -59,9 +62,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  * @mixin \Eloquent
  */
-class User extends Authenticatable implements FilamentUser, HasAvatar
+class User extends Authenticatable implements FilamentUser, HasAvatar, HasTenants
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -106,10 +109,25 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         'active' => 'boolean',
     ];
 
+    public function getTenants(Panel $panel): Collection
+    {
+        if ($this->role->name === 'admin') {
+            return Business::query()->get();
+        }
+
+        return $this->businesses;
+    }
+
     public function getIsAdminAttribute()
     {
         return data_get($this, 'role.name') == 'admin';
     }
+
+    public function businesses()
+    {
+        return $this->hasManyThrough(Business::class, Contract::class, 'user_id', 'id', 'id', 'business_id');
+    }
+
 
     public function contracts()
     {
@@ -123,7 +141,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
 
     public function getActiveBusinessId()
     {
-        return data_get($this->getActiveBusiness(), 'id');
+        return Filament::getTenant()->id;
     }
 
     public function getActiveBusiness($uuid = null)
@@ -195,5 +213,10 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         }
 
         return $avatar;
+    }
+
+    public function canAccessTenant(Model $tenant): bool
+    {
+        return true;
     }
 }

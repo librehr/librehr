@@ -17,9 +17,9 @@ class PostResource extends Resource
 {
     protected static ?string $model = Post::class;
     protected static ?int $navigationSort = 3;
-    protected static ?string $navigationIcon = null;
+    protected static ?string $navigationIcon = 'heroicon-o-document';
 
-    protected static ?string $navigationGroup = 'Business';
+    protected static ?string $navigationGroup = 'Human Resources';
 
     protected static ?string $navigationLabel = 'Community Posts / News';
     protected static ?string $label = 'Business News';
@@ -65,7 +65,7 @@ class PostResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ])->modifyQueryUsing(fn ($query) => $query->where('business_id', \Auth::user()->getActiveBusinessId()));
+            ]);
     }
 
     public static function getRelations(): array

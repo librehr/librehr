@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AbsenceStatusEnum;
+use App\Models\Trait\TeamScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -43,7 +44,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Absence extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, TeamScope;
 
     protected $guarded = [];
 
