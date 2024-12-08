@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use Carbon\Carbon;
-use Filament\Facades\Filament;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
@@ -11,7 +10,6 @@ use Filament\Support\Facades\FilamentView;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
-use Filament\Notifications\Notification;
 use Illuminate\View\View;
 
 
@@ -44,10 +42,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->attachViewToFilamentClasses(
             [
-                \App\Filament\Pages\MyProfile\Profile::class,
-                \App\Filament\Pages\MyProfile\ProfileContracts::class,
-                \App\Filament\Pages\MyProfile\ProfileTools::class,
-                \App\Filament\Pages\MyProfile\Documents::class,
+                \App\Filament\App\Pages\MyProfile\Profile::class,
+                \App\Filament\App\Pages\MyProfile\ProfileContracts::class,
+                \App\Filament\App\Pages\MyProfile\ProfileTools::class,
+                \App\Filament\App\Pages\MyProfile\Documents::class,
             ],
             view: 'filament.pages.header.my-profile-navigation',
             hookName: 'panels::page.start'
@@ -56,10 +54,10 @@ class AppServiceProvider extends ServiceProvider
 
         $this->attachViewToFilamentClasses(
             [
-                \App\Filament\Pages\Dashboard::class,
-                \App\Filament\Pages\Requests::class,
-                \App\Filament\Pages\TimeOff::class,
-                \App\Filament\Pages\Attendances::class,
+                \App\Filament\App\Pages\Dashboard::class,
+                \App\Filament\App\Pages\Requests::class,
+                \App\Filament\App\Pages\TimeOff::class,
+                \App\Filament\App\Pages\Attendances::class,
             ],
             view: 'filament.pages.header.user',
             hookName: 'panels::page.start'

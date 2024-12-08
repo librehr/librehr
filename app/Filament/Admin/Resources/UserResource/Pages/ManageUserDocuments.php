@@ -3,7 +3,7 @@
 namespace App\Filament\Admin\Resources\UserResource\Pages;
 
 use App\Filament\Admin\Resources\UserResource;
-use App\Filament\Traits\DocumentUploadTrait;
+use App\Filament\App\Traits\DocumentUploadTrait;
 use App\Services\Documents;
 use Filament\Pages\SubNavigationPosition;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;

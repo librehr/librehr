@@ -24,7 +24,7 @@ test('it can access business dataset', function (string $url) {
 test('can access business', function (string $url) {
     $this->get((new $url)->getNavigationUrl())->assertOk();
 })->with([
-    App\Filament\Resources\TeamResource::class,
+    \App\Filament\App\Resources\TeamResource::class,
 ]);
 
 test('can access administration', function (string $url) {

@@ -2,7 +2,7 @@
 
 namespace App\Filament\Admin\Resources\TasksCategoryResource\RelationManagers;
 
-use App\Filament\Resources\TaskResource;
+use App\Filament\App\Resources\TaskResource;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;

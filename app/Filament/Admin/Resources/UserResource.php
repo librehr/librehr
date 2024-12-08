@@ -2,7 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Pages\MyProfile\Profile;
+use App\Filament\App\Pages\MyProfile\Profile;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
@@ -18,7 +18,6 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
     protected static bool $isScopedToTenant = false;
-    protected static SubNavigationPosition $subNavigationPosition = SubNavigationPosition::Top;
 
     public static function form(Form $form): Form
     {

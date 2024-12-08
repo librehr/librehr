@@ -3,7 +3,7 @@
 namespace App\Filament\Admin\Resources\UserResource\Pages;
 
 use App\Filament\Admin\Resources\UserResource;
-use App\Filament\Traits\DocumentUploadTrait;
+use App\Filament\App\Traits\DocumentUploadTrait;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 

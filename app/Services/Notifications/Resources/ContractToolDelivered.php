@@ -2,9 +2,7 @@
 
 namespace App\Services\Notifications\Resources;
 
-use App\Filament\Pages\Dashboard;
-use App\Filament\Pages\MyProfile\Documents;
-use App\Filament\Pages\MyProfile\ProfileTools;
+use App\Filament\App\Pages\MyProfile\ProfileTools;
 use App\Services\Notifications\NotificationsResources;
 
 class ContractToolDelivered extends NotificationsResources

@@ -23,7 +23,7 @@ test('cant access business dataset', function (string $url) {
 test('can access business', function (string $url) {
     $this->get((new $url)->getNavigationUrl())->assertOk();
 })->with([
-    App\Filament\Resources\TeamResource::class,
+    \App\Filament\App\Resources\TeamResource::class,
 ]);
 
 test('cant access administration', function (string $url) {

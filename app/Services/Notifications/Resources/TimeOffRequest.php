@@ -2,12 +2,7 @@
 
 namespace App\Services\Notifications\Resources;
 
-use App\Filament\Pages\Attendances;
-use App\Filament\Pages\Dashboard;
-use App\Filament\Pages\MyProfile\Documents;
-use App\Filament\Pages\MyProfile\ProfileTools;
-use App\Filament\Pages\Requests;
-use App\Filament\Pages\TimeOff;
+use App\Filament\App\Pages\Requests;
 use App\Services\Notifications\NotificationsResources;
 
 class TimeOffRequest extends NotificationsResources

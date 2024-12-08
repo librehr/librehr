@@ -2,11 +2,9 @@
 
 namespace App\Notifications;
 
-use App\Filament\Pages\Dashboard;
+use App\Filament\App\Pages\Dashboard;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Mail;
 
 class Posts extends \Filament\Notifications\Notification

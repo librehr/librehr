@@ -6,12 +6,14 @@ use App\Enums\TaskPriorityEnum;
 use App\Enums\TaskStatusEnum;
 use App\Models\Pivots\ContratablePivot;
 use App\Models\Scopes\BusinessScope;
+use App\Models\Trait\TeamScope;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Task extends Model
 {
+    use TeamScope;
     use HasFactory;
 
     /**

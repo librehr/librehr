@@ -66,7 +66,7 @@
             <span class="text-xs">Estimate</span>
         </div>
         <div class="flex-grow p-4">
-                @livewire(App\Filament\Widgets\AttendancesChart::class)
+                @livewire(App\Filament\App\Widgets\AttendancesChart::class)
         </div>
         <div class="p-4 flex flex-col">
             <span>{{ data_get($summary, $contractId . '.total_time_extra') }}</span>
