@@ -70,7 +70,7 @@ class ManageUserTools extends ManageRelatedRecords
                             })->required(),
                             Forms\Components\Select::make('contract_id')
                                 ->label('Contract')
-                                ->options(function () use($record) {
+                                ->options(function () use ($record) {
                                     return Contract::query()
                                         ->with('business')
                                         ->where('user_id', $record->id)

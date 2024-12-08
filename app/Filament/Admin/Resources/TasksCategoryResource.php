@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\TasksCategoryResource\RelationManagers\TasksRelationManager;
-use App\Filament\Resources\TasksCategoryResource\Pages;
 use App\Models\TasksCategory;
 use Filament\Facades\Filament;
 use Filament\Forms;
@@ -101,7 +100,7 @@ class TasksCategoryResource extends Resource
                     $query->whereNull('parent_id');
                 }
 
-    });
+            });
     }
 
     public static function getRelations(): array

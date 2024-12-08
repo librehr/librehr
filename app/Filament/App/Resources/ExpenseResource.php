@@ -3,7 +3,6 @@
 namespace App\Filament\App\Resources;
 
 use App\Filament\App\Resources\ExpenseResource\Widgets\UserExpenseMonth;
-use App\Filament\Resources\ExpenseResource\Pages;
 use App\Models\Contract;
 use App\Models\Expense;
 use Filament\Forms;
@@ -85,9 +84,12 @@ class ExpenseResource extends Resource
                     ->date()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('amount')
-                    ->money(data_get($user->getActiveBusiness(),
-                        'attributes.default_currency',
-                        config('librehr.currency'))
+                    ->money(
+                        data_get(
+                            $user->getActiveBusiness(),
+                            'attributes.default_currency',
+                            config('librehr.currency')
+                        )
                     )
                     ->sortable(),
                 Tables\Columns\IconColumn::make('paid')
@@ -181,7 +183,8 @@ class ExpenseResource extends Resource
         ];
     }
 
-    protected static function getContractForm($control, $user) {
+    protected static function getContractForm($control, $user)
+    {
         if ($control) {
             return  Forms\Components\Select::make('contract_id')
                 ->label('Employeer')

@@ -2,8 +2,8 @@
 
 namespace App\Filament\App\Pages;
 
-
-class Login extends \Filament\Pages\Auth\Login {
+class Login extends \Filament\Pages\Auth\Login
+{
     public function mount(): void
     {
         parent::mount();

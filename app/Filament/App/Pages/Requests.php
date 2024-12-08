@@ -51,7 +51,7 @@ class Requests extends Page
                 ->slideOver()
                 ->requiresConfirmation()
                 ->form([
-                    Hidden::make('user')->default(data_get( $this->user, 'id')),
+                    Hidden::make('user')->default(data_get($this->user, 'id')),
                     ToggleButtons::make('validated')
                         ->helperText('Once you have approved the request, you will not be able to change it again.')
                         ->label('Do you want to approve the absence requested by the employee?')
@@ -105,7 +105,7 @@ class Requests extends Page
                 ->slideOver()
                 ->requiresConfirmation()
                 ->form([
-                    Hidden::make('user')->default(data_get( $this->user, 'id')),
+                    Hidden::make('user')->default(data_get($this->user, 'id')),
                     ToggleButtons::make('validated')
                         ->label('Do you want to approve the validation requested?')
                         ->inline()
@@ -118,7 +118,7 @@ class Requests extends Page
                         $record->requests()->detach();
 
                         Notification::make('ok')
-                            ->title( 'Approved successfully.')
+                            ->title('Approved successfully.')
                             ->success()
                             ->send();
                     }
@@ -134,14 +134,14 @@ class Requests extends Page
                 ->slideOver()
                 ->requiresConfirmation()
                 ->form([
-                    Hidden::make('user')->default(data_get( $this->user, 'id')),
+                    Hidden::make('user')->default(data_get($this->user, 'id')),
                 ])
                 ->action(function (array $arguments, $data) {
                     $record = Document::query()->find(data_get($arguments, '0.requestable_id'));
                     $record->requests()->detach();
 
                     Notification::make('ok')
-                        ->title( 'Signed successfully.')
+                        ->title('Signed successfully.')
                         ->success()
                         ->send();
                 })->after(function () {

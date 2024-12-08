@@ -53,10 +53,12 @@ trait DocumentUploadTrait
                 }
 
                 if (!empty($documents)) {
-                    $record->documents()->attach($documents,
-                    [
+                    $record->documents()->attach(
+                        $documents,
+                        [
                         'documents_type_id' => data_get($data, 'type')
-                    ]);
+                    ]
+                    );
 
                     Notification::make()
                         ->title('Upload successfully')

@@ -31,7 +31,8 @@ use App\Models\Tool;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-dataset('user_contract_resources',
+dataset(
+    'user_contract_resources',
     [
         \App\Filament\App\Pages\TimeOff::class,
         \App\Filament\App\Pages\Attendances::class,
@@ -39,7 +40,8 @@ dataset('user_contract_resources',
     ]
 );
 
-dataset('profile_resources',
+dataset(
+    'profile_resources',
     [
         \App\Filament\App\Pages\Dashboard::class,
         \App\Filament\App\Pages\MyProfile\Profile::class,
@@ -49,7 +51,8 @@ dataset('profile_resources',
     ]
 );
 
-dataset('manager_resources',
+dataset(
+    'manager_resources',
     [
         \App\Filament\App\Resources\AbsenceResource::class,
         \App\Filament\App\Resources\ContractResource::class,
@@ -59,14 +62,16 @@ dataset('manager_resources',
     ]
 );
 
-dataset('business_resources',
+dataset(
+    'business_resources',
     [
         \App\Filament\App\Resources\CalendarResource::class,
         \App\Filament\App\Resources\PostResource::class,
     ]
 );
 
-dataset('administration_resources',
+dataset(
+    'administration_resources',
     [
         \App\Filament\Admin\Resources\AbsenceTypeResource::class,
         \App\Filament\Admin\Resources\BusinessResource::class,
@@ -252,7 +257,7 @@ function loadDatabase()
         'business_id' => 1,
     ]);
 
-    \App\Models\User::query()->where('id',1)->update([
+    \App\Models\User::query()->where('id', 1)->update([
         'name' => 'demo',
         'email' => 'demo@librehr.com',
         'role_id' => Role::query()->create(['name' => 'admin'])->id,

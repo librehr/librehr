@@ -2,10 +2,7 @@
 
 namespace App\Services;
 
-
-use App\Models\Absence;
 use App\Models\Document;
-use Illuminate\Support\Carbon;
 
 class Documents extends BaseService
 {

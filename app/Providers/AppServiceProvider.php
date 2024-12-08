@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\View;
 
-
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -29,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (config('app.debug')) {
-            DB::listen(function($query) {
+            DB::listen(function ($query) {
                 Log::info(
                     $query->sql,
                     [
@@ -63,12 +62,12 @@ class AppServiceProvider extends ServiceProvider
             hookName: 'panels::page.start'
         );
 
-/*
-        $this->registerCalendar(
-            \App\Filament\Pages\AttendancesControl::class,
-            true
-        );
-*/
+        /*
+                $this->registerCalendar(
+                    \App\Filament\Pages\AttendancesControl::class,
+                    true
+                );
+        */
 
         FilamentAsset::register([
             Js::make('alpinejs-tooltip', __DIR__ . '/../../resources/js/alpinejs-tooltip.js'),
@@ -89,7 +88,8 @@ class AppServiceProvider extends ServiceProvider
             $links[$navigationClass::getNavigationLabel()] = $navigationClass::getRouteName('app');
         }
 
-        FilamentView::registerRenderHook($hookName,
+        FilamentView::registerRenderHook(
+            $hookName,
             fn (): View => view($view, [
                 'links' => $links,
                 'data' => $data
@@ -131,10 +131,10 @@ class AppServiceProvider extends ServiceProvider
             fn (): View => view('filament.pages.header.calendar', [
                 'month' => $month,
                 'selected' => $month ? $selected->format('F, Y') : $selected->format('D d, F, Y'),
-                'previous' =>  ($previous !== null && $previous < now()->startOfMonth()->startOfDay()  ? [
+                'previous' =>  ($previous !== null && $previous < now()->startOfMonth()->startOfDay() ? [
                     'date' => $previous->format('Y-m-d'),
                 ] : null),
-                'next' => ($next !== null && $next < now()  ? [
+                'next' => ($next !== null && $next < now() ? [
                     'date' => $next->format('Y-m-d'),
                 ] : null),
                 'route' => $route

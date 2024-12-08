@@ -9,7 +9,6 @@ use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Auth;
 
-
 class EditAbsence extends EditRecord
 {
     use DocumentUploadTrait;

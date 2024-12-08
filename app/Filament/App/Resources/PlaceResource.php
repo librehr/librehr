@@ -2,8 +2,6 @@
 
 namespace App\Filament\App\Resources;
 
-use App\Filament\Resources\PlaceResource\Pages;
-use App\Filament\Resources\PlaceResource\RelationManagers\FloorsRelationManager;
 use App\Models\Place;
 use Filament\Forms;
 use Filament\Forms\Form;

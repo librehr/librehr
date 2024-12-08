@@ -2,9 +2,7 @@
 
 namespace App\Observers;
 
-use App\Jobs\NotifyUsers;
 use App\Models\Post;
-use App\Notifications\Posts;
 use App\Services\Notifications;
 
 class PostObserver

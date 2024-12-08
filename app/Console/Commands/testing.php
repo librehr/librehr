@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Jobs\TestJob;
 use App\Models\Document;
-use App\Models\Pivots\ContratablePivot;
 use App\Models\User;
 use Illuminate\Bus\Batch;
 use Illuminate\Console\Command;

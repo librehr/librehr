@@ -19,8 +19,7 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 
-
-class AttendancesControl extends Page  implements HasForms, HasTable
+class AttendancesControl extends Page implements HasForms, HasTable
 {
     use InteractsWithTable;
     use InteractsWithForms;
@@ -213,8 +212,8 @@ class AttendancesControl extends Page  implements HasForms, HasTable
                     ->requiresConfirmation()
                     ->action(function (Contract $record) {
                         $validations = AttendanceValidation::query()
-                            ->whereYear('date', Carbon::parse( $this->date))
-                            ->whereMonth('date', Carbon::parse( $this->date))
+                            ->whereYear('date', Carbon::parse($this->date))
+                            ->whereMonth('date', Carbon::parse($this->date))
                             ->where('contract_id', data_get($record, 'id'))
                             ->where('business_id', data_get($record, 'business_id'))
                             ->first();
@@ -279,7 +278,8 @@ class AttendancesControl extends Page  implements HasForms, HasTable
             ->groups([
                 'team.name',
             ])
-            ->modifyQueryUsing(fn ($query) =>
+            ->modifyQueryUsing(
+                fn ($query) =>
                 $query->with([
                     'user:name,id',
                     'attendancesValidations',

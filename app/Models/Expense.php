@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\ExpenseStatusEnum;
-use App\Enums\TaskStatusEnum;
 use App\Models\Scopes\BusinessScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

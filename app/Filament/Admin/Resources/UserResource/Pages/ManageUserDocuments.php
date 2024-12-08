@@ -11,7 +11,8 @@ use Filament\Resources\Pages\Page;
 
 class ManageUserDocuments extends Page
 {
-    use InteractsWithRecord, DocumentUploadTrait;
+    use InteractsWithRecord;
+    use DocumentUploadTrait;
 
     protected static string $resource = UserResource::class;
 

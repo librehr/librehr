@@ -17,8 +17,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 
-
-class TimeOffControl extends Page  implements HasForms, HasTable
+class TimeOffControl extends Page implements HasForms, HasTable
 {
     use InteractsWithTable;
     use InteractsWithForms;
@@ -53,7 +52,7 @@ class TimeOffControl extends Page  implements HasForms, HasTable
     {
         if ($position == 'next') {
             $this->date = Carbon::parse($this->date)->addMonth();
-         } else {
+        } else {
             $this->date = Carbon::parse($this->date)->subMonth();
         }
         $this->daysInMonth = range(1, $this->date->daysInMonth);
@@ -94,7 +93,7 @@ class TimeOffControl extends Page  implements HasForms, HasTable
                     return null;
                 })
                 ->formatStateUsing(function ($state) {
-                   return new HtmlString('<div class="rounded py-1 px-2 text-xs" style="color: '.data_get($state, 'attributes.color.text').'; background-color: '.data_get($state, 'attributes.color.background').'">'.str(data_get($state, 'name'))->split(1)->first().'</div>');
+                    return new HtmlString('<div class="rounded py-1 px-2 text-xs" style="color: '.data_get($state, 'attributes.color.text').'; background-color: '.data_get($state, 'attributes.color.background').'">'.str(data_get($state, 'name'))->split(1)->first().'</div>');
                 })
                 ->color(function () {
                     return Color::Blue;
@@ -129,9 +128,9 @@ class TimeOffControl extends Page  implements HasForms, HasTable
                     'absences' => function ($query) {
                         $query->where('status', 'allowed')
                             ->where(function ($query) {
-                            $query->whereYear('start', $this->date)
-                                ->orWhereYear('end', $this->date);
-                        });
+                                $query->whereYear('start', $this->date)
+                                    ->orWhereYear('end', $this->date);
+                            });
 
                     },
                 ]))

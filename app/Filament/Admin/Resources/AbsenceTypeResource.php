@@ -3,8 +3,6 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources;
-use App\Filament\Resources\AbsenceTypeResource\Pages;
-use App\Filament\Resources\AbsenceTypeResource\RelationManagers;
 use App\Models\AbsenceType;
 use Filament\Forms;
 use Filament\Forms\Form;

@@ -29,7 +29,7 @@ class Posts extends \Filament\Notifications\Notification
 
     public function toMail()
     {
-        $message = (new MailMessage)
+        $message = (new MailMessage())
             ->subject('New post from ' . config('app.name'))
             ->line(data_get($this->data, 'title'))
             ->action('Read full post', url(Dashboard::getNavigationUrl()))

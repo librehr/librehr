@@ -2,8 +2,6 @@
 
 namespace App\Filament\App\Resources;
 
-use App\Filament\Resources\TeamResource\Pages;
-use App\Filament\Resources\TeamResource\RelationManagers;
 use App\Models\Team;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -29,7 +27,9 @@ class TeamResource extends Resource
                 Forms\Components\TextInput::make('name'),
                 Forms\Components\Select::make('supervisors')
                     ->label('Users')
-                    ->relationship('supervisors', 'id',
+                    ->relationship(
+                        'supervisors',
+                        'id',
                         modifyQueryUsing: fn (Builder $query) => $query->with('user')->where('business_id', \Auth::user()->getActiveBusinessId()),
                     )
                     ->multiple()

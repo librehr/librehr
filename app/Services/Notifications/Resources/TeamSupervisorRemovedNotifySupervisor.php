@@ -12,7 +12,7 @@ class TeamSupervisorRemovedNotifySupervisor extends NotificationsResources
     }
     public function getDescription(): string
     {
-            return  'You are no more supervising "' . data_get($this->data, 'contratable.name') .'" Team, thanks for your help!.';
+        return  'You are no more supervising "' . data_get($this->data, 'contratable.name') .'" Team, thanks for your help!.';
     }
 
     public function getUrl(): string

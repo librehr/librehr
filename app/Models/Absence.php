@@ -44,7 +44,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Absence extends Model
 {
-    use HasFactory, SoftDeletes, TeamScope;
+    use HasFactory;
+    use SoftDeletes;
+    use TeamScope;
 
     protected $guarded = [];
 

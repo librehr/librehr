@@ -68,5 +68,3 @@ class ViewAbsence extends ViewRecord
         ];
     }
 }
-
-

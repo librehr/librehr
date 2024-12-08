@@ -13,7 +13,7 @@ class ExpenseAction extends NotificationsResources
     }
     public function getDescription(): string
     {
-            return  'Go to your expenses to get more information.';
+        return  'Go to your expenses to get more information.';
     }
 
     public function getUrl(): string

@@ -34,7 +34,7 @@ class EmailNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        return (new MailMessage)
+        return (new MailMessage())
                     ->subject(data_get($this->data, 'title'))
                     ->line(data_get($this->data, 'description'))
                     ->action('Go to Link', url(data_get($this->data, 'url')));

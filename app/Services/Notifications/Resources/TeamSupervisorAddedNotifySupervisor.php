@@ -12,7 +12,7 @@ class TeamSupervisorAddedNotifySupervisor extends NotificationsResources
     }
     public function getDescription(): string
     {
-            return  'Welcome to the team "' . data_get($this->data, 'contratable.name') .'", you are the new supervisor.';
+        return  'Welcome to the team "' . data_get($this->data, 'contratable.name') .'", you are the new supervisor.';
     }
 
     public function getUrl(): string

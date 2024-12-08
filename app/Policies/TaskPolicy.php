@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Models\Task;
 use App\Models\User;
 use Filament\Facades\Filament;
-use Illuminate\Auth\Access\Response;
 
 class TaskPolicy
 {

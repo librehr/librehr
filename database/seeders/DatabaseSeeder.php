@@ -8,15 +8,12 @@ use App\Models\Business;
 use App\Models\Calendar;
 use App\Models\Contract;
 use App\Models\ContractType;
-use App\Models\Desk;
 use App\Models\DocumentsType;
-use App\Models\Floor;
 use App\Models\Place;
 use App\Models\Planning;
 use App\Models\Post;
 use App\Models\Request;
 use App\Models\Role;
-use App\Models\Room;
 use App\Models\TasksCategory;
 use App\Models\Team;
 use App\Models\Tool;
@@ -123,7 +120,7 @@ class DatabaseSeeder extends Seeder
             'business_id' => 1,
         ]);
 
-        \App\Models\User::query()->where('id',1)->update([
+        \App\Models\User::query()->where('id', 1)->update([
             'name' => 'demo',
             'email' => 'demo@librehr.com',
             'role_id' => Role::query()->create(['name' => 'admin'])->id,

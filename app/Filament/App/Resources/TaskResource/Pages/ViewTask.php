@@ -51,7 +51,9 @@ class ViewTask extends ViewRecord
                 ->form([
                     Select::make('contracts')
                         ->label('Users')
-                        ->relationship('contracts', 'id',
+                        ->relationship(
+                            'contracts',
+                            'id',
                             modifyQueryUsing: fn (Builder $query) => $query->with('user')->where('business_id', \Auth::user()->getActiveBusinessId()),
                         )
                         ->multiple()
@@ -85,8 +87,8 @@ class ViewTask extends ViewRecord
                     ->iconColor(Color::Red)
                     ->icon('heroicon-o-exclamation-triangle')
                     ->columnSpanFull()
-                    ->tooltip(fn ($state) => Carbon::parse($state)->toDate() < now()->toDate() ? 'Out dated' : null )
-                    ->visible(fn ($state) => Carbon::parse($state)->toDate() < now() )
+                    ->tooltip(fn ($state) => Carbon::parse($state)->toDate() < now()->toDate() ? 'Out dated' : null)
+                    ->visible(fn ($state) => Carbon::parse($state)->toDate() < now())
                     ->formatStateUsing(fn ($state) => new HtmlString('This task is outdated: <span class="text-primary-600">' . Carbon::parse($state)->format('F d, Y') . '</span>'))
                     ->columns(1),
                 Section::make([
@@ -103,11 +105,11 @@ class ViewTask extends ViewRecord
                                     $record->priority = data_get($data, 'priority');
                                     $record->save();
 
-                                        Notification::make()
-                                            ->title('Priority saved sucessfully.')
-                                            ->success()
-                                            ->send();
-                                    })
+                                    Notification::make()
+                                        ->title('Priority saved sucessfully.')
+                                        ->success()
+                                        ->send();
+                                })
                             )
                             ->icon('heroicon-m-flag')
                             ->columns(1),
@@ -147,7 +149,9 @@ class ViewTask extends ViewRecord
                                     ->form([
                                     Select::make('contracts')
                                         ->label('Users')
-                                        ->relationship('contracts', 'id',
+                                        ->relationship(
+                                            'contracts',
+                                            'id',
                                             modifyQueryUsing: fn (Builder $query) => $query->with('user')->where('business_id', \Auth::user()->getActiveBusinessId()),
                                         )
                                         ->multiple()
@@ -156,10 +160,10 @@ class ViewTask extends ViewRecord
                                         ->getOptionLabelFromRecordUsing(fn (Model $record) => data_get($record, 'user.name'))
                                     ,
                                 ])->action(function ($record) {
-                                        Notification::make()
-                                            ->title('Users assigned saved sucessfully.')
-                                            ->success()
-                                            ->send();
+                                    Notification::make()
+                                        ->title('Users assigned saved sucessfully.')
+                                        ->success()
+                                        ->send();
                                 })
                             )
                             ->label('Assigned to'),
@@ -173,8 +177,8 @@ class ViewTask extends ViewRecord
                             ->columns(1),
                         TextEntry::make('end')
                             ->date()
-                            ->color(fn ($state) => Carbon::parse($state)->toDate() < now()->toDate() ? Color::Red : Color::Gray )
-                            ->tooltip(fn ($state) => Carbon::parse($state)->toDate() < now()->toDate() ? 'Outdated' : null )
+                            ->color(fn ($state) => Carbon::parse($state)->toDate() < now()->toDate() ? Color::Red : Color::Gray)
+                            ->tooltip(fn ($state) => Carbon::parse($state)->toDate() < now()->toDate() ? 'Outdated' : null)
                             ->columns(1),
                     ])->columns(5),
                     Section::make([
@@ -199,7 +203,7 @@ class ViewTask extends ViewRecord
                                     )->extraAttributes([
                                         'target' => '_blank'
                                     ])
-                            ])->hidden(fn ($record) => empty(data_get($record, 'attributes.files', []) ))
+                            ])->hidden(fn ($record) => empty(data_get($record, 'attributes.files', [])))
                     ])
                 ])
             ]);

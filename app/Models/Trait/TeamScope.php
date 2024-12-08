@@ -3,12 +3,11 @@
 namespace App\Models\Trait;
 
 use App\Models\Business;
-use App\Models\Team;
-use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-trait TeamScope {
+trait TeamScope
+{
     protected static function booted(): void
     {
         static::addGlobalScope('business', function (Builder $query) {

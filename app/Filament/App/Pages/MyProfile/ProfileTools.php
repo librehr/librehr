@@ -11,8 +11,7 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 
-
-class ProfileTools extends Page  implements HasForms, HasTable
+class ProfileTools extends Page implements HasForms, HasTable
 {
     use InteractsWithTable;
     use InteractsWithForms;

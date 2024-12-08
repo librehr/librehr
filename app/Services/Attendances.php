@@ -2,12 +2,9 @@
 
 namespace App\Services;
 
-
 use App\Models\Attendance;
-use App\Models\AttendanceValidation;
 use App\Models\User;
 use Carbon\Carbon;
-use Filament\Forms\Get;
 use Illuminate\Support\Facades\Auth;
 
 class Attendances extends BaseService
@@ -30,8 +27,7 @@ class Attendances extends BaseService
         $value = null,
         $start = null,
         $end = null
-    )
-    {
+    ) {
         if ($attendanceId === null && $type === 'new') {
             $start = explode(':', $start);
             $end = explode(':', $end);
@@ -54,7 +50,7 @@ class Attendances extends BaseService
                 ->first();
 
             $time = explode(':', $value);
-            $dateTime = Carbon::createFromDate( $attendance->date)
+            $dateTime = Carbon::createFromDate($attendance->date)
                 ->setTime($time[0], $time[1])
                 ->setTimezone(config('app.timezone'));
 
@@ -121,9 +117,11 @@ class Attendances extends BaseService
                     'contracts.planning',
                     'contracts.absences' => function ($q) use ($currentDate) {
                         $q->where('status', 'allowed')
-                            ->whereYear('start',  $currentDate->format('Y'));;
+                            ->whereYear('start', $currentDate->format('Y'));
+                        ;
                     }
-                ])
+                ]
+            )
             ->get();
     }
 
@@ -193,8 +191,8 @@ class Attendances extends BaseService
 
                         $dayData = $attendances->where('date', $dateAttendance);
                         $estimated = data_get($estimatedWorkTime, $dateAttendance->format('N'));
-                        $differenceSeconds = data_get($estimated, 'seconds')-$dayData->sum('seconds');
-                        $extraSeconds = data_get($estimated, 'seconds')-$dayData->sum('seconds');
+                        $differenceSeconds = data_get($estimated, 'seconds') - $dayData->sum('seconds');
+                        $extraSeconds = data_get($estimated, 'seconds') - $dayData->sum('seconds');
                         $estimatedTimes = data_get($estimated, 'times');
                         $totalTimes = is_array($estimatedTimes) ? count($estimatedTimes) : 0;
                         $timesValids = 0;
@@ -276,7 +274,7 @@ class Attendances extends BaseService
             $daysCollected = collect($days);
             $totalSeconds = $daysCollected->sum('total_seconds');
             $totalSecondsEstimated = $daysCollected->sum('total_seconds_estimated');
-            $difference = ($totalSeconds-$totalSecondsEstimated);
+            $difference = ($totalSeconds - $totalSecondsEstimated);
 
             $summary[$contract] = [
                 'user' => $contractInfo[$contract] ?? [],
@@ -303,7 +301,8 @@ class Attendances extends BaseService
             ->map(function ($attendance, $key) {
                 $attendance->startFormat = Carbon::create($attendance->start)->format('H:i');
                 $attendance->endFormat = null;
-                $attendance->seconds = Carbon::create(Carbon::create($attendance->start))->diffInSeconds(now());;
+                $attendance->seconds = Carbon::create(Carbon::create($attendance->start))->diffInSeconds(now());
+                ;
                 if ($attendance->end) {
                     $attendance->endFormat = Carbon::create($attendance->end)->format('H:i');
                     $attendance->seconds = Carbon::create(Carbon::create($attendance->start))->diffInSeconds($attendance->end);
@@ -349,7 +348,8 @@ class Attendances extends BaseService
         return $status;
     }
 
-    public function getPeriods($periods, $currentDate) {
+    public function getPeriods($periods, $currentDate)
+    {
         $planningWorkDays = [];
 
         foreach ($periods as $period) {
@@ -379,7 +379,8 @@ class Attendances extends BaseService
             $day['times'] = $times->toArray();
             $day['seconds'] = $times->sum('seconds');
             return $day;
-        })->mapWithKeys(function ($day) {;
+        })->mapWithKeys(function ($day) {
+            ;
             return [data_get($day, 'day') => $day];
         });
     }

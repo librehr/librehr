@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\BusinessScope;
 use App\Models\Trait\TeamScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -47,7 +46,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Contract extends Model
 {
-    use HasFactory, TeamScope;
+    use HasFactory;
+    use TeamScope;
 
     protected $casts = [
         'attributes' => 'array',

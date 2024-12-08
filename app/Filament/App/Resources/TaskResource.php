@@ -4,8 +4,6 @@ namespace App\Filament\App\Resources;
 
 use App\Enums\TaskPriorityEnum;
 use App\Enums\TaskStatusEnum;
-use App\Filament\Resources\TaskResource\Pages;
-use App\Filament\Resources\TaskResource\RelationManagers;
 use App\Models\Task;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -61,7 +59,9 @@ class TaskResource extends Resource
                             ->columns(1),
                         Forms\Components\Select::make('contracts')
                             ->label('Users')
-                            ->relationship('contracts', 'id',
+                            ->relationship(
+                                'contracts',
+                                'id',
                                 modifyQueryUsing: fn (Builder $query) => $query->with('user')->where('business_id', \Auth::user()->getActiveBusinessId()),
                             )
                             ->multiple()
@@ -111,8 +111,8 @@ class TaskResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('end')
                     ->date()
-                    ->color(fn ($state) => $state > now()->toDate() ? Color::Red : Color::Gray )
-                    ->tooltip(fn ($state) => $state > now()->toDate() ? 'Outdated' : null )
+                    ->color(fn ($state) => $state > now()->toDate() ? Color::Red : Color::Gray)
+                    ->tooltip(fn ($state) => $state > now()->toDate() ? 'Outdated' : null)
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: false),
                 Tables\Columns\TextColumn::make('created_at')

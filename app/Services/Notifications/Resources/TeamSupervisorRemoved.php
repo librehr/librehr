@@ -13,7 +13,7 @@ class TeamSupervisorRemoved extends NotificationsResources
 
     public function getDescription(): string
     {
-            return  data_get($this->data, 'supervisor.name') . ' has been removed from supervising your team.';
+        return  data_get($this->data, 'supervisor.name') . ' has been removed from supervising your team.';
     }
 
     public function getUrl(): string

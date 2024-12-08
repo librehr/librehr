@@ -40,7 +40,8 @@ class Attendances extends Page
 
     public function mount()
     {
-        $this->contractId = Auth::user()->getActiveContractId();;
+        $this->contractId = Auth::user()->getActiveContractId();
+        ;
         $selected = $this->loadSelectedDate();
         $this->loadDays($selected);
     }
@@ -163,7 +164,7 @@ class Attendances extends Page
         ];
 
 
-        return $inspirational_messages[rand(0,9)];
+        return $inspirational_messages[rand(0, 9)];
     }
 
     private function loadSelectedDate()

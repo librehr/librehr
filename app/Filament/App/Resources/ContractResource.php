@@ -2,8 +2,6 @@
 
 namespace App\Filament\App\Resources;
 
-use App\Filament\Resources\ContractResource\Pages;
-use App\Filament\Resources\ContractResource\RelationManagers;
 use App\Models\Contract;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -41,7 +39,7 @@ class ContractResource extends Resource
                                 ->relationship('user', 'name')
                                 ->searchable()
                                 ->required()
-                                ->hidden(fn($record) => $record)
+                                ->hidden(fn ($record) => $record)
                                 ->preload(),
                             Forms\Components\DatePicker::make('start')
                                 ->required()
@@ -84,14 +82,14 @@ class ContractResource extends Resource
                         ->searchable(),
                     Tables\Columns\TextColumn::make('contractType.name'),
                     Tables\Columns\TextColumn::make('team.name')
-                        ->hidden(in_array($table->getQueryStringIdentifier(),  ['contractsRelationManager']))
+                        ->hidden(in_array($table->getQueryStringIdentifier(), ['contractsRelationManager']))
                         ->badge(),
                     Tables\Columns\TextColumn::make('place.name'),
                     Tables\Columns\TextColumn::make('planning.name')
-                        ->hidden(in_array($table->getQueryStringIdentifier(),  ['contractsRelationManager'])),
+                        ->hidden(in_array($table->getQueryStringIdentifier(), ['contractsRelationManager'])),
                     Tables\Columns\TextColumn::make('start')->date(),
                     Tables\Columns\TextColumn::make('end')->date()
-                        ->hidden(in_array($table->getQueryStringIdentifier(),  ['contractsRelationManager']))
+                        ->hidden(in_array($table->getQueryStringIdentifier(), ['contractsRelationManager']))
                 ]
             )
             ->filters([

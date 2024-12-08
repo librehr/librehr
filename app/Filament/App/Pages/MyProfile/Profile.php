@@ -19,7 +19,6 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 
-
 class Profile extends Page implements HasForms
 {
     use InteractsWithForms;

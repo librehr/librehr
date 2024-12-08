@@ -5,7 +5,6 @@ namespace App\Livewire;
 use App\Models\Business;
 use App\Models\Contract;
 use App\Models\Scopes\BusinessScope;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 

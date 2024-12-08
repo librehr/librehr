@@ -15,7 +15,6 @@ use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
 
-
 class ActivitiesRelationManager extends RelationManager
 {
     protected static string $relationship = 'activities';
@@ -33,13 +32,13 @@ class ActivitiesRelationManager extends RelationManager
                             ->icon('heroicon-m-arrow-down-tray')
                             ->formatStateUsing(fn ($record, $state) => data_get($record, 'attributes.fileNames')[$state] ?? null)
                             ->url(
-                            fn ($state) =>
+                                fn ($state) =>
                             \Storage::url($state),
-                            true
-                        )->extraAttributes([
+                                true
+                            )->extraAttributes([
                             'target' => '_blank'
                         ])->columnSpanFull(1)
-                ])->hidden(fn ($record) => empty(data_get($record, 'attributes.files', []) ))
+                ])->hidden(fn ($record) => empty(data_get($record, 'attributes.files', [])))
             ]);
     }
 
@@ -78,31 +77,31 @@ class ActivitiesRelationManager extends RelationManager
                 Tables\Actions\Action::make('Create Message')
                     ->form($this->createMessage())
                     ->action(function ($data) use ($userId) {
-                    $record = $this->getOwnerRecord();
-                    TaskActivity::query()->create([
-                        'task_id' => data_get($record, 'id'),
-                        'user_id' => $userId,
-                        'attributes' => data_get($data, 'attributes')
-                    ]);
-                })
+                        $record = $this->getOwnerRecord();
+                        TaskActivity::query()->create([
+                            'task_id' => data_get($record, 'id'),
+                            'user_id' => $userId,
+                            'attributes' => data_get($data, 'attributes')
+                        ]);
+                    })
             ])
             ->filters([])
             ->actions([
-                $this->getReactionAction($userId, 'check'),
-                $this->getReactionAction($userId, 'face-smile'),
-                $this->getReactionAction($userId, 'face-frown'),
-                $this->getReactionAction($userId, 'rocket-launch'),
+                    $this->getReactionAction($userId, 'check'),
+                    $this->getReactionAction($userId, 'face-smile'),
+                    $this->getReactionAction($userId, 'face-frown'),
+                    $this->getReactionAction($userId, 'rocket-launch'),
 
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\EditAction::make()->authorize(fn ($record) => $record->user_id === \Auth::id()),
-                    Tables\Actions\DeleteAction::make()->authorize(fn ($record) => $record->user_id === \Auth::id()),
-                    Tables\Actions\ViewAction::make()->authorize(true),
-                ])->color(Color::Gray),
+                    Tables\Actions\ActionGroup::make([
+                        Tables\Actions\EditAction::make()->authorize(fn ($record) => $record->user_id === \Auth::id()),
+                        Tables\Actions\DeleteAction::make()->authorize(fn ($record) => $record->user_id === \Auth::id()),
+                        Tables\Actions\ViewAction::make()->authorize(true),
+                    ])->color(Color::Gray),
             ], position: Tables\Enums\ActionsPosition::AfterColumns)
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                    Tables\Actions\BulkActionGroup::make([
+                        Tables\Actions\DeleteBulkAction::make(),
+                    ]),
             ]);
     }
 

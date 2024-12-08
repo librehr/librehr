@@ -18,12 +18,19 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
+use Filament\Support\Facades\FilamentView;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\Blade;
 
 class AppPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::BODY_START,
+            fn (): string => Blade::render('@livewire(\'livewire-ui-modal\')'),
+        );
+
         $panel
             ->id('app')
             ->default()
