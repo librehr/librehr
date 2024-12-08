@@ -27,14 +27,14 @@ class AppPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         FilamentView::registerRenderHook(
-            PanelsRenderHook::BODY_START,
-            fn (): string => Blade::render('@livewire(\'livewire-ui-modal\')'),
+            PanelsRenderHook::USER_MENU_AFTER,
+            fn (): string => Blade::render('@livewire(\'admin-login\')'),
         );
 
         $panel
             ->id('app')
             ->default()
-            ->path('/')
+            ->path('/app')
                 ->tenant(Business::class)
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
