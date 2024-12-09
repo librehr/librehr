@@ -24,11 +24,11 @@
             <h1 class="fi-header-heading text-2xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
                 {{ $this->getNavigationLabel() }}
             </h1>
-            <p>
+            <p class="my-4">
                 {{ $this->getSubheading() }}
             </p>
         </div>
-        <div class="flex flex-col border rounded-lg py-4 divide-y gap-4 items-center justify-center">
+        <div class="flex flex-col border bg-white rounded-lg py-4 divide-y gap-4 items-center justify-center">
             <div class="w-full flex justify-center">
                 Attendance
             </div>

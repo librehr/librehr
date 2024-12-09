@@ -42,7 +42,6 @@ class ProfileTools extends Page implements HasForms, HasTable
                 TextColumn::make('deliveredBy.name'),
                 TextColumn::make('returned_at')->date(),
                 TextColumn::make('returnedTo.name'),
-                TextColumn::make('documents'),
             ])
             ->filters([
                 // ...

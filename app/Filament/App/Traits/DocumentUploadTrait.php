@@ -5,6 +5,7 @@ namespace App\Filament\App\Traits;
 use App\Models\Document;
 use App\Models\DocumentsType;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
@@ -66,7 +67,10 @@ trait DocumentUploadTrait
                         ->send();
                 }
 
-                return $this->redirect(route($this->getRouteName(), $record->id));
+                return $this->redirect(route($this->getRouteName(), [
+                    Filament::getTenant()->id,
+                    $record->id
+                ]));
             })
             ->color(Color::Slate);
     }

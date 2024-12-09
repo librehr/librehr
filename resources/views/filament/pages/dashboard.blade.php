@@ -1,7 +1,7 @@
 <div class="pt-10">
     @if($contractId && $businessId)
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4 text-sm">
-        <x-filament::section class="p-0">
+    <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 mb-4 text-sm">
+        <x-filament::section class="p-0 col-span-6">
             <x-slot name="heading">
                 Attendance
             </x-slot>
@@ -31,7 +31,7 @@
             </div>
         </x-filament::section>
 
-        <x-filament::section class="col-span-2">
+        <x-filament::section class="col-span-6">
             <x-slot name="heading">
                 Notifications / Requests
             </x-slot>
@@ -85,7 +85,26 @@
             </div>
         </x-filament::section>
 
-        <x-filament::section class="p-0 col-span-2">
+        <div class="col-span-8 flex flex-col gap-4">
+            @foreach($posts as $post)
+                <x-filament::section>
+                    <x-slot name="heading">
+                        {{ data_get($post, 'title') }}
+                    </x-slot>
+
+                    <x-slot name="headerEnd">
+                        {{ data_get($post, 'created_at')->format('M N, Y') }}
+                    </x-slot>
+
+                    <div class="blog-format">
+                        {!! data_get($post, 'body') !!}
+                    </div>
+
+                </x-filament::section>
+            @endforeach
+        </div>
+
+        <x-filament::section class="p-0 col-span-4">
             <x-slot name="heading">
                 {{ data_get($user->getActiveBusiness(), 'name') }} Calendar
             </x-slot>
@@ -107,27 +126,9 @@
                 @endforelse
             </div>
         </x-filament::section>
+
     </div>
 
     @endif
-    <div class="flex flex-col gap-4 mb-4">
-        @foreach($posts as $post)
-            <x-filament::section>
-                <x-slot name="heading">
-                    {{ data_get($post, 'title') }}
-                </x-slot>
-
-                <x-slot name="headerEnd">
-                    {{ data_get($post, 'created_at')->format('M N, Y') }}
-                </x-slot>
-
-                <div class="blog-format">
-                    {!! data_get($post, 'body') !!}
-                </div>
-
-            </x-filament::section>
-        @endforeach
-    </div>
-
 </div>
 
