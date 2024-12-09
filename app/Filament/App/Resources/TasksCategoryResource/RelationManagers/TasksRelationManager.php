@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Admin\Resources\TasksCategoryResource\RelationManagers;
+namespace App\Filament\App\Resources\TasksCategoryResource\RelationManagers;
 
 use App\Filament\App\Resources\TaskResource;
 use Filament\Forms\Form;

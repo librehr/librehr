@@ -18,7 +18,7 @@ class PlanningResource extends Resource
     protected static bool $isScopedToTenant = false;
 
     protected static ?int $navigationSort = 1;
-    protected static ?string $navigationIcon = null;
+    protected static ?string $navigationIcon = 'lucide-file-clock';
     protected static ?string $navigationGroup = 'Human Resources';
 
 

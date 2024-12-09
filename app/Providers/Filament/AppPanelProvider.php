@@ -34,7 +34,7 @@ class AppPanelProvider extends PanelProvider
         $panel
             ->id('app')
             ->default()
-            ->path('/app')
+            ->path('/')
                 ->tenant(Business::class)
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')

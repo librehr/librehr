@@ -15,7 +15,7 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
     protected static bool $isScopedToTenant = false;
-
+    protected static ?string $navigationGroup = 'Administration';
     public static function form(Form $form): Form
     {
         return $form
@@ -75,10 +75,6 @@ class UserResource extends Resource
             'index' => \App\Filament\Admin\Resources\UserResource\Pages\ListUsers::route('/'),
             'create' => \App\Filament\Admin\Resources\UserResource\Pages\CreateUser::route('/create'),
             'edit' => \App\Filament\Admin\Resources\UserResource\Pages\EditUser::route('/{record}/edit'),
-            'documents' => \App\Filament\Admin\Resources\UserResource\Pages\ManageUserDocuments::route('/{record}/documents'),
-            'contracts' => \App\Filament\Admin\Resources\UserResource\Pages\ManageUserContracts::route('/{record}/contracts'),
-            'absences' => \App\Filament\Admin\Resources\UserResource\Pages\ManageUserAbsences::route('/{record}/absences'),
-            'tools' => \App\Filament\Admin\Resources\UserResource\Pages\ManageUserTools::route('/{record}/tools'),
         ];
     }
 
@@ -87,9 +83,6 @@ class UserResource extends Resource
         return $page->generateNavigationItems([
             \App\Filament\Admin\Resources\UserResource\Pages\EditUser::class,
             \App\Filament\Admin\Resources\UserResource\Pages\ManageUserContracts::class,
-            \App\Filament\Admin\Resources\UserResource\Pages\ManageUserAbsences::class,
-            \App\Filament\Admin\Resources\UserResource\Pages\ManageUserDocuments::class,
-            \App\Filament\Admin\Resources\UserResource\Pages\ManageUserTools::class,
         ]);
     }
 }

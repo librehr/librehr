@@ -14,6 +14,9 @@ class DocumentsTypeResource extends Resource
     protected static ?string $model = DocumentsType::class;
 
     protected static ?string $navigationIcon = null;
+
+    protected static ?string $navigationGroup = 'Administration';
+
     protected static bool $isScopedToTenant = false;
     public static function form(Form $form): Form
     {

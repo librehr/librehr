@@ -10,6 +10,7 @@ use App\Models\Request;
 use App\Services\Calendar;
 use App\Services\Notifications;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
@@ -164,6 +165,7 @@ class TimeOff extends Page
                     $absence = Absence::query()->create([
                         'absence_type_id' => data_get($data, 'absenceType'),
                         'contract_id' => $user->getActiveContractId(),
+                        'business_id' => Filament::getTenant()->id,
                         'start' => $from,
                         'year' => $from->format('Y'),
                         'end' => $to,

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Admin\Resources;
+namespace App\Filament\App\Resources;
 
-use App\Filament\Admin\Resources\TasksCategoryResource\RelationManagers\TasksRelationManager;
+use App\Filament\App\Resources\TasksCategoryResource\RelationManagers\TasksRelationManager;
 use App\Models\TasksCategory;
 use Filament\Facades\Filament;
 use Filament\Forms;
@@ -17,9 +17,9 @@ class TasksCategoryResource extends Resource
 {
     protected static ?string $model = TasksCategory::class;
     protected static bool $isScopedToTenant = false;
+    protected static ?string $navigationGroup = 'Human Resources';
 
-
-    protected static ?string $navigationIcon = null;
+    protected static ?string $navigationIcon = 'lucide-layout-list';
     public static function form(Form $form): Form
     {
         return $form
@@ -66,7 +66,7 @@ class TasksCategoryResource extends Resource
                 Tables\Actions\Action::make('Open Category')
                     ->icon('heroicon-m-folder')
                     ->color(Color::Gray)
-                    ->url(fn ($record) => route(\App\Filament\Admin\Resources\TasksCategoryResource\Pages\ListTasksCategories::getRouteName('app'), [
+                    ->url(fn ($record) => route(\App\Filament\App\Resources\TasksCategoryResource\Pages\ListTasksCategories::getRouteName('app'), [
                         'tenant' => Filament::getTenant(),
                         'tableFilters[parent][id]' => data_get($record, 'id')
                     ]))
@@ -75,7 +75,7 @@ class TasksCategoryResource extends Resource
                     ->icon('heroicon-m-plus-circle')
                     ->iconButton()
                     ->size('xl')
-                    ->form(fn ($form) => [self::form($form)])
+                    ->form(fn ($form) => self::form($form)->getComponents())
                     ->action(function ($record, $data) {
                         $created = TasksCategory::query()->create([
                             'name' => data_get($data, 'name'),
@@ -84,7 +84,9 @@ class TasksCategoryResource extends Resource
                         ]);
 
                         redirect()->to(
-                            route(\App\Filament\Admin\Resources\TasksCategoryResource\Pages\EditTasksCategory::getRouteName('app'), data_get($created, 'id'))
+                            route(\App\Filament\App\Resources\TasksCategoryResource\Pages\EditTasksCategory::getRouteName('app'), [
+                                Filament::getTenant()->id, data_get($created, 'id')
+                            ])
                         );
                     }),
             ])
@@ -113,9 +115,9 @@ class TasksCategoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => \App\Filament\Admin\Resources\TasksCategoryResource\Pages\ListTasksCategories::route('/'),
-            'create' => \App\Filament\Admin\Resources\TasksCategoryResource\Pages\CreateTasksCategory::route('/create'),
-            'edit' => \App\Filament\Admin\Resources\TasksCategoryResource\Pages\EditTasksCategory::route('/{record}/edit'),
+            'index' => \App\Filament\App\Resources\TasksCategoryResource\Pages\ListTasksCategories::route('/'),
+            'create' => \App\Filament\App\Resources\TasksCategoryResource\Pages\CreateTasksCategory::route('/create'),
+            'edit' => \App\Filament\App\Resources\TasksCategoryResource\Pages\EditTasksCategory::route('/{record}/edit'),
         ];
     }
 }

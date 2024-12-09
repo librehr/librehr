@@ -13,6 +13,7 @@ class ToolResource extends Resource
 {
     protected static ?string $model = Tool::class;
     protected static bool $isScopedToTenant = false;
+    protected static ?string $navigationGroup = 'Administration';
 
     protected static ?string $navigationIcon = null;
 

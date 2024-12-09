@@ -15,6 +15,7 @@ class BusinessResource extends Resource
     protected static ?string $model = Business::class;
     protected static bool $isScopedToTenant = false;
 
+    protected static ?string $navigationGroup = 'Administration';
 
     protected static ?string $navigationIcon = null;
 

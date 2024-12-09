@@ -14,6 +14,7 @@ class AbsenceTypeResource extends Resource
 {
     protected static ?string $model = AbsenceType::class;
     protected static bool $isScopedToTenant = false;
+    protected static ?string $navigationGroup = 'Administration';
 
     protected static ?string $navigationIcon = null;
 

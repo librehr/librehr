@@ -13,6 +13,7 @@ class ContractTypeResource extends Resource
 {
     protected static ?string $model = ContractType::class;
     protected static bool $isScopedToTenant = false;
+    protected static ?string $navigationGroup = 'Administration';
 
     protected static ?string $navigationIcon = null;
 

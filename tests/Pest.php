@@ -78,7 +78,7 @@ dataset(
         \App\Filament\Admin\Resources\ContractTypeResource::class,
         \App\Filament\Admin\Resources\DocumentsTypeResource::class,
         \App\Filament\Admin\Resources\RoleResource::class,
-        \App\Filament\Admin\Resources\TasksCategoryResource::class,
+        \App\Filament\App\Resources\TasksCategoryResource::class,
         \App\Filament\Admin\Resources\ToolResource::class,
         \App\Filament\App\Resources\PlanningResource::class,
     ]

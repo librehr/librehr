@@ -5,6 +5,7 @@ namespace App\Filament\App\Resources;
 use App\Models\Contract;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -108,12 +109,6 @@ class ContractResource extends Resource
             });
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            \App\Filament\App\Resources\DocumentsRelationManager::class
-        ];
-    }
 
     public static function getPages(): array
     {
@@ -121,6 +116,19 @@ class ContractResource extends Resource
             'index' => \App\Filament\App\Resources\ContractResource\Pages\ListContracts::route('/'),
             'create' => \App\Filament\App\Resources\ContractResource\Pages\CreateContract::route('/create'),
             'edit' => \App\Filament\App\Resources\ContractResource\Pages\EditContract::route('/{record}/edit'),
+            'documents' => \App\Filament\App\Resources\ContractResource\Pages\Documents::route('/{record}/documents'),
+            'absences' =>\App\Filament\App\Resources\ContractResource\Pages\Absences::route('/{record}/absences'),
+            'tools' => \App\Filament\App\Resources\ContractResource\Pages\Tools::route('/{record}/tools'),
         ];
+    }
+
+    public static function getRecordSubNavigation(Page $page): array
+    {
+        return $page->generateNavigationItems([
+            \App\Filament\App\Resources\ContractResource\Pages\EditContract::class,
+            \App\Filament\App\Resources\ContractResource\Pages\Absences::class,
+            \App\Filament\App\Resources\ContractResource\Pages\Documents::class,
+            \App\Filament\App\Resources\ContractResource\Pages\Tools::class,
+        ]);
     }
 }

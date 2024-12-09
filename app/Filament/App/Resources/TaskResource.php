@@ -20,7 +20,7 @@ class TaskResource extends Resource
 {
     protected static ?string $model = Task::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'lucide-clipboard-list';
 
     protected static ?int $navigationSort = 3;
     public static function getNavigationBadge(): ?string

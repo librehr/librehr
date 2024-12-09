@@ -12,7 +12,7 @@ class ExpensePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->getActiveContractId() !== null && data_get($user->getActiveBusiness(), 'attributes.modules.expenses');
+        return $user->getActiveContractId() !== null;
     }
 
     /**

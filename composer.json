@@ -15,6 +15,7 @@
         "laravel/reverb": "@beta",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.8",
+        "mallardduck/blade-lucide-icons": "^1.23",
         "malzariey/filament-daterangepicker-filter": "dev-main",
         "rdumpdev/laravel-rdump": "^1.2"
     },

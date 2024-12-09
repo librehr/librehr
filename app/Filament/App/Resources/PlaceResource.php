@@ -13,10 +13,10 @@ class PlaceResource extends Resource
 {
     protected static ?string $model = Place::class;
     protected static ?int $navigationSort = 4;
-    protected static ?string $navigationIcon = null;
+    protected static ?string $navigationIcon = 'lucide-building';
     protected static ?string $navigationLabel = "Office Locations";
     protected static ?string $modelLabel = 'Offices';
-    protected static ?string $navigationGroup = 'Business';
+    protected static ?string $navigationGroup = 'Human Resources';
     public static function form(Form $form): Form
     {
         return $form

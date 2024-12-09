@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filament\Admin\Resources\TasksCategoryResource\Pages;
+namespace App\Filament\App\Resources\TasksCategoryResource\Pages;
 
-use App\Filament\Admin\Resources\TasksCategoryResource;
+use App\Filament\App\Resources\TasksCategoryResource;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateTasksCategory extends CreateRecord

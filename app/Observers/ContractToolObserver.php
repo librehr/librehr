@@ -23,6 +23,11 @@ class ContractToolObserver
     /**
      * Handle the ContractTool "updated" event.
      */
+    public function updating(ContractTool $contractTool): void
+    {
+        $contractTool->returned_to = \Auth::id();
+    }
+
     public function updated(ContractTool $contractTool): void
     {
         //
