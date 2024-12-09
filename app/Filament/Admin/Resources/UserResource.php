@@ -75,6 +75,7 @@ class UserResource extends Resource
             'index' => \App\Filament\Admin\Resources\UserResource\Pages\ListUsers::route('/'),
             'create' => \App\Filament\Admin\Resources\UserResource\Pages\CreateUser::route('/create'),
             'edit' => \App\Filament\Admin\Resources\UserResource\Pages\EditUser::route('/{record}/edit'),
+            'contracts' => \App\Filament\Admin\Resources\UserResource\Pages\ManageUserContracts::route('/{record}/contracts'),
         ];
     }
 
