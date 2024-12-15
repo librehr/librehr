@@ -21,7 +21,7 @@ class Documents extends Page
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public $documents = null;
+    public array $documents = [];
 
     public static function getNavigationLabel(): string
     {

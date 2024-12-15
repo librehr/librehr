@@ -9,3 +9,11 @@
 .blog-format b {
     @apply font-semibold;
 }
+
+.fi-sidebar-nav {
+    @apply bg-white border-r;
+}
+
+.fi-ta-actions-cell {
+    @apply flex justify-end items-end;
+}

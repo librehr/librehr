@@ -41,6 +41,10 @@ class TaskResource extends Resource
                     ->schema([
                         Forms\Components\Hidden::make('business_id')
                             ->default(\Auth::user()->getActiveBusinessId()),
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
                         Forms\Components\Select::make('status')
                             ->options(TaskStatusEnum::class)
                             ->required()
@@ -57,6 +61,10 @@ class TaskResource extends Resource
                             ->relationship('tasksCategory', 'name')
                             ->required()
                             ->columns(1),
+                        Forms\Components\DatePicker::make('start')->columns(1)
+                            ->default(now())->required(),
+                        Forms\Components\DatePicker::make('end')->columns(1)
+                            ->required(),
                         Forms\Components\Select::make('contracts')
                             ->label('Users')
                             ->relationship(
@@ -68,14 +76,6 @@ class TaskResource extends Resource
                             ->preload()
                             ->getOptionLabelFromRecordUsing(fn (Model $record) => data_get($record, 'user.name'))
                         ,
-                        Forms\Components\DatePicker::make('start')->columns(1)
-                            ->default(now())->required(),
-                        Forms\Components\DatePicker::make('end')->columns(1)
-                            ->required(),
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(255)
-                            ->columnSpanFull(),
                         Forms\Components\RichEditor::make('description')
                             ->columnSpanFull(),
                         Forms\Components\FileUpload::make('attributes.files')

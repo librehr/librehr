@@ -2,6 +2,7 @@
 
 namespace App\Filament\App\Pages;
 
+use App\Enums\AbsenceStatusEnum;
 use App\Models\Absence;
 use App\Models\AbsenceType;
 use App\Models\Document;
@@ -11,13 +12,18 @@ use App\Services\Calendar;
 use App\Services\Notifications;
 use Filament\Actions\Action;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Support\Enums\MaxWidth;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -40,6 +46,7 @@ class TimeOff extends Page
     public $type;
     public $files  = [];
 
+
     public $absenceTypeId;
     public $absenceType;
     public $startDate = 0;
@@ -59,71 +66,67 @@ class TimeOff extends Page
 
     protected function getHeaderActions(): array
     {
+        $cantEdit = Action::make('cant-edit')
+            ->label('This request is not editable')
+            ->modalWidth(MaxWidth::ExtraSmall)
+            ->modalSubmitAction(null)
+            ->form(function ($arguments, $data) {
+                $contractId = Auth::user()->getActiveContractId();
+                $absence = Absence::query()
+                    ->where('id', $arguments[0])
+                    ->where('contract_id', $contractId)
+                    ->first();
+
+                if (in_array($absence->status, [AbsenceStatusEnum::Pending, AbsenceStatusEnum::Allowed])) {
+                    if (Carbon::parse(data_get($absence, 'start')) < now()) {
+                        return [
+                            Placeholder::make('')
+                                ->content('Not editable.')
+                        ];
+                    }
+
+                    return [
+                        Hidden::make('id')
+                            ->default($absence->id),
+                        Placeholder::make('')
+                            ->label('In case you want to cancel this request, please confirm it.'),
+                        Checkbox::make('cancel_request')
+                    ];
+                }
+
+                return [
+                    Placeholder::make('')
+                        ->content('Not editable.')
+                ];
+            })
+            ->action(function ($data) {
+                if (!isset($data['cancel_request'])) {
+                    return;
+                }
+
+                if (!$data['cancel_request']) {
+                    return;
+                }
+
+                $contractId = Auth::user()->getActiveContractId();
+                $absence = Absence::query()
+                    ->where('id', $data['id'])
+                    ->where('contract_id', $contractId)
+                    ->first();
+
+                $absence->status = AbsenceStatusEnum::Cancelled;
+                $absence->save();
+
+                $this->reloadAbsences();
+            });
+
+        $this->cacheAction($cantEdit);
+
         return [
             Action::make('request-absence')
                 ->icon('heroicon-o-plus')
                 ->slideOver()
-                ->form([
-                    Select::make('absenceType')
-                        ->live()
-                        ->options(function () {
-                            return AbsenceType::query()->get()->pluck('name', 'id')->toArray();
-                        })
-                        ->required(),
-                    DateRangePicker::make('date')
-                        ->required(),
-                    Textarea::make('comments'),
-                    Placeholder::make('data')
-                        ->label('')
-                        ->content(function (Get $get) {
-                            if ($get('date') !== null) {
-                                [$from, $to] = explode(' - ', $get('date'));
-                                $from = Carbon::createFromFormat('d/m/Y', $from);
-                                $to = Carbon::createFromFormat('d/m/Y', $to);
-                                $days = $from->diffInDays($to) + 1;
-                                $daysAvailable = data_get($this->summary, 'total_days_pending');
-
-                                $absenceType = AbsenceType::query()->find($get('absenceType'));
-
-                                if ($days > $daysAvailable && data_get($absenceType, 'attributes.is_holidays', false) === true) {
-                                    $this->allowToRequest = false;
-                                    $message = "<div class='font-semibold text-red-600'>Not enought days available.</div>";
-                                } else {
-                                    $message = "<div>You have choosed " . $days . " days" . "</div>";
-                                }
-
-                                $overlaps = app(Calendar::class)
-                                    ->getOverlaps($this->contractId, $from, $to);
-
-                                $team = array_keys(data_get($overlaps, 'team', []));
-                                $business = array_keys(data_get($overlaps, 'business', []));
-
-                                if (count($team) > 0) {
-                                    $message .= "<div>Team overlaps: ". implode(',', $team) . "</div>";
-                                }
-
-                                if (count($business) > 0) {
-                                    $message .= "<div>Business overlaps: ". implode(',', $business) . "</div>";
-                                }
-
-                                return new HtmlString($message);
-                            }
-                            return "";
-                        }),
-                    FileUpload::make('file')
-                        ->disk('local')
-                        ->storeFileNamesIn('files')
-                        ->directory('timeoff')
-                        ->multiple()
-                        ->hidden(function (Get $get) {
-                            $absence = AbsenceType::query()->find($get('absenceType'));
-                            if (data_get($absence, 'attributes.attachments', false) == true) {
-                                return false;
-                            }
-
-                            return true;
-                        }),
-                ])
+                ->form($this->requestAbsenceForm())
                 ->action(function ($data) {
                     if ($this->allowToRequest === false) {
                         Notification::make()
@@ -227,6 +230,11 @@ class TimeOff extends Page
         $this->absenceType = AbsenceType::query()->find($this->absenceTypeId);
     }
 
+    public function mountAction(string $name, array $arguments = []): mixed
+    {
+        return parent::mountAction($name, $arguments);
+    }
+
     public function mount()
     {
         $this->contractId = Auth::user()->getActiveContractId();
@@ -276,5 +284,70 @@ class TimeOff extends Page
             ->get()
             ->groupBy('status')
             ->toArray();
+    }
+
+    private function requestAbsenceForm($data = [])
+    {
+        return [
+            Select::make('absenceType')
+                ->live()
+                ->options(function () {
+                    return AbsenceType::query()->get()->pluck('name', 'id')->toArray();
+                })
+                ->required(),
+            DateRangePicker::make('date')
+                ->required(),
+            Textarea::make('comments'),
+            Placeholder::make('data')
+                ->label('')
+                ->content(function (Get $get) {
+                    if ($get('date') !== null) {
+                        [$from, $to] = explode(' - ', $get('date'));
+                        $from = Carbon::createFromFormat('d/m/Y', $from);
+                        $to = Carbon::createFromFormat('d/m/Y', $to);
+                        $days = $from->diffInDays($to) + 1;
+                        $daysAvailable = data_get($this->summary, 'total_days_pending');
+
+                        $absenceType = AbsenceType::query()->find($get('absenceType'));
+
+                        if ($days > $daysAvailable && data_get($absenceType, 'attributes.is_holidays', false) === true) {
+                            $this->allowToRequest = false;
+                            $message = "<div class='font-semibold text-red-600'>Not enought days available.</div>";
+                        } else {
+                            $message = "<div>You have choosed " . $days . " days" . "</div>";
+                        }
+
+                        $overlaps = app(Calendar::class)
+                            ->getOverlaps($this->contractId, $from, $to);
+
+                        $team = array_keys(data_get($overlaps, 'team', []));
+                        $business = array_keys(data_get($overlaps, 'business', []));
+
+                        if (count($team) > 0) {
+                            $message .= "<div>Team overlaps: ". implode(',', $team) . "</div>";
+                        }
+
+                        if (count($business) > 0) {
+                            $message .= "<div>Business overlaps: ". implode(',', $business) . "</div>";
+                        }
+
+                        return new HtmlString($message);
+                    }
+                    return "";
+                }),
+            FileUpload::make('file')
+                ->disk('local')
+                ->storeFileNamesIn('files')
+                ->directory('timeoff')
+                ->multiple()
+                ->hidden(function (Get $get) {
+                    $absence = AbsenceType::query()->find($get('absenceType'));
+                    if (data_get($absence, 'attributes.attachments', false) == true) {
+                        return false;
+                    }
+
+                    return true;
+                }),
+        ];
     }
 }

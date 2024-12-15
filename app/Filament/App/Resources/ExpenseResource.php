@@ -51,7 +51,9 @@ class ExpenseResource extends Resource
                         ])
                         ->columns(3),
 
-                    Forms\Components\Textarea::make('attributes.note')->columnSpanFull(),
+                    Forms\Components\Textarea::make('attributes.note')
+                        ->required()
+                        ->columnSpanFull(),
                     Forms\Components\FileUpload::make('attributes.files')->columnSpanFull()
                     ->multiple(),
                 ])->columns(2),

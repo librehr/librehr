@@ -24,18 +24,20 @@ class TeamResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name'),
-                Forms\Components\Select::make('supervisors')
-                    ->label('Users')
-                    ->relationship(
-                        'supervisors',
-                        'id',
-                        modifyQueryUsing: fn (Builder $query) => $query->with('user')->where('business_id', \Auth::user()->getActiveBusinessId()),
-                    )
-                    ->multiple()
-                    ->preload()
-                    ->getOptionLabelFromRecordUsing(fn (Model $record) => data_get($record, 'user.name'))
-                ,
+                Forms\Components\Section::make()
+                ->schema([
+                    Forms\Components\TextInput::make('name'),
+                    Forms\Components\Select::make('supervisors')
+                        ->relationship(
+                            'supervisors',
+                            'id',
+                            modifyQueryUsing: fn (Builder $query) => $query->with('user')->where('business_id', \Auth::user()->getActiveBusinessId()),
+                        )
+                        ->multiple()
+                        ->preload()
+                        ->getOptionLabelFromRecordUsing(fn (Model $record) => data_get($record, 'user.name'))
+                    ,
+                ])->columns(2),
             ]);
     }
 

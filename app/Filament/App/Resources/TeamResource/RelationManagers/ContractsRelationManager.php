@@ -48,7 +48,14 @@ class ContractsRelationManager extends RelationManager
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
             ])
-            ->actions([
+            ->actºions([
+                Tables\Actions\Action::make('Contract')
+                    ->tooltip('view_contract')
+                    ->iconButton()
+                    ->icon('heroicon-o-document')
+                    ->url(fn ($record) => ContractResource\Pages\EditContract::getNavigationUrl([
+                        $record->id
+                    ])),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])

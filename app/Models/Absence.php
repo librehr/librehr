@@ -61,6 +61,10 @@ class Absence extends Model
         'absenceType'
     ];
 
+    protected $appends = [
+        'DiffInDays'
+    ];
+
     public function absenceType()
     {
         return $this->belongsTo(AbsenceType::class);
@@ -79,5 +83,10 @@ class Absence extends Model
     public function requests()
     {
         return $this->morphToMany(Request::class, 'requestable');
+    }
+
+    public function getDiffInDaysAttribute()
+    {
+        return \Carbon\Carbon::parse($this->start)->diffInDays(\Carbon\Carbon::parse($this->end)) + 1;
     }
 }

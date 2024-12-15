@@ -30,12 +30,6 @@ class BusinessResource extends Resource
                         ->disk('public')
                         ->imageEditor(),
                 ]),
-                Forms\Components\Section::make([
-                    Forms\Components\Toggle::make('attributes.modules.tasks')
-                        ->default(true),
-                    Forms\Components\Toggle::make('attributes.modules.expenses')
-                        ->default(true),
-                ])->heading('Allowed Modules'),
                 Forms\Components\Section::make()->schema([
                     Forms\Components\TextInput::make('attributes.default_vacations')
                         ->default(config('librehr.vacations'))

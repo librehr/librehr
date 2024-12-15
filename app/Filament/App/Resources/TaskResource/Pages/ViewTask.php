@@ -80,7 +80,7 @@ class ViewTask extends ViewRecord
                 TextEntry::make('end')
                     ->label('')
                     ->extraAttributes([
-                        'class' => 'rounded-lg p-1 px-6 border border-gray-200 bg-red-50'
+                        'class' => 'rounded-2xl p-4 px-6 border border-gray-200 bg-red-50'
                     ])
                     ->color(Color::Gray)
                     ->size('sm')

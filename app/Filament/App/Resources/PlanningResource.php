@@ -32,42 +32,53 @@ class PlanningResource extends Resource
 
         return $form
             ->schema([
-                Forms\Components\Hidden::make('business_id')
-                    ->default(\Auth::user()->getActiveBusinessId()),
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255)
-                    ->columnSpanFull(),
-
-                Repeater::make('attributes.periods')
-                    ->cloneable()
+                Forms\Components\Section::make()
                     ->schema([
-                        DateRangePicker::make('date')
-                            ->displayFormat('D-M')
-                            ->required(),
-                        Repeater::make('work_days')
+                        Forms\Components\Hidden::make('business_id')
+                            ->default(\Auth::user()->getActiveBusinessId()),
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+
+                        Repeater::make('attributes.periods')
+                            ->collapsed()
+                            ->collapsible()
+                            ->itemLabel(fn ($state) => $state['date'])
                             ->cloneable()
                             ->schema([
-                                Select::make('day')
-                                    ->options($dayNames)
+                                DateRangePicker::make('date')
+                                    ->live()
+                                    ->displayFormat('D-M')
                                     ->required(),
-                                Repeater::make('times')
+                                Repeater::make('work_days')
+                                    ->collapsible()
+                                    ->collapsed()
+                                    ->itemLabel(fn ($state) => $dayNames[$state['day']])
                                     ->cloneable()
                                     ->schema([
-                                        Forms\Components\TimePicker::make('from')
-                                            ->step('h')
-                                            ->closeOnDateSelection()
+                                        Select::make('day')
+                                            ->live()
+                                            ->options($dayNames)
                                             ->required(),
-                                        Forms\Components\TimePicker::make('to')
-                                            ->step('h')
-                                            ->required(),
-                                    ])
-                                    ->columns(2)
+                                        Repeater::make('times')
+                                            ->cloneable()
+                                            ->schema([
+                                                Forms\Components\TimePicker::make('from')
+                                                    ->step('h')
+                                                    ->closeOnDateSelection()
+                                                    ->required(),
+                                                Forms\Components\TimePicker::make('to')
+                                                    ->step('h')
+                                                    ->required(),
+                                            ])
+                                            ->columns(2)
 
+                                    ])
+                                    ->columnSpanFull()
                             ])
                             ->columnSpanFull()
-                    ])
-                    ->columnSpanFull()
+                    ]),
             ]);
     }
 

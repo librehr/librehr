@@ -18,6 +18,6 @@ class Documents extends BaseService
             ->mapToGroups(function ($record) {
                 $modelName = data_get($record, 'documentable.type.name', 'No classificated');
                 return [$modelName => $record];
-            });
+            })->toArray();
     }
 }

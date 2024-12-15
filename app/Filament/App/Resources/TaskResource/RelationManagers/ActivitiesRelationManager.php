@@ -14,6 +14,8 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\View\View;
 
 class ActivitiesRelationManager extends RelationManager
 {
@@ -54,10 +56,11 @@ class ActivitiesRelationManager extends RelationManager
 
         return $table
             ->recordTitleAttribute(' ')
+            ->recordAction(null)
+            ->paginated(false)
+            ->deferLoading(true)
+            ->selectable(false)
             ->columns([
-                Tables\Columns\IconColumn::make('attributes.files.0')
-                    ->label('Has Files?')
-                    ->boolean(),
                     Tables\Columns\TextColumn::make('attributes.body')
                         ->label('Message')
                         ->html()
@@ -65,9 +68,6 @@ class ActivitiesRelationManager extends RelationManager
                         ->description(fn ($record) => data_get($record, 'user.name') . ' - ' . data_get($record, 'created_at')->format('F Y, H:s'))
                         ->label('Message')
                         ->grow(),
-
-
-
             ])
             ->contentGrid([
                 'md' => 2,
@@ -87,6 +87,21 @@ class ActivitiesRelationManager extends RelationManager
             ])
             ->filters([])
             ->actions([
+                    Tables\Actions\ViewAction::make('attachments')
+                        ->color('danger')
+                        ->modalHeading('Message Attachments')
+                        ->label('Attachments')
+                        ->extraAttributes([
+                            'class' => 'go'
+                        ])
+                        ->icon('heroicon-o-arrow-down-tray')
+                        ->visible(function ($record) {
+                            if (data_get($record, 'attributes.files', [])) {
+                                return true;
+                            }
+
+                            return false;
+                        }),
                     $this->getReactionAction($userId, 'check'),
                     $this->getReactionAction($userId, 'face-smile'),
                     $this->getReactionAction($userId, 'face-frown'),

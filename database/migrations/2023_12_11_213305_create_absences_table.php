@@ -28,11 +28,7 @@ return new class () extends Migration {
             $table->string('year');
             $table->date('start');
             $table->date('end');
-            $table->enum('status', [
-                'pending',
-                'allowed',
-                'denied'
-            ]);
+            $table->string('status');
             $table->bigInteger('status_by')
                 ->nullable();
             $table->timestampTz('status_at')

@@ -30,7 +30,7 @@ class AbsenceResource extends Resource
                         ->columnSpan(3),
                     Forms\Components\Select::make('status')
                         ->required()
-                        ->options(fn () => collect(AbsenceStatusEnum::cases())->pluck('name', 'value'))
+                        ->options(AbsenceStatusEnum::class)
                         ->columnSpan(3),
                     DateRangePicker::make('date')
                         ->formatStateUsing(function ($record) {

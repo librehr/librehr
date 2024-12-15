@@ -27,7 +27,7 @@ class AppPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         FilamentView::registerRenderHook(
-            PanelsRenderHook::USER_MENU_AFTER,
+            PanelsRenderHook::USER_MENU_BEFORE,
             fn (): string => Blade::render('@livewire(\'admin-login\')'),
         );
 
