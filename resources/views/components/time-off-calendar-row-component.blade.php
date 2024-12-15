@@ -16,12 +16,9 @@
         There are not absences yet.
     </div>
 @else
-    <div class="mb-8 border rounded flex flex-col divide-gray-200 divide-y">
+    <div class="mb-8 flex flex-col divide-gray-200 gap-2">
         @foreach ($absences as $absence)
-            @php($diffDays = \Carbon\Carbon::parse($absence['start'])->diffInDays(
-         \Carbon\Carbon::parse($absence['end'])
-    )+1)
-            <div wire:click="openAbsence({{ data_get($absence, 'id') }})"  class="p-6 flex flex-row gap-4 cursor-pointer hover:bg-gray-100">
+            <div wire:click="mountAction('cant-edit', [{{ $absence['id'] }}])"  class="p-6 flex flex-row gap-4 cursor-pointer bg-white border rounded-2xl hover:bg-gray-100">
                 <div class="flex flex-row min-w-[70px] gap-2">
                     <span class="rounded-2xl border-2 p-1 flex flex-col items-center justify-items-center">
                         <span class="text-xs text-primary-600 font-semibold px-2">
@@ -31,7 +28,7 @@
                             {{ \Carbon\Carbon::parse($absence['start'])->format('d') }}
                         </span>
                     </span>
-                    @if($diffDays > 1)
+                    @if($absence['DiffInDays'] > 1)
                         <span class="flex items-center">-></span>
                         <span class="rounded-2xl border-2 p-1 flex flex-col items-center justify-items-center">
                     <span class="text-xs text-primary-600 font-semibold px-2">
@@ -48,7 +45,7 @@
                         {{ data_get($absence, 'absence_type.name') }}
                     </span>
                     <span class="text-gray-600">
-                    {{ $diffDays }} day{{ $diffDays > 1 ? 's' : '' }} ({{ \Carbon\Carbon::parse($absence['start'])->format('Y') }})
+                    {{ $absence['DiffInDays'] }} day{{ $absence['DiffInDays'] > 1 ? 's' : '' }} ({{ \Carbon\Carbon::parse($absence['start'])->format('Y') }})
                 </span>
                 </div>
             </div>

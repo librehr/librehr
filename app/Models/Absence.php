@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AbsenceStatusEnum;
+use App\Models\Trait\TeamScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -43,7 +44,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Absence extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
+    use TeamScope;
 
     protected $guarded = [];
 
@@ -56,6 +59,10 @@ class Absence extends Model
 
     protected $with = [
         'absenceType'
+    ];
+
+    protected $appends = [
+        'DiffInDays'
     ];
 
     public function absenceType()
@@ -76,5 +83,10 @@ class Absence extends Model
     public function requests()
     {
         return $this->morphToMany(Request::class, 'requestable');
+    }
+
+    public function getDiffInDaysAttribute()
+    {
+        return \Carbon\Carbon::parse($this->start)->diffInDays(\Carbon\Carbon::parse($this->end)) + 1;
     }
 }

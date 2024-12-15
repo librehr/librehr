@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Expense;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class ExpensePolicy
 {
@@ -13,7 +12,7 @@ class ExpensePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->getActiveContractId() !== null && data_get($user->getActiveBusiness(), 'attributes.modules.expenses');
+        return $user->getActiveContractId() !== null;
     }
 
     /**

@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Jobs\TestJob;
 use App\Models\Document;
-use App\Models\Pivots\ContratablePivot;
 use App\Models\User;
 use Illuminate\Bus\Batch;
 use Illuminate\Console\Command;
@@ -33,7 +32,12 @@ class testing extends Command
      */
     public function handle()
     {
+        $e = User::query()
+            ->first()
+            ->businesses;
+        dd($e);
 
+        exit;
         //$e = \Cache::store('redis')->get('librehr_database_batch:9b908b75-eddb-4bc7-9333-38fe674e9702');
 
         Bus::batch(

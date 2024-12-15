@@ -2,10 +2,7 @@
 
 namespace App\Services;
 
-
-use App\Models\Absence;
 use App\Models\Document;
-use Illuminate\Support\Carbon;
 
 class Documents extends BaseService
 {
@@ -21,6 +18,6 @@ class Documents extends BaseService
             ->mapToGroups(function ($record) {
                 $modelName = data_get($record, 'documentable.type.name', 'No classificated');
                 return [$modelName => $record];
-            });
+            })->toArray();
     }
 }

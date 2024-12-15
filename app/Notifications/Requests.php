@@ -3,7 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -15,12 +14,11 @@ class Requests extends Notification
      * Create a new notification instance.
      */
     public function __construct(
-            protected $subject,
-            protected $body,
-            protected $action = null,
-            protected $url = null
-    )
-    {
+        protected $subject,
+        protected $body,
+        protected $action = null,
+        protected $url = null
+    ) {
         //
     }
 
@@ -47,7 +45,7 @@ class Requests extends Notification
 
     public function toMail($notifiable)
     {
-        $mail = (new MailMessage)->subject($this->subject)->line($this->body);
+        $mail = (new MailMessage())->subject($this->subject)->line($this->body);
 
         if ($this->action !== null && $this->url !== null) {
             $mail = $mail->action($this->action, url($this->url));

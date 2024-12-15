@@ -2,9 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Models\Attendance;
 use App\Services\Attendances;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;

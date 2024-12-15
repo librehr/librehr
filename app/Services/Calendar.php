@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-
 use App\Models\Absence;
 use App\Models\Contract;
 use Illuminate\Support\Carbon;
@@ -26,7 +25,7 @@ class Calendar extends BaseService
         $date = [];
         $totalAbsences = [];
         $totalNotHolidays = [];
-        while($startOfCalendar <= $endOfCalendar) {
+        while ($startOfCalendar <= $endOfCalendar) {
             $holidays = data_get($calendar, $startOfCalendar->format('Y-m-d'), []);
             $absenceses = [];
             foreach ($absences as $absence) {

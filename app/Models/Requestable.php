@@ -16,15 +16,18 @@ class Requestable extends Model
 
     protected $guarded = [];
 
-    public function request(){
+    public function request()
+    {
         return $this->belongsTo(Request::class);
     }
 
-    public function contract(){
+    public function contract()
+    {
         return $this->belongsTo(Contract::class);
     }
 
-    public function userTo(){
+    public function userTo()
+    {
         return $this->belongsTo(User::class);
     }
 

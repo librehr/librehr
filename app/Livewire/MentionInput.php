@@ -7,7 +7,6 @@ use Livewire\Component;
 
 class MentionInput extends Component
 {
-
     public $mentionables;
     public $body;
 

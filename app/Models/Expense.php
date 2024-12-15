@@ -3,14 +3,15 @@
 namespace App\Models;
 
 use App\Enums\ExpenseStatusEnum;
-use App\Enums\TaskStatusEnum;
 use App\Models\Scopes\BusinessScope;
+use App\Models\Trait\TeamScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Expense extends Model
 {
     use HasFactory;
+    use TeamScope;
 
     protected $casts = [
         'status' => ExpenseStatusEnum::class,

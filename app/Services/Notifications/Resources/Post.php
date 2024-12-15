@@ -2,7 +2,7 @@
 
 namespace App\Services\Notifications\Resources;
 
-use App\Filament\Pages\Dashboard;
+use App\Filament\App\Pages\Dashboard;
 use App\Services\Notifications\NotificationsResources;
 
 class Post extends NotificationsResources

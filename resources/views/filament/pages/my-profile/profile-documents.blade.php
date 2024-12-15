@@ -1,3 +1,3 @@
 <x-filament-panels::page>
-    <x-documents-component :documentsAll="$documents"/>
+    @livewire('user-download-component', [$documents])
 </x-filament-panels::page>
