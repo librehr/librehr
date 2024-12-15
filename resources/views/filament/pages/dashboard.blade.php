@@ -85,7 +85,7 @@
             </div>
         </x-filament::section>
 
-        <div class="col-span-8 flex flex-col gap-4">
+        <div class="col-span-7 flex flex-col gap-4">
             @foreach($posts as $post)
                 <x-filament::section>
                     <x-slot name="heading">
@@ -104,7 +104,7 @@
             @endforeach
         </div>
 
-        <x-filament::section class="p-0 col-span-4">
+        <x-filament::section class="p-0 col-span-5">
             <x-slot name="heading">
                 {{ data_get($user->getActiveBusiness(), 'name') }} Calendar
             </x-slot>

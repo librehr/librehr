@@ -73,14 +73,14 @@ class AppPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-
             ->passwordReset()
             ->favicon(asset('images/logo.png'))
             ->discoverPages(in: app_path('Filament/App/Pages'), for: 'App\\Filament\\App\\Pages')
             ->discoverWidgets(in: app_path('Filament/App/Widgets'), for: 'App\\Filament\\App\\Widgets')
             ->discoverResources(in: app_path('Filament/App/Resources'), for: 'App\\Filament\\App\\Resources')
             ->sidebarCollapsibleOnDesktop()
-            ->viteTheme('resources/css/filament/app/theme.css');
+            ->viteTheme('resources/css/filament/app/theme.css')
+            ->spa();
 
         return $panel;
     }

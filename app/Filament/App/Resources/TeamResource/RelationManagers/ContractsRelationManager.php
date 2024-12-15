@@ -48,7 +48,7 @@ class ContractsRelationManager extends RelationManager
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
             ])
-            ->actºions([
+            ->actions([
                 Tables\Actions\Action::make('Contract')
                     ->tooltip('view_contract')
                     ->iconButton()

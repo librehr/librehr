@@ -13,13 +13,20 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/test', function () {
-    $logFilePath = storage_path('logs/laravel.log');
+Route::get('/download/{uuid}', function (Request $request, $uuid) {
+    $document = \App\Models\Document::query()->where('uuid', $uuid);
+    $authUser = Auth::user();
 
-    // Check if the log file exists
-    if (file_exists($logFilePath)) {
-        dd(file_get_contents($logFilePath));
-    } else {
-        return 'not exist';
+    if ($authUser->IsAdmin) {
+        $document = $document->firstOrFail();
+        return response()->download(
+            Storage::path($document->path)
+        );
     }
-});
+
+    $document = $document->where('user_id', $authUser->id)->firstOrFail();
+
+    return response()->download(
+        Storage::path($document->path)
+    );
+})->name('download-document')->middleware(['auth']);

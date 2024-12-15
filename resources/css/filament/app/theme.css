@@ -11,9 +11,29 @@
 }
 
 .fi-sidebar-nav {
-    @apply bg-white border-r;
+    @apply bg-white;
 }
 
 .fi-ta-actions-cell {
     @apply flex justify-end items-end;
+}
+
+.fi-main {
+    @apply rounded-tl-2xl border bg-gray-50 flex flex-col min-h-screen;
+}
+
+.fi-page {
+    @apply flex-grow;
+}
+
+.fi-topbar {
+    @apply static;
+}
+
+.fi-layout {
+    @apply bg-white;
+}
+
+.fi-topbar nav{
+    @apply border-none shadow-none ring-0;
 }

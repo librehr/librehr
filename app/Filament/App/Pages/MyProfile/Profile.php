@@ -2,6 +2,7 @@
 
 namespace App\Filament\App\Pages\MyProfile;
 
+use App\Forms\Components\DownloadFile;
 use App\Models\User;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\Actions\Action;
