@@ -20,3 +20,4 @@ yarn-error.log
 sqlite.sql
 sqlite.sqlite
 /storage/framework
+/storage/framework/*

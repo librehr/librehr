@@ -19,8 +19,8 @@
             @endif
 
     </ul>
-    <div class="grid grid-cols-2">
-        <div class="flex flex-col">
+    <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-2">
             <h1 class="fi-header-heading text-2xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
                 {{ $this->getNavigationLabel() }}
             </h1>
