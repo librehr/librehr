@@ -2,11 +2,9 @@
 
 namespace App\Notifications;
 
-use App\Filament\Pages\Dashboard;
+use App\Filament\App\Pages\Dashboard;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Mail;
 
 class Posts extends \Filament\Notifications\Notification
@@ -31,7 +29,7 @@ class Posts extends \Filament\Notifications\Notification
 
     public function toMail()
     {
-        $message = (new MailMessage)
+        $message = (new MailMessage())
             ->subject('New post from ' . config('app.name'))
             ->line(data_get($this->data, 'title'))
             ->action('Read full post', url(Dashboard::getNavigationUrl()))

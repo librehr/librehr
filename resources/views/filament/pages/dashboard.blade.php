@@ -1,7 +1,7 @@
 <div class="pt-10">
     @if($contractId && $businessId)
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4 text-sm">
-        <x-filament::section class="p-0">
+    <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 mb-4 text-sm">
+        <x-filament::section class="p-0 col-span-6">
             <x-slot name="heading">
                 Attendance
             </x-slot>
@@ -31,7 +31,7 @@
             </div>
         </x-filament::section>
 
-        <x-filament::section class="col-span-2">
+        <x-filament::section class="col-span-6">
             <x-slot name="heading">
                 Notifications / Requests
             </x-slot>
@@ -85,33 +85,26 @@
             </div>
         </x-filament::section>
 
-        <x-filament::section>
-            <x-slot name="heading">
-                Office Desk Booking
-            </x-slot>
+        <div class="col-span-7 flex flex-col gap-4">
+            @foreach($posts as $post)
+                <x-filament::section>
+                    <x-slot name="heading">
+                        {{ data_get($post, 'title') }}
+                    </x-slot>
 
-            <div class="mb-4 flex flex-col gap-4">
-                @if ($todayBooked)
-                    <span class="text-2xl text-green-600">Seat {{ data_get($todayBooked, 'desk.name') }}</span>
-                    <span class="-mt-4 text-xs text-gray-500">This is the seat your reserved for today!</span>
-                    <span>You have booked seat <span class="text-green-700 font-black">{{ data_get($todayBooked, 'desk.name') }}</span> for today in <b>{{ data_get($todayBooked, 'desk.room.floor.place.name') }}</b>, room <b>{{ data_get($todayBooked, 'desk.room.name') }}</b> @ the <b>{{ data_get($todayBooked, 'desk.room.floor.name') }}</b></span>
+                    <x-slot name="headerEnd">
+                        {{ data_get($post, 'created_at')->format('M N, Y') }}
+                    </x-slot>
 
-                    <span>
-                    <x-filament::button color="gray" wire:click="goToDeskBookings( {{ data_get($todayBooked, 'desk.room.id') }}, '{{ data_get($todayBooked, 'start') }}')">
-                        View in map
-                    </x-filament::button>
-                    </span>
-                @else
-                    Do you want to come to the office today? Get excited and reserve your spot!
+                    <div class="blog-format">
+                        {!! data_get($post, 'body') !!}
+                    </div>
 
-                    <x-filament::button wire:click="goToDeskBookings">
-                        Book now!
-                    </x-filament::button>
-                @endif
-            </div>
-        </x-filament::section>
+                </x-filament::section>
+            @endforeach
+        </div>
 
-        <x-filament::section class="p-0 col-span-2">
+        <x-filament::section class="p-0 col-span-5">
             <x-slot name="heading">
                 {{ data_get($user->getActiveBusiness(), 'name') }} Calendar
             </x-slot>
@@ -133,27 +126,9 @@
                 @endforelse
             </div>
         </x-filament::section>
+
     </div>
 
     @endif
-    <div class="flex flex-col gap-4 mb-4">
-        @foreach($posts as $post)
-            <x-filament::section>
-                <x-slot name="heading">
-                    {{ data_get($post, 'title') }}
-                </x-slot>
-
-                <x-slot name="headerEnd">
-                    {{ data_get($post, 'created_at')->format('M N, Y') }}
-                </x-slot>
-
-                <div class="blog-format">
-                    {!! data_get($post, 'body') !!}
-                </div>
-
-            </x-filament::section>
-        @endforeach
-    </div>
-
 </div>
 

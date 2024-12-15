@@ -19,16 +19,16 @@
             @endif
 
     </ul>
-    <div class="grid grid-cols-2">
-        <div class="flex flex-col">
+    <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-2">
             <h1 class="fi-header-heading text-2xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-3xl">
                 {{ $this->getNavigationLabel() }}
             </h1>
-            <p>
+            <p class="my-4">
                 {{ $this->getSubheading() }}
             </p>
         </div>
-        <div class="flex flex-col border rounded-lg py-4 divide-y gap-4 items-center justify-center">
+        <div class="flex flex-col border bg-white rounded-lg py-4 divide-y gap-4 items-center justify-center">
             <div class="w-full flex justify-center">
                 Attendance
             </div>
@@ -66,7 +66,7 @@
             <span class="text-xs">Estimate</span>
         </div>
         <div class="flex-grow p-4">
-                @livewire(App\Filament\Widgets\AttendancesChart::class)
+                @livewire(App\Filament\App\Widgets\AttendancesChart::class)
         </div>
         <div class="p-4 flex flex-col">
             <span>{{ data_get($summary, $contractId . '.total_time_extra') }}</span>

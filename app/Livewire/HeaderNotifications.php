@@ -2,8 +2,6 @@
 
 namespace App\Livewire;
 
-use App\Models\Business;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class HeaderNotifications extends Component
@@ -32,4 +30,3 @@ HTML;
         HTML;
     }
 }
-

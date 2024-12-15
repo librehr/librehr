@@ -3,8 +3,6 @@
 namespace App\Policies;
 
 use App\Models\Calendar;
-use App\Models\Planning;
-use App\Models\Post;
 use App\Models\User;
 
 class CalendarPolicy

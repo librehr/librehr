@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use Carbon\Carbon;
-use Filament\Facades\Filament;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
@@ -11,9 +10,7 @@ use Filament\Support\Facades\FilamentView;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
-use Filament\Notifications\Notification;
 use Illuminate\View\View;
-
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         if (config('app.debug')) {
-            DB::listen(function($query) {
+            DB::listen(function ($query) {
                 Log::info(
                     $query->sql,
                     [
@@ -42,14 +39,12 @@ class AppServiceProvider extends ServiceProvider
             });
         }
 
-
-
         $this->attachViewToFilamentClasses(
             [
-                \App\Filament\Pages\MyProfile\Profile::class,
-                \App\Filament\Pages\MyProfile\ProfileContracts::class,
-                \App\Filament\Pages\MyProfile\ProfileTools::class,
-                \App\Filament\Pages\MyProfile\Documents::class,
+                \App\Filament\App\Pages\MyProfile\Profile::class,
+                \App\Filament\App\Pages\MyProfile\ProfileContracts::class,
+                \App\Filament\App\Pages\MyProfile\ProfileTools::class,
+                \App\Filament\App\Pages\MyProfile\Documents::class,
             ],
             view: 'filament.pages.header.my-profile-navigation',
             hookName: 'panels::page.start'
@@ -58,27 +53,24 @@ class AppServiceProvider extends ServiceProvider
 
         $this->attachViewToFilamentClasses(
             [
-                \App\Filament\Pages\Dashboard::class,
-                \App\Filament\Pages\Requests::class,
-                \App\Filament\Pages\TimeOff::class,
-                \App\Filament\Pages\DeskBookings::class,
-                \App\Filament\Pages\Attendances::class,
+                \App\Filament\App\Pages\Dashboard::class,
+                \App\Filament\App\Pages\Requests::class,
+                \App\Filament\App\Pages\TimeOff::class,
+                \App\Filament\App\Pages\Attendances::class,
             ],
             view: 'filament.pages.header.user',
             hookName: 'panels::page.start'
         );
 
-/*
-        $this->registerCalendar(
-            \App\Filament\Pages\AttendancesControl::class,
-            true
-        );
-*/
+        /*
+                $this->registerCalendar(
+                    \App\Filament\Pages\AttendancesControl::class,
+                    true
+                );
+        */
 
         FilamentAsset::register([
             Js::make('alpinejs-tooltip', __DIR__ . '/../../resources/js/alpinejs-tooltip.js'),
-            Css::make('leaflet-stylesheet', resource_path('css/leaflet.css')),
-            Js::make('leaflet-script', resource_path('js/leaflet.js')),
             Css::make('tribute-css', 'https://unpkg.com/tributejs@5.1.3/dist/tribute.css'),
             Js::make('tribute-js', 'https://unpkg.com/tributejs@5.1.3/dist/tribute.min.js')
         ]);
@@ -96,7 +88,8 @@ class AppServiceProvider extends ServiceProvider
             $links[$navigationClass::getNavigationLabel()] = $navigationClass::getRouteName('app');
         }
 
-        FilamentView::registerRenderHook($hookName,
+        FilamentView::registerRenderHook(
+            $hookName,
             fn (): View => view($view, [
                 'links' => $links,
                 'data' => $data
@@ -138,10 +131,10 @@ class AppServiceProvider extends ServiceProvider
             fn (): View => view('filament.pages.header.calendar', [
                 'month' => $month,
                 'selected' => $month ? $selected->format('F, Y') : $selected->format('D d, F, Y'),
-                'previous' =>  ($previous !== null && $previous < now()->startOfMonth()->startOfDay()  ? [
+                'previous' =>  ($previous !== null && $previous < now()->startOfMonth()->startOfDay() ? [
                     'date' => $previous->format('Y-m-d'),
                 ] : null),
-                'next' => ($next !== null && $next < now()  ? [
+                'next' => ($next !== null && $next < now() ? [
                     'date' => $next->format('Y-m-d'),
                 ] : null),
                 'route' => $route

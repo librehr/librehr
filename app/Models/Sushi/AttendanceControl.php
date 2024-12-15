@@ -2,15 +2,10 @@
 
 namespace App\Models\Sushi;
 
-use App\Models\Contract;
 use App\Models\User;
 use App\Services\Attendances;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
 
 class AttendanceControl extends Model
 {
@@ -40,8 +35,8 @@ class AttendanceControl extends Model
             $query->where('business_id', self::$businessId)
             ->where('end', null)
             ->with(['team', 'attendancesValidations' => function ($query) {
-                    $query->whereYear('date', Carbon::parse(self::$date));
-                    $query->whereMonth('date', Carbon::parse(self::$date));
+                $query->whereYear('date', Carbon::parse(self::$date));
+                $query->whereMonth('date', Carbon::parse(self::$date));
             },
                 'absences' => function ($q) {
                     $q->where('status', 'allowed')
@@ -69,7 +64,7 @@ class AttendanceControl extends Model
 
     protected function newRelatedInstance($class)
     {
-        return tap(new $class, function ($instance) use ($class) {
+        return tap(new $class(), function ($instance) use ($class) {
             if (!$instance->getConnectionName()) {
                 $instance->setConnection($this->getConnectionResolver()->getDefaultConnection());
                 parent::newRelatedInstance($class);

@@ -20,8 +20,7 @@ class Notifications extends BaseService
         string $notification,
         $record,
         array|int|null $usersId = null,
-    ): void
-    {
+    ): void {
         $allowedNotifications = config('notifications.allowed_notifications');
         $users = User::query()->where('active', true);
 
@@ -30,29 +29,29 @@ class Notifications extends BaseService
         }
 
         $users->chunkById(200, function ($users) use ($allowedNotifications, $notification, $record) {
-                foreach ($users as $user) {
-                    $result = self::getNotificationData($notification, $record);
+            foreach ($users as $user) {
+                $result = self::getNotificationData($notification, $record);
 
-                    if (in_array('mail', data_get($allowedNotifications, $notification, []))) {
-                        $user->notify(new EmailNotification(
-                            $result
-                        ));
-                    }
-
-                    if (in_array('web', data_get($allowedNotifications, $notification, []))) {
-                        $user->notify(
-                            Notification::make()
-                                ->title(data_get($result, 'title'))
-                                ->body(data_get($result, 'description'))
-                                ->actions([
-                                    Action::make('open')
-                                    ->url(data_get($result, 'url'))
-                                ])
-                                ->toDatabase(),
-                        );
-                    }
+                if (in_array('mail', data_get($allowedNotifications, $notification, []))) {
+                    $user->notify(new EmailNotification(
+                        $result
+                    ));
                 }
-            });
+
+                if (in_array('web', data_get($allowedNotifications, $notification, []))) {
+                    $user->notify(
+                        Notification::make()
+                            ->title(data_get($result, 'title'))
+                            ->body(data_get($result, 'description'))
+                            ->actions([
+                                Action::make('open')
+                                ->url(data_get($result, 'url'))
+                            ])
+                            ->toDatabase(),
+                    );
+                }
+            }
+        });
     }
 
     /**

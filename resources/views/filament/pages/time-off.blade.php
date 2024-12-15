@@ -1,5 +1,5 @@
 <x-filament-panels::page>
-    <div class="grid grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
         <div class="flex flex-col gap-4">
 
             <div class="bg-gray-200 rounded-lg p-2 py-5 px-4 mb-4 text-lg">
@@ -72,7 +72,17 @@
                     <x-time-off-calendar-row-component :absences="data_get($contractAbsences, 'denied', [])"/>
             </x-time-off-calendar-component>
 
-
+            <x-time-off-calendar-component
+                title="Cancelled"
+                description="Cancelled absences are not editable."
+            >
+                <x-slot:icon>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-primary-600">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                    </x-slot>
+                    <x-time-off-calendar-row-component :absences="data_get($contractAbsences, 'cancelled', [])"/>
+            </x-time-off-calendar-component>
         </div>
         <div class="bg-gray-100 h-full p-4 rounded-lg">
             <ul class="p-4 border-b mb-4 flex flex-row justify-center items-center gap-8">

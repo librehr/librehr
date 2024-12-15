@@ -2,13 +2,7 @@
 
 namespace App\Services\Notifications\Resources;
 
-use App\Filament\Pages\Attendances;
-use App\Filament\Pages\Dashboard;
-use App\Filament\Pages\MyProfile\Documents;
-use App\Filament\Pages\MyProfile\ProfileTools;
-use App\Filament\Resources\ExpenseResource;
-use App\Filament\Resources\TaskResource\Pages\ViewTask;
-use App\Filament\Resources\TeamResource;
+use App\Filament\App\Resources\ExpenseResource;
 use App\Services\Notifications\NotificationsResources;
 
 class ExpenseAction extends NotificationsResources
@@ -19,7 +13,7 @@ class ExpenseAction extends NotificationsResources
     }
     public function getDescription(): string
     {
-            return  'Go to your expenses to get more information.';
+        return  'Go to your expenses to get more information.';
     }
 
     public function getUrl(): string

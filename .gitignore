@@ -4,6 +4,7 @@
 /public/storage
 /storage/*.key
 /vendor
+/storage
 .env
 .env.backup
 .env.production
@@ -18,3 +19,5 @@ yarn-error.log
 /.vscode
 sqlite.sqlite
 storage/database.sqlite
+/storage/framework
+/storage/framework/*

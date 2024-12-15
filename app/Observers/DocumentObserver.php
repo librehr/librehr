@@ -4,7 +4,6 @@ namespace App\Observers;
 
 use App\Models\Document;
 use App\Models\Request;
-use App\Models\User;
 use App\Services\Notifications;
 
 class DocumentObserver

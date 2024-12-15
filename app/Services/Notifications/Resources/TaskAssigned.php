@@ -2,11 +2,7 @@
 
 namespace App\Services\Notifications\Resources;
 
-use App\Filament\Pages\Attendances;
-use App\Filament\Pages\Dashboard;
-use App\Filament\Pages\MyProfile\Documents;
-use App\Filament\Pages\MyProfile\ProfileTools;
-use App\Filament\Resources\TaskResource\Pages\ViewTask;
+use App\Filament\App\Resources\TaskResource\Pages\ViewTask;
 use App\Services\Notifications\NotificationsResources;
 
 class TaskAssigned extends NotificationsResources

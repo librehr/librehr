@@ -4,7 +4,7 @@ namespace App\Policies;
 
 use App\Models\Task;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use Filament\Facades\Filament;
 
 class TaskPolicy
 {
@@ -13,7 +13,7 @@ class TaskPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->getActiveContractId() !== null && data_get($user->getActiveBusiness(), 'attributes.modules.tasks');
+        return Filament::getTenant() !== null;
     }
 
     /**
