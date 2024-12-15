@@ -2,9 +2,7 @@
 
 namespace App\Filament\App\Resources\ContractResource\Pages;
 
-use App\Filament\Admin\Resources\UserResource;
 use App\Filament\App\Resources\ContractResource;
-use App\Models\Contract;
 use App\Models\ContractTool;
 use App\Models\Tool;
 use Filament\Forms;

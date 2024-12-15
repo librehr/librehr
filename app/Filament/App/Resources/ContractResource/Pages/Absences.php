@@ -2,7 +2,6 @@
 
 namespace App\Filament\App\Resources\ContractResource\Pages;
 
-use App\Filament\Admin\Resources\UserResource;
 use App\Filament\App\Resources\AbsenceResource;
 use App\Filament\App\Resources\ContractResource;
 use Filament\Forms\Form;

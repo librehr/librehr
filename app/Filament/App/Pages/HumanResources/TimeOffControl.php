@@ -2,7 +2,6 @@
 
 namespace App\Filament\App\Pages\HumanResources;
 
-use App\Filament\Admin\Resources\UserResource;
 use App\Filament\App\Resources\ContractResource;
 use App\Models\AbsenceType;
 use App\Models\Contract;

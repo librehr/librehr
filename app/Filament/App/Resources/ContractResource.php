@@ -117,7 +117,7 @@ class ContractResource extends Resource
             'create' => \App\Filament\App\Resources\ContractResource\Pages\CreateContract::route('/create'),
             'edit' => \App\Filament\App\Resources\ContractResource\Pages\EditContract::route('/{record}/edit'),
             'documents' => \App\Filament\App\Resources\ContractResource\Pages\Documents::route('/{record}/documents'),
-            'absences' =>\App\Filament\App\Resources\ContractResource\Pages\Absences::route('/{record}/absences'),
+            'absences' => \App\Filament\App\Resources\ContractResource\Pages\Absences::route('/{record}/absences'),
             'tools' => \App\Filament\App\Resources\ContractResource\Pages\Tools::route('/{record}/tools'),
         ];
     }

@@ -2,7 +2,6 @@
 
 namespace App\Filament\App\Resources\ContractResource\Pages;
 
-use App\Filament\Admin\Resources\UserResource;
 use App\Filament\App\Resources\ContractResource;
 use App\Filament\App\Traits\DocumentUploadTrait;
 use App\Services\Documents as DocumentService;

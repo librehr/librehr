@@ -14,8 +14,6 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Support\Colors\Color;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\View\View;
 
 class ActivitiesRelationManager extends RelationManager
 {
