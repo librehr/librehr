@@ -17,7 +17,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-sqlite.sql
 sqlite.sqlite
+storage/database.sqlite
 /storage/framework
 /storage/framework/*
